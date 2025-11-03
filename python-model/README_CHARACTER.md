@@ -1,7 +1,7 @@
-# Character-Based AR OCR System
+# Lipika - Character-Based AR OCR System
 
 ## Overview
-This is an **AR-ready OCR service** for Ranjana script, optimized for Google Lens-style augmented reality visualization. Unlike word-based OCR, this system recognizes individual characters with bounding box information for AR overlay.
+**Lipika** (लिपिका) is an **AR-ready OCR service** for Ranjana script, optimized for Google Lens-style augmented reality visualization. Unlike word-based OCR, this system recognizes individual characters with bounding box information for AR overlay.
 
 ## Why Character-Based?
 
