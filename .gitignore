@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch models and checkpoints
+*.pth
+*.pt
+checkpoints/
+char_models/
+shrunken/
+
+# Datasets and generated data
+char_dataset/
+user_datasets/images/
+user_char_datasets/
+character_dataset/
+# Allow dataset directory but ignore generated images
+dataset/
+!dataset/labels.txt
+
+# Training logs and outputs
+*.log
+training_enhanced.log
+char_train_*.txt
+test_summary.txt
+# Allow text files in root
+!chars.txt
+!enhanced_chars.txt
+!dataset/labels.txt
+
+# Images and media (allow in root/templates)
+*.png
+!templates/*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+archive/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Generated documentation
+*.html
+!templates/*.html
+*.pdf
+
+# Fonts (large binary files)
+fonts/
+
+# Environment
+.env
+.env.local
+
+# Training metrics
+training_progress_monitor.png
+*_metrics.png
+
+# Temporary files
+*.tmp
+*.temp
+
