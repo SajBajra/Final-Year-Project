@@ -1,5 +1,5 @@
 """
-Character-Based Ranjana OCR Training
+Lipika - Character-Based Ranjana OCR Training
 Trains a CRNN model for individual character recognition (Google Lens style)
 """
 

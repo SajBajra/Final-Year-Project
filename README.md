@@ -1,6 +1,6 @@
-# Ranjana Script OCR System
+# Lipika - Ranjana Script OCR System
 
-A production-ready OCR (Optical Character Recognition) system for Ranjana script using CRNN (CNN + RNN) deep learning architecture. This system recognizes Ranjana text from images and exposes REST API endpoints for integration with external applications.
+A production-ready OCR (Optical Character Recognition) system for Ranjana script using CRNN (CNN + RNN) deep learning architecture. **Lipika** (लिपिका) recognizes Ranjana text from images with Google Lens-style AR overlay and exposes REST API endpoints for integration with external applications.
 
 ## 🎯 MVP Overview
 

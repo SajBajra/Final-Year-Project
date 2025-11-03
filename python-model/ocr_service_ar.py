@@ -1,5 +1,5 @@
 """
-AR-Ready OCR Service for Ranjana Script
+Lipika - AR-Ready OCR Service for Ranjana Script
 Character-based recognition for Google Lens style AR visualization
 Returns bounding boxes for each recognized character
 """
