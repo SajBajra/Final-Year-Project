@@ -24,7 +24,7 @@ chars = None
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # -------------------
-# Character CRNN Model
+# Character CRNN Model (Original)
 # -------------------
 class CharacterCRNN(torch.nn.Module):
     """Character-based CRNN for individual character recognition"""
@@ -93,6 +93,133 @@ class CharacterCRNN(torch.nn.Module):
         conv_features = conv_features.view(b, c, -1).permute(0, 2, 1)
         rnn_out, _ = self.rnn(conv_features)
         output = self.classifier(rnn_out.squeeze(1))
+        return output
+
+# -------------------
+# Improved Character CRNN Model
+# -------------------
+class ImprovedCharacterCRNN(torch.nn.Module):
+    """
+    Improved Character-based CRNN with better architecture
+    - Deeper CNN with residual connections
+    - Attention mechanism
+    - Better regularization
+    """
+    def __init__(self, num_classes, img_height=64, img_width=64, dropout=0.5):
+        super(ImprovedCharacterCRNN, self).__init__()
+        self.img_height = img_height
+        self.img_width = img_width
+        
+        # Improved CNN Feature Extractor with residual connections
+        self.conv1 = torch.nn.Sequential(
+            torch.nn.Conv2d(1, 32, 3, 1, 1),
+            torch.nn.BatchNorm2d(32),
+            torch.nn.ReLU(True),
+        )
+        self.conv1_res = torch.nn.Conv2d(1, 32, 1)  # Skip connection
+        
+        self.conv2 = torch.nn.Sequential(
+            torch.nn.Conv2d(32, 32, 3, 1, 1),
+            torch.nn.BatchNorm2d(32),
+            torch.nn.ReLU(True),
+            torch.nn.MaxPool2d(2, 2),  # 64x64 -> 32x32
+        )
+        
+        self.conv3 = torch.nn.Sequential(
+            torch.nn.Conv2d(32, 64, 3, 1, 1),
+            torch.nn.BatchNorm2d(64),
+            torch.nn.ReLU(True),
+            torch.nn.Conv2d(64, 64, 3, 1, 1),
+            torch.nn.BatchNorm2d(64),
+            torch.nn.ReLU(True),
+            torch.nn.MaxPool2d(2, 2),  # 32x32 -> 16x16
+        )
+        
+        self.conv4 = torch.nn.Sequential(
+            torch.nn.Conv2d(64, 128, 3, 1, 1),
+            torch.nn.BatchNorm2d(128),
+            torch.nn.ReLU(True),
+            torch.nn.Conv2d(128, 128, 3, 1, 1),
+            torch.nn.BatchNorm2d(128),
+            torch.nn.ReLU(True),
+            torch.nn.MaxPool2d(2, 2),  # 16x16 -> 8x8
+        )
+        
+        self.conv5 = torch.nn.Sequential(
+            torch.nn.Conv2d(128, 256, 3, 1, 1),
+            torch.nn.BatchNorm2d(256),
+            torch.nn.ReLU(True),
+            torch.nn.Conv2d(256, 256, 3, 1, 1),
+            torch.nn.BatchNorm2d(256),
+            torch.nn.ReLU(True),
+            torch.nn.MaxPool2d(2, 2),  # 8x8 -> 4x4
+        )
+        
+        # Global pooling
+        self.global_pool = torch.nn.AdaptiveAvgPool2d((1, 1))
+        
+        # Attention mechanism
+        self.attention = torch.nn.Sequential(
+            torch.nn.Linear(256, 128),
+            torch.nn.ReLU(),
+            torch.nn.Linear(128, 256),
+            torch.nn.Sigmoid()
+        )
+        
+        # Improved RNN
+        self.rnn = torch.nn.LSTM(
+            input_size=256,
+            hidden_size=256,
+            num_layers=3,
+            bidirectional=True,
+            batch_first=True,
+            dropout=0.3 if dropout > 0 else 0
+        )
+        
+        # Improved Classification head with more layers
+        self.classifier = torch.nn.Sequential(
+            torch.nn.Dropout(dropout),
+            torch.nn.Linear(512, 512),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(512),
+            torch.nn.Dropout(0.4),
+            torch.nn.Linear(512, 256),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(256),
+            torch.nn.Dropout(0.3),
+            torch.nn.Linear(256, 128),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(0.2),
+            torch.nn.Linear(128, num_classes)
+        )
+        
+    def forward(self, x):
+        # First conv with residual
+        out = self.conv1(x) + self.conv1_res(x)
+        
+        # Continue through CNN
+        out = self.conv2(out)
+        out = self.conv3(out)
+        out = self.conv4(out)
+        out = self.conv5(out)
+        
+        # Global pooling
+        conv_features = self.global_pool(out)  # [B, 256, 1, 1]
+        conv_features = conv_features.squeeze(-1).squeeze(-1)  # [B, 256]
+        
+        # Apply attention
+        attention_weights = self.attention(conv_features)  # [B, 256]
+        conv_features = conv_features * attention_weights
+        
+        # Reshape for RNN: [B, C] -> [B, 1, C]
+        conv_features = conv_features.unsqueeze(1)
+        
+        # RNN processing
+        rnn_out, _ = self.rnn(conv_features)
+        
+        # Classification
+        output = self.classifier(rnn_out.squeeze(1))
+        
         return output
 
 # -------------------
@@ -173,24 +300,48 @@ def normalize_unicode(text: str) -> str:
     return unicodedata.normalize('NFC', text)
 
 def load_model():
-    """Load the trained character model"""
+    """Load the trained character model (supports both original and improved models)"""
     global model, chars
     
     try:
-        if os.path.exists("best_character_crnn.pth"):
-            checkpoint = torch.load("best_character_crnn.pth", map_location=device)
-            chars = checkpoint['chars']
-            num_classes = len(chars)
-            model = CharacterCRNN(num_classes=num_classes).to(device)
-            model.load_state_dict(checkpoint['model_state_dict'])
-            model.eval()
-            print(f"✓ Character model loaded with {len(chars)} characters")
-            return True
-        else:
+        model_paths = ["best_character_crnn.pth", "best_character_crnn_improved.pth"]
+        checkpoint = None
+        model_path = None
+        
+        # Try to find and load model file
+        for path in model_paths:
+            if os.path.exists(path):
+                checkpoint = torch.load(path, map_location=device)
+                model_path = path
+                break
+        
+        if checkpoint is None:
             print("✗ No character model found")
             return False
+        
+        # Get model type from checkpoint (default to original)
+        model_type = checkpoint.get('model_type', 'CharacterCRNN')
+        chars = checkpoint['chars']
+        num_classes = len(chars)
+        
+        # Load appropriate model class
+        if model_type == 'ImprovedCharacterCRNN':
+            print(f"Loading ImprovedCharacterCRNN model from {model_path}...")
+            model = ImprovedCharacterCRNN(num_classes=num_classes, img_height=64, img_width=64, dropout=0.5).to(device)
+        else:
+            print(f"Loading CharacterCRNN model from {model_path}...")
+            model = CharacterCRNN(num_classes=num_classes).to(device)
+        
+        # Load state dict
+        model.load_state_dict(checkpoint['model_state_dict'])
+        model.eval()
+        print(f"✓ Model loaded successfully! Type: {model_type}, Characters: {len(chars)}")
+        return True
+        
     except Exception as e:
         print(f"✗ Error loading model: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 # -------------------
