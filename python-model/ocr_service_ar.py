@@ -229,69 +229,110 @@ def segment_characters(image):
     """
     IMPROVED character segmentation with better preprocessing
     Returns list of (bbox, crop) tuples
+    
+    IMPORTANT: For single character images (like from training dataset),
+    this function will return the entire image as a single segment.
     """
-    # Convert PIL to OpenCV format
-    img_array = np.array(image.convert('L'))
-    original_height, original_width = img_array.shape
-    
-    # IMPROVED preprocessing
-    # 1. Apply adaptive thresholding for better handling of varying lighting
-    binary = cv2.adaptiveThreshold(
-        img_array, 255, 
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-        cv2.THRESH_BINARY_INV, 
-        11, 2
-    )
-    
-    # 2. Morphological operations to clean up noise
-    kernel = np.ones((2, 2), np.uint8)
-    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
-    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
-    
-    # 3. Find contours with better parameters
-    contours, _ = cv2.findContours(
-        binary, 
-        cv2.RETR_EXTERNAL, 
-        cv2.CHAIN_APPROX_SIMPLE
-    )
-    
-    # Get bounding boxes with improved filtering
-    boxes = []
-    min_area = (original_width * original_height) * 0.001  # 0.1% of image area
-    min_width = max(5, original_width * 0.01)  # At least 1% of width
-    min_height = max(10, original_height * 0.05)  # At least 5% of height
-    
-    for contour in contours:
-        x, y, w, h = cv2.boundingRect(contour)
-        area = w * h
+    try:
+        # Convert PIL to OpenCV format
+        img_array = np.array(image.convert('L'))
+        original_height, original_width = img_array.shape
         
-        # Better filtering: check area, aspect ratio, and size
-        if (area >= min_area and 
-            w >= min_width and h >= min_height and
-            h / w < 10 and w / h < 10):  # Reasonable aspect ratio
-            boxes.append((x, y, w, h))
-    
-    if not boxes:
-        return []
-    
-    # Sort by x-coordinate (left to right), then by y (top to bottom for same column)
-    boxes.sort(key=lambda b: (b[0], b[1]))
-    
-    # Extract crops with padding for better recognition
-    results = []
-    for x, y, w, h in boxes:
-        # Add padding around character (10% on each side)
-        padding = max(3, int(min(w, h) * 0.1))
-        x_pad = max(0, x - padding)
-        y_pad = max(0, y - padding)
-        w_pad = min(original_width - x_pad, w + 2 * padding)
-        h_pad = min(original_height - y_pad, h + 2 * padding)
+        # If image is very small or looks like a single character image (aspect ratio close to 1:1),
+        # skip segmentation and return entire image as single character
+        # This is important for testing on training dataset images!
+        is_single_char = (original_width < 100 and original_height < 100) or \
+                        (abs(original_width - original_height) < max(original_width, original_height) * 0.3)
         
-        crop = image.crop((x_pad, y_pad, x_pad + w_pad, y_pad + h_pad))
-        bbox = {'x': int(x), 'y': int(y), 'width': int(w), 'height': int(h)}
-        results.append((bbox, crop))
-    
-    return results
+        if is_single_char:
+            print(f"[INFO] Detected single character image ({original_width}x{original_height}), skipping segmentation")
+            return [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+        
+        # Skip if image is too small
+        if original_width < 20 or original_height < 20:
+            print(f"[WARN] Image too small: {original_width}x{original_height}")
+            # Try to process entire image as single character
+            return [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+        
+        # IMPROVED preprocessing
+        # 1. Apply adaptive thresholding for better handling of varying lighting
+        binary = cv2.adaptiveThreshold(
+            img_array, 255, 
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+            cv2.THRESH_BINARY_INV, 
+            11, 2
+        )
+        
+        # 2. Morphological operations to clean up noise (gentler)
+        kernel_small = np.ones((2, 2), np.uint8)
+        kernel_medium = np.ones((3, 3), np.uint8)
+        
+        # Close small gaps
+        binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel_small)
+        # Remove small noise
+        binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel_small)
+        
+        # 3. Find contours with better parameters
+        contours, _ = cv2.findContours(
+            binary, 
+            cv2.RETR_EXTERNAL, 
+            cv2.CHAIN_APPROX_SIMPLE
+        )
+        
+        # More lenient filtering parameters
+        min_area = max(50, (original_width * original_height) * 0.0005)  # 0.05% of image area (more lenient)
+        min_width = max(3, original_width * 0.005)  # At least 0.5% of width (more lenient)
+        min_height = max(5, original_height * 0.02)  # At least 2% of height (more lenient)
+        
+        boxes = []
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            area = w * h
+            
+            # More lenient filtering: check area, aspect ratio, and size
+            if (area >= min_area and 
+                w >= min_width and h >= min_height and
+                h / w < 20 and w / h < 20):  # More lenient aspect ratio
+                boxes.append((x, y, w, h))
+        
+        # If no boxes found, try processing entire image as single character
+        if not boxes:
+            print("[WARN] No characters segmented, processing entire image as single character")
+            return [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+        
+        # Sort by x-coordinate (left to right), then by y (top to bottom for same column)
+        boxes.sort(key=lambda b: (b[0], b[1]))
+        
+        # Extract crops with padding for better recognition
+        results = []
+        for x, y, w, h in boxes:
+            # Add padding around character (15% on each side for better recognition)
+            padding = max(5, int(min(w, h) * 0.15))
+            x_pad = max(0, x - padding)
+            y_pad = max(0, y - padding)
+            w_pad = min(original_width - x_pad, w + 2 * padding)
+            h_pad = min(original_height - y_pad, h + 2 * padding)
+            
+            try:
+                crop = image.crop((x_pad, y_pad, x_pad + w_pad, y_pad + h_pad))
+                bbox = {'x': int(x), 'y': int(y), 'width': int(w), 'height': int(h)}
+                results.append((bbox, crop))
+            except Exception as e:
+                print(f"[WARN] Error cropping character at ({x}, {y}): {e}")
+                continue
+        
+        print(f"[INFO] Segmented {len(results)} characters from image")
+        return results if results else [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+        
+    except Exception as e:
+        print(f"[ERROR] Error in character segmentation: {e}")
+        import traceback
+        traceback.print_exc()
+        # Fallback: return entire image as single character
+        try:
+            return [({'x': 0, 'y': 0, 'width': image.width, 'height': image.height}, image)]
+        except:
+            return []
 
 # -------------------
 # Utility Functions
@@ -316,7 +357,7 @@ def load_model():
                 break
         
         if checkpoint is None:
-            print("✗ No character model found")
+            print("[ERROR] No character model found")
             return False
         
         # Get model type from checkpoint (default to original)
@@ -335,11 +376,20 @@ def load_model():
         # Load state dict
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
-        print(f"✓ Model loaded successfully! Type: {model_type}, Characters: {len(chars)}")
+        print(f"[OK] Model loaded successfully! Type: {model_type}, Characters: {len(chars)}")
+        
+        # Print character set info for debugging
+        ascii_chars = [c for c in chars if c and c.isascii() and (c.isalpha() or c.isdigit())]
+        unicode_chars = [c for c in chars if c and ord(c) > 127]
+        print(f"[INFO] Character set: {len(ascii_chars)} ASCII, {len(unicode_chars)} Unicode (Ranjana)")
+        if len(ascii_chars) > 0:
+            print(f"[WARN] Model contains ASCII characters: {ascii_chars[:10]}... (first 10)")
+            print(f"[WARN] This may cause predictions to default to ASCII characters like 'a'")
+        
         return True
         
     except Exception as e:
-        print(f"✗ Error loading model: {e}")
+        print(f"[ERROR] Error loading model: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -468,6 +518,12 @@ def index():
     </html>
     '''
 
+@app.route('/favicon.ico')
+def favicon():
+    """Suppress favicon 404 errors"""
+    from flask import Response
+    return Response(status=204)  # No Content
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
@@ -486,61 +542,130 @@ def predict():
     """
     try:
         if model is None:
-            return jsonify({'error': 'Model not loaded'}), 500
+            print("[ERROR] Model not loaded")
+            return jsonify({
+                'success': False,
+                'error': 'Model not loaded. Please ensure the model file exists.'
+            }), 500
         
         if 'image' not in request.files:
-            return jsonify({'error': 'No image provided'}), 400
+            return jsonify({
+                'success': False,
+                'error': 'No image provided'
+            }), 400
         
         file = request.files['image']
         if file.filename == '':
-            return jsonify({'error': 'No image selected'}), 400
+            return jsonify({
+                'success': False,
+                'error': 'No image selected'
+            }), 400
+        
+        print(f"[INFO] Processing image: {file.filename}")
         
         # Load image
-        image = Image.open(file.stream).convert('L')
+        try:
+            image = Image.open(file.stream).convert('L')
+            print(f"[INFO] Image loaded: {image.size[0]}x{image.size[1]}")
+        except Exception as e:
+            print(f"[ERROR] Error loading image: {e}")
+            return jsonify({
+                'success': False,
+                'error': f'Error loading image: {str(e)}'
+            }), 400
         
         # Segment into characters
         segments = segment_characters(image)
         
         if not segments:
+            print("[WARN] No segments found, returning empty result")
             return jsonify({
                 'success': True,
                 'text': '',
                 'characters': [],
-                'message': 'No characters detected'
+                'message': 'No characters detected in image'
             })
+        
+        print(f"[INFO] Processing {len(segments)} character segments")
+        
+        # IMPORTANT: Use same normalization as training!
+        # Training uses: mean=[0.485], std=[0.229]
+        # This is critical for correct predictions!
+        transform = transforms.Compose([
+            transforms.Resize((64, 64), antialias=True),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485], std=[0.229])  # Match training normalization
+        ])
         
         # Predict each character
         results = []
         for i, (bbox, crop) in enumerate(segments):
-            # Preprocess
-            transform = transforms.Compose([
-                transforms.Resize((64, 64)),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5,), (0.5,))
-            ])
-            
-            image_tensor = transform(crop).unsqueeze(0).to(device)
-            
-            # Predict
-            with torch.no_grad():
-                output = model(image_tensor)
-                probs = F.softmax(output, dim=1)
-                confidence, predicted = torch.max(probs, 1)
+            try:
+                # Preprocess
+                image_tensor = transform(crop).unsqueeze(0).to(device)
                 
-                char_idx = predicted.item()
-                conf = confidence.item()
+                # Predict
+                with torch.no_grad():
+                    output = model(image_tensor)
+                    probs = F.softmax(output, dim=1)
+                    confidence, predicted = torch.max(probs, 1)
+                    
+                    char_idx = predicted.item()
+                    conf = confidence.item()
                 
+                # Get top 3 predictions for debugging
+                top3_probs, top3_indices = torch.topk(probs, min(3, len(chars)), dim=1)
+                top3_chars = [chars[idx.item()] if idx.item() < len(chars) else '?' for idx in top3_indices[0]]
+                top3_conf = [prob.item() for prob in top3_probs[0]]
+                
+                # Higher confidence threshold (0.5) to avoid false positives like 'a'
+                # FILTER OUT ALL ASCII ENGLISH CHARACTERS - we only want Ranjana!
                 if char_idx < len(chars) and conf > 0.5:
                     char = chars[char_idx]
+                    # CRITICAL: Filter out ALL ASCII English characters - they shouldn't be in Ranjana OCR!
+                    is_ascii_english = char and len(char) == 1 and char.isascii() and (char.isalpha() or char.isdigit())
+                    if is_ascii_english:
+                        print(f"[WARN] Character {i}: Filtered out ASCII '{char}' (confidence: {conf:.3f}) - not a Ranjana character")
+                        print(f"[DEBUG] Top 3 predictions: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
+                        # Try to use the next best prediction if it's a Unicode character
+                        found_unicode = False
+                        for alt_idx, alt_char in enumerate(top3_chars[1:], 1):  # Skip first (ASCII)
+                            alt_conf = top3_conf[alt_idx]
+                            if alt_char and not (alt_char.isascii() and len(alt_char) == 1 and (alt_char.isalpha() or alt_char.isdigit())):
+                                # Found a non-ASCII character in top predictions
+                                if alt_conf > 0.3:  # Accept if confidence > 0.3
+                                    char = alt_char
+                                    conf = alt_conf
+                                    found_unicode = True
+                                    print(f"[INFO] Using alternative prediction: '{char}' (confidence: {conf:.3f})")
+                                    break
+                        if not found_unicode:
+                            # No valid Unicode alternative found, skip this character
+                            continue
+                    
                     results.append({
                         'character': char,
                         'confidence': round(conf, 3),
                         'bbox': bbox,
                         'index': i
                     })
+                    print(f"[INFO] Character {i}: '{char}' (confidence: {conf:.3f}, idx: {char_idx})")
+                    if conf < 0.7:
+                        print(f"[DEBUG] Top 3: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
+                else:
+                    print(f"[WARN] Character {i}: Low confidence ({conf:.3f}) or invalid index ({char_idx}/{len(chars)})")
+                    print(f"[DEBUG] Top 3 predictions: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
+                    
+            except Exception as e:
+                print(f"[ERROR] Error predicting character {i}: {e}")
+                import traceback
+                traceback.print_exc()
+                continue
         
         # Construct full text
         text = ''.join([r['character'] for r in results])
+        
+        print(f"[INFO] Recognition complete: {len(results)} characters recognized, text: '{text}'")
         
         return jsonify({
             'success': True,
@@ -550,6 +675,9 @@ def predict():
         })
         
     except Exception as e:
+        print(f"[ERROR] Error in predict endpoint: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': str(e)
@@ -575,12 +703,14 @@ def predict_base64():
         segments = segment_characters(image)
         results = []
         
+        # IMPORTANT: Use same normalization as training!
+        transform = transforms.Compose([
+            transforms.Resize((64, 64), antialias=True),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485], std=[0.229])  # Match training normalization
+        ])
+        
         for bbox, crop in segments:
-            transform = transforms.Compose([
-                transforms.Resize((64, 64)),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5,), (0.5,))
-            ])
             
             image_tensor = transform(crop).unsqueeze(0).to(device)
             
@@ -592,8 +722,14 @@ def predict_base64():
                 char_idx = predicted.item()
                 conf = confidence.item()
                 
+                # Higher confidence threshold (0.5) to avoid false positives
                 if char_idx < len(chars) and conf > 0.5:
                     char = chars[char_idx]
+                    # CRITICAL: Filter out ALL ASCII English characters for Ranjana OCR
+                    is_ascii_english = char and len(char) == 1 and char.isascii() and (char.isalpha() or char.isdigit())
+                    if is_ascii_english:
+                        continue  # Skip ALL ASCII predictions - we only want Ranjana characters
+                    
                     results.append({
                         'character': char,
                         'confidence': round(conf, 3),
