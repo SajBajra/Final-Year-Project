@@ -247,3 +247,64 @@ curl -X POST http://localhost:8080/api/translate \
 
 **Note**: Make sure the Python OCR service is running on port 5000 before using OCR endpoints.
 
+## Troubleshooting
+
+### Error: "Could not find or load main class com.lipika.LipikaApplication"
+
+This error occurs when the project hasn't been compiled yet. Follow these steps:
+
+**Solution 1: Build with Maven (Recommended)**
+```bash
+cd javabackend
+
+# Clean and build the project
+mvn clean install
+
+# Run the application
+mvn spring-boot:run
+```
+
+**Solution 2: Build JAR and Run**
+```bash
+cd javabackend
+
+# Build the JAR file
+mvn clean package
+
+# Run the JAR file
+java -jar target/lipika-backend-1.0.0.jar
+```
+
+**Solution 3: If Maven is not installed**
+
+1. **Install Maven:**
+   - Download from: https://maven.apache.org/download.cgi
+   - Or use package manager:
+     - Windows (Chocolatey): `choco install maven`
+     - Windows (Winget): `winget install Apache.Maven`
+
+2. **Verify Maven installation:**
+   ```bash
+   mvn --version
+   ```
+
+3. **Then build the project:**
+   ```bash
+   cd javabackend
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+**Solution 4: Use IDE (IntelliJ IDEA / Eclipse)**
+
+1. Open the `javabackend` folder in your IDE
+2. Let the IDE auto-import Maven dependencies
+3. Right-click on `LipikaApplication.java`
+4. Select "Run 'LipikaApplication'"
+
+**Common Issues:**
+
+- **Java version mismatch**: Ensure you have Java 17 installed (`java -version`)
+- **Maven not found**: Install Maven and add it to your PATH
+- **Compilation errors**: Check that all dependencies are downloaded correctly
+
