@@ -100,33 +100,67 @@ class CharacterCRNN(torch.nn.Module):
 # -------------------
 def segment_characters(image):
     """
-    Segment image into individual character bounding boxes
+    IMPROVED character segmentation with better preprocessing
     Returns list of (bbox, crop) tuples
     """
     # Convert PIL to OpenCV format
     img_array = np.array(image.convert('L'))
+    original_height, original_width = img_array.shape
     
-    # Threshold to binary
-    _, binary = cv2.threshold(img_array, 127, 255, cv2.THRESH_BINARY_INV)
+    # IMPROVED preprocessing
+    # 1. Apply adaptive thresholding for better handling of varying lighting
+    binary = cv2.adaptiveThreshold(
+        img_array, 255, 
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+        cv2.THRESH_BINARY_INV, 
+        11, 2
+    )
     
-    # Find contours
-    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # 2. Morphological operations to clean up noise
+    kernel = np.ones((2, 2), np.uint8)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
     
-    # Get bounding boxes
+    # 3. Find contours with better parameters
+    contours, _ = cv2.findContours(
+        binary, 
+        cv2.RETR_EXTERNAL, 
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+    
+    # Get bounding boxes with improved filtering
     boxes = []
+    min_area = (original_width * original_height) * 0.001  # 0.1% of image area
+    min_width = max(5, original_width * 0.01)  # At least 1% of width
+    min_height = max(10, original_height * 0.05)  # At least 5% of height
+    
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
-        # Filter small noise
-        if w > 5 and h > 10:
+        area = w * h
+        
+        # Better filtering: check area, aspect ratio, and size
+        if (area >= min_area and 
+            w >= min_width and h >= min_height and
+            h / w < 10 and w / h < 10):  # Reasonable aspect ratio
             boxes.append((x, y, w, h))
     
-    # Sort by x-coordinate (left to right)
-    boxes.sort(key=lambda b: b[0])
+    if not boxes:
+        return []
     
-    # Extract crops
+    # Sort by x-coordinate (left to right), then by y (top to bottom for same column)
+    boxes.sort(key=lambda b: (b[0], b[1]))
+    
+    # Extract crops with padding for better recognition
     results = []
     for x, y, w, h in boxes:
-        crop = image.crop((x, y, x+w, y+h))
+        # Add padding around character (10% on each side)
+        padding = max(3, int(min(w, h) * 0.1))
+        x_pad = max(0, x - padding)
+        y_pad = max(0, y - padding)
+        w_pad = min(original_width - x_pad, w + 2 * padding)
+        h_pad = min(original_height - y_pad, h + 2 * padding)
+        
+        crop = image.crop((x_pad, y_pad, x_pad + w_pad, y_pad + h_pad))
         bbox = {'x': int(x), 'y': int(y), 'width': int(w), 'height': int(h)}
         results.append((bbox, crop))
     
