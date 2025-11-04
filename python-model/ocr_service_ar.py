@@ -162,6 +162,127 @@ def load_model():
 # -------------------
 # API Endpoints
 # -------------------
+@app.route('/', methods=['GET'])
+def index():
+    """Root endpoint - API information"""
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Lipika - AR OCR Service</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 50px auto;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .container {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            h1 {
+                color: #4a90e2;
+                border-bottom: 3px solid #4a90e2;
+                padding-bottom: 10px;
+            }
+            .endpoint {
+                background: #f8f9fa;
+                padding: 15px;
+                margin: 10px 0;
+                border-left: 4px solid #4a90e2;
+                border-radius: 5px;
+            }
+            .method {
+                display: inline-block;
+                padding: 5px 10px;
+                border-radius: 3px;
+                font-weight: bold;
+                margin-right: 10px;
+            }
+            .get { background: #28a745; color: white; }
+            .post { background: #007bff; color: white; }
+            .status {
+                padding: 10px;
+                border-radius: 5px;
+                margin: 20px 0;
+            }
+            .success { background: #d4edda; color: #155724; }
+            .error { background: #f8d7da; color: #721c24; }
+            code {
+                background: #f4f4f4;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-family: 'Courier New', monospace;
+            }
+            a {
+                color: #4a90e2;
+                text-decoration: none;
+            }
+            a:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>📜 Lipika - AR-Ready OCR Service</h1>
+            <p><strong>Ranjana Script OCR with AR Bounding Boxes</strong></p>
+            
+            <div class="status ''' + ('success' if model is not None else 'error') + '''">
+                <strong>Service Status:</strong> ''' + ('✅ Model Loaded' if model is not None else '❌ Model Not Loaded') + '''<br>
+                <strong>Device:</strong> ''' + str(device) + '''<br>
+                <strong>Characters:</strong> ''' + str(len(chars) if chars else 0) + '''
+            </div>
+            
+            <h2>API Endpoints</h2>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong><a href="/health">/health</a></strong>
+                <p>Health check endpoint. Returns service status and model information.</p>
+                <code>curl http://localhost:5000/health</code>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <strong>/predict</strong>
+                <p>OCR prediction with AR bounding boxes. Accepts multipart/form-data with 'image' field.</p>
+                <code>curl -X POST -F "image=@your_image.png" http://localhost:5000/predict</code>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <strong>/predict/base64</strong>
+                <p>OCR prediction with base64-encoded image. Accepts JSON with 'image' field (base64 string).</p>
+                <code>curl -X POST -H "Content-Type: application/json" -d '{"image":"base64_string"}' http://localhost:5000/predict/base64</code>
+            </div>
+            
+            <h2>Response Format</h2>
+            <pre style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto;">
+{
+  "success": true,
+  "text": "Recognized text...",
+  "characters": [
+    {
+      "character": "न",
+      "confidence": 0.987,
+      "bbox": {"x": 10, "y": 5, "width": 25, "height": 30},
+      "index": 0
+    }
+  ],
+  "count": 1
+}</pre>
+            
+            <p style="margin-top: 30px; color: #666; font-size: 0.9em;">
+                For the React frontend, go to <a href="http://localhost:5173">http://localhost:5173</a>
+            </p>
+        </div>
+    </body>
+    </html>
+    '''
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
