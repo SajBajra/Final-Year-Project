@@ -117,3 +117,6 @@ nbdist/
 .vscode/
 *.code-workspace
 
+
+# Prepared dataset (generated from Dataset folder)
+prepared_dataset/
