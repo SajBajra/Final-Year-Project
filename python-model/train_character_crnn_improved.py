@@ -38,7 +38,12 @@ class AdvancedAugmentation:
     def random_rotate(self, img, max_angle=15):
         """Random rotation within ±max_angle degrees"""
         angle = random.uniform(-max_angle, max_angle)
-        return img.rotate(angle, fillcolor=255, resample=Image.BILINEAR)
+        try:
+            # Try with fillcolor first (newer Pillow versions)
+            return img.rotate(angle, fillcolor=255, resample=Image.BILINEAR)
+        except TypeError:
+            # Fallback for older versions - expand=True adds white borders
+            return img.rotate(angle, expand=True, resample=Image.BILINEAR)
     
     def random_affine(self, img):
         """Random affine transformation"""
@@ -48,14 +53,25 @@ class AdvancedAugmentation:
         angle = random.uniform(-5, 5)
         scale = random.uniform(0.9, 1.1)
         
-        return TF.affine(
-            img,
-            angle=angle,
-            translate=(translate_x, translate_y),
-            scale=scale,
-            shear=random.uniform(-2, 2),
-            fillcolor=255
-        )
+        try:
+            # Try with fillcolor first (newer versions)
+            return TF.affine(
+                img,
+                angle=angle,
+                translate=(translate_x, translate_y),
+                scale=scale,
+                shear=random.uniform(-2, 2),
+                fillcolor=255
+            )
+        except TypeError:
+            # Fallback for older versions without fillcolor
+            return TF.affine(
+                img,
+                angle=angle,
+                translate=(translate_x, translate_y),
+                scale=scale,
+                shear=random.uniform(-2, 2)
+            )
     
     def random_noise(self, img, noise_factor=0.05):
         """Add random noise"""
