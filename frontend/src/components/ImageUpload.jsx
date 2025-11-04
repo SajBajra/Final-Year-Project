@@ -51,10 +51,12 @@ const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete }) => {
       onOCRComplete(result)
     } catch (error) {
       console.error('OCR Error:', error)
+      // Show actual error message instead of generic "Error processing image"
       onOCRComplete({
-        text: 'Error processing image',
+        text: error.message || 'Error processing image',
         characters: [],
-        confidence: 0
+        confidence: 0,
+        error: error.message
       })
     }
   }

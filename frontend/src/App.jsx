@@ -9,7 +9,7 @@ import './index.css'
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 via-purple-50 to-pink-50 flex flex-col">
         <Header />
         <div className="flex-grow">
           <Routes>
