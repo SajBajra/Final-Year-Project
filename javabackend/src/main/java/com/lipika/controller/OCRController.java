@@ -45,7 +45,7 @@ public class OCRController {
         try {
             OCRResponse response = ocrService.recognizeText(image);
             
-            if (response.isSuccess()) {
+            if (response.getSuccess()) {
                 return ResponseEntity.ok(ApiResponse.success("Text recognized successfully", response));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
