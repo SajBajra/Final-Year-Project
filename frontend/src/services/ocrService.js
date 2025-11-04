@@ -59,7 +59,7 @@ export const recognizeText = async (imageFile) => {
   }
 }
 
-export const translateText = async (text, targetLanguage = 'en') => {
+export const translateText = async (text, targetLanguage = 'devanagari') => {
   try {
     // Call Java backend translation service
     const response = await axios.post(
@@ -80,13 +80,9 @@ export const translateText = async (text, targetLanguage = 'en') => {
   } catch (error) {
     console.warn('Translation service unavailable, using fallback:', error.message)
     
-    // Fallback: Simple character mapping
-    const charMap = {
-      'न': 'na', 'े': 'e', 'प': 'pa', 'ा': 'aa', 'ल': 'la', 'ी': 'ee',
-      'भ': 'bha', 'ा': 'aa', 'ष': 'sha', 'ा': 'aa'
-    }
-    
-    return text.split('').map(char => charMap[char] || char).join('')
+    // Fallback: Simple character mapping to Devanagari
+    // This is a basic fallback - actual mapping is done in backend
+    return text  // Return original if translation fails
   }
 }
 
@@ -100,4 +96,5 @@ export const checkHealth = async () => {
     return { status: 'error', message: 'Backend service unavailable' }
   }
 }
+
 
