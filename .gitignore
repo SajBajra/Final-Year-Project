@@ -83,3 +83,37 @@ training_progress_monitor.png
 *.tmp
 *.temp
 
+# Java/Maven build artifacts
+*.class
+bin/
+target/
+.gradle/
+build/
+out/
+.mvn/
+mvnw
+mvnw.cmd
+
+# Eclipse IDE
+.classpath
+.project
+.settings/
+.factorypath
+
+# IntelliJ IDEA
+*.iml
+*.iws
+*.ipr
+.idea/
+
+# NetBeans
+nbproject/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+*.code-workspace
+
