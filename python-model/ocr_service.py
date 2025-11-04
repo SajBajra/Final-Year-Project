@@ -188,7 +188,7 @@ def load_model():
             model = EnhancedCRNN(num_classes=num_classes).to(device)
             model.load_state_dict(checkpoint['model_state_dict'])
             model.eval()
-            print(f"✓ Enhanced model loaded with {len(chars)} characters")
+            print(f"[OK] Enhanced model loaded with {len(chars)} characters")
             return True
         elif os.path.exists("best_crnn_model.pth"):
             checkpoint = torch.load("best_crnn_model.pth", map_location=device)
@@ -198,13 +198,13 @@ def load_model():
             state = checkpoint.get('model_state_dict', checkpoint)
             model.load_state_dict(state)
             model.eval()
-            print(f"✓ Basic model loaded with {len(chars)} characters")
+            print(f"[OK] Basic model loaded with {len(chars)} characters")
             return True
         else:
-            print("✗ No trained model found")
+            print("[ERROR] No trained model found")
             return False
     except Exception as e:
-        print(f"✗ Error loading model: {e}")
+        print(f"[ERROR] Error loading model: {e}")
         return False
 
 # -------------------
