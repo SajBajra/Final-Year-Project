@@ -383,7 +383,7 @@ class ImprovedCharacterDataset(Dataset):
 # -------------------
 # IMPROVED Training Function
 # -------------------
-def train_improved_model(images_folder, train_labels, val_labels, epochs=150, batch_size=64, learning_rate=0.001):
+def train_improved_model(images_folder, train_labels, val_labels, epochs=150, batch_size=64, learning_rate=0.001, resume_from=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
@@ -434,6 +434,28 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
     num_classes = len(train_dataset.chars)
     model = ImprovedCharacterCRNN(num_classes=num_classes, img_height=64, img_width=64, dropout=0.5).to(device)
     
+    # Resume from checkpoint if provided
+    start_epoch = 0
+    best_val_acc = 0.0
+    train_losses = []
+    val_losses = []
+    val_accs = []
+    
+    if resume_from and os.path.exists(resume_from):
+        try:
+            print(f"\n[INFO] Resuming from checkpoint: {resume_from}")
+            checkpoint = torch.load(resume_from, map_location=device)
+            model.load_state_dict(checkpoint['model_state_dict'])
+            start_epoch = checkpoint.get('epoch', 0) + 1
+            best_val_acc = checkpoint.get('val_acc', 0.0)
+            train_losses = checkpoint.get('train_losses', [])
+            val_losses = checkpoint.get('val_losses', [])
+            val_accs = checkpoint.get('val_accs', [])
+            print(f"[OK] Resumed from epoch {start_epoch}, best val_acc: {best_val_acc:.2f}%")
+        except Exception as e:
+            print(f"[ERROR] Failed to resume from checkpoint: {e}")
+            print("[INFO] Starting training from scratch...")
+    
     print(f"\nImproved Model created with {num_classes} character classes")
     print(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"Trainable parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad):,}")
@@ -450,22 +472,31 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         eps=1e-8
     )
     
+    # Load optimizer state if resuming
+    if resume_from and os.path.exists(resume_from):
+        try:
+            checkpoint = torch.load(resume_from, map_location=device)
+            if 'optimizer_state_dict' in checkpoint:
+                optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                print("[OK] Loaded optimizer state")
+        except Exception as e:
+            print(f"[WARN] Could not load optimizer state: {e}")
+    
     # IMPROVED Learning rate scheduler (CosineAnnealingWarmRestarts)
     scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer, T_0=10, T_mult=2, eta_min=1e-6
     )
     
     # Training loop
-    best_val_acc = 0.0
-    train_losses = []
-    val_losses = []
-    val_accs = []
     patience = 15
     patience_counter = 0
     
-    print(f"\nStarting IMPROVED training for {epochs} epochs...\n")
+    if start_epoch == 0:
+        print(f"\nStarting IMPROVED training for {epochs} epochs...\n")
+    else:
+        print(f"\nContinuing IMPROVED training from epoch {start_epoch} to {epochs} epochs...\n")
     
-    for epoch in range(epochs):
+    for epoch in range(start_epoch, epochs):
         # Training phase
         model.train()
         train_loss = 0.0
@@ -539,11 +570,16 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
                 'optimizer_state_dict': optimizer.state_dict(),
                 'val_acc': val_acc,
                 'train_acc': train_acc,
+                'val_loss': val_loss,
+                'train_loss': train_loss,
                 'chars': train_dataset.chars,
                 'num_classes': num_classes,
-                'model_type': 'ImprovedCharacterCRNN'
+                'model_type': 'ImprovedCharacterCRNN',
+                'train_losses': train_losses,
+                'val_losses': val_losses,
+                'val_accs': val_accs
             }, 'best_character_crnn_improved.pth')
-            print(f"  ✓ Saved best model with val_acc: {val_acc:.2f}%\n")
+            print(f"  [OK] Saved best model with val_acc: {val_acc:.2f}%\n")
         else:
             patience_counter += 1
             print(f"  No improvement ({patience_counter}/{patience})\n")
@@ -603,6 +639,8 @@ if __name__ == '__main__':
                         help='Batch size')
     parser.add_argument('--lr', type=float, default=0.001,
                         help='Learning rate')
+    parser.add_argument('--resume', type=str, default=None,
+                        help='Resume training from checkpoint (e.g., best_character_crnn_improved.pth)')
     
     args = parser.parse_args()
     
@@ -623,8 +661,9 @@ if __name__ == '__main__':
         val_labels=args.val_labels,
         epochs=args.epochs,
         batch_size=args.batch_size,
-        learning_rate=args.lr
+        learning_rate=args.lr,
+        resume_from=args.resume
     )
     
-    print(f"\n✅ Training complete! Best accuracy: {best_acc:.2f}%")
-    print(f"📁 Model saved as: best_character_crnn_improved.pth")
+    print(f"\n[SUCCESS] Training complete! Best accuracy: {best_acc:.2f}%")
+    print(f"[FILE] Model saved as: best_character_crnn_improved.pth")
