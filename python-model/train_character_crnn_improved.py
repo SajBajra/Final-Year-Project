@@ -488,13 +488,10 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
     )
     
     # Training loop
-    patience = 15
-    patience_counter = 0
-    
     if start_epoch == 0:
-        print(f"\nStarting IMPROVED training for {epochs} epochs...\n")
+        print(f"\nStarting IMPROVED training for {epochs} epochs (full training, no early stopping)...\n")
     else:
-        print(f"\nContinuing IMPROVED training from epoch {start_epoch} to {epochs} epochs...\n")
+        print(f"\nContinuing IMPROVED training from epoch {start_epoch} to {epochs} epochs (full training, no early stopping)...\n")
     
     for epoch in range(start_epoch, epochs):
         # Training phase
@@ -563,7 +560,6 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            patience_counter = 0
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -581,13 +577,7 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
             }, 'best_character_crnn_improved.pth')
             print(f"  [OK] Saved best model with val_acc: {val_acc:.2f}%\n")
         else:
-            patience_counter += 1
-            print(f"  No improvement ({patience_counter}/{patience})\n")
-        
-        # Early stopping
-        if patience_counter >= patience:
-            print(f"\nEarly stopping at epoch {epoch+1}")
-            break
+            print(f"  Current best val_acc: {best_val_acc:.2f}% (no improvement this epoch)\n")
     
     print(f"\nTraining completed!")
     print(f"Best validation accuracy: {best_val_acc:.2f}%")

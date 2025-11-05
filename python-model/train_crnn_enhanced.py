@@ -576,8 +576,6 @@ if __name__ == "__main__":
     # Enhanced training parameters
     num_epochs = args.epochs  # configurable epochs
     best_val_loss = float('inf')
-    patience = 1000  # Set to a value larger than num_epochs to disable early stopping
-    patience_counter = 0
     
     # Training history
     train_losses = []
@@ -587,7 +585,7 @@ if __name__ == "__main__":
 
     print("Starting ENHANCED training...")
     print(f"Model has {sum(p.numel() for p in model.parameters()):,} parameters")
-    print(f"Training for {num_epochs} epochs with early stopping")
+    print(f"Training for {num_epochs} epochs (full training, no early stopping)")
     print("=" * 60)
 
     start_time = time.time()
@@ -637,10 +635,9 @@ if __name__ == "__main__":
         print(f"Val   Loss: {val_loss:.4f}, Acc: {val_acc['char_acc']:.3f} (char), {val_acc['word_acc']:.3f} (word), CER: {val_acc.get('cer', 0):.3f}, WER: {val_acc.get('wer', 0):.3f}")
         print(f"Learning Rate: {optimizer.param_groups[0]['lr']:.6f}")
         
-        # Early stopping (can be effectively disabled by high patience)
+        # Save best model (no early stopping - trains for full epochs)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            patience_counter = 0
             # Save best model
             payload = {
                 'epoch': epoch,
@@ -659,10 +656,7 @@ if __name__ == "__main__":
             safe_torch_save(payload, 'enhanced_crnn_model.pth')
             print(f"Best model saved at {best_ckpt_path}")
         else:
-            patience_counter += 1
-            if patience_counter >= patience:
-                print(f"Early stopping after {epoch+1} epochs")
-                break
+            print(f"Current best val_loss: {best_val_loss:.4f} (no improvement this epoch)")
 
         # Periodic checkpoint every 10 epochs
         if (epoch + 1) % 10 == 0:
