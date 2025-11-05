@@ -19,11 +19,6 @@ export default {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-      },
-      fontFamily: {
-        sans: ['Poppins', 'system-ui', 'sans-serif'],
-      },
-      colors: {
         secondary: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -36,6 +31,9 @@ export default {
           800: '#1e293b',
           900: '#0f172a',
         },
+      },
+      fontFamily: {
+        sans: ['Poppins', 'system-ui', 'sans-serif'],
       },
       animation: {
         'blob': 'blob 7s infinite',
