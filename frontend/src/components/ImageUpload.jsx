@@ -73,10 +73,10 @@ const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete }) => {
       </h2>
       
       <div
-        className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-200 ${
+        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all duration-200 ${
           dragActive
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+            ? 'border-primary-600 bg-gray-100'
+            : 'border-gray-300 hover:border-primary-600 hover:bg-gray-50'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}

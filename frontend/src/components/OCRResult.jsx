@@ -7,25 +7,27 @@ const OCRResult = ({
   onToggleAR, 
   showAR,
   translations = {},
+  devanagariText = '',
+  englishText = '',
   showTranslation = false,
   setShowTranslation,
   translationLoading = false,
-  onTranslate
+  onTranslateToEnglish
 }) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="card-glow"
+      className="card"
     >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-4">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+          <div className="p-3 rounded-xl bg-primary-600">
             <span className="text-4xl">🔍</span>
           </div>
           <div>
-            <h2 className="text-3xl font-black text-gradient">
+            <h2 className="text-3xl font-black text-primary-600">
               Recognition Result
             </h2>
             {confidence !== undefined && (
@@ -57,13 +59,13 @@ const OCRResult = ({
         
         <div className="flex flex-wrap items-center gap-3">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onToggleAR}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 shadow-lg ${
+            className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-md ${
               showAR 
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-xl' 
-                : 'bg-white/80 backdrop-blur-sm text-gray-700 border-2 border-gray-300/50 hover:border-purple-400 hover:bg-white'
+                ? 'bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg' 
+                : 'bg-white text-secondary-500 border-2 border-gray-300 hover:border-primary-600 hover:bg-gray-50'
             }`}
           >
             {showAR ? '👓 Hide AR' : '👓 Show AR Overlay'}
@@ -71,11 +73,11 @@ const OCRResult = ({
           
           {text && (
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setShowTranslation(!showTranslation)}
               disabled={translationLoading}
-              className="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-xl disabled:opacity-50 transition-all duration-300 shadow-lg"
+              className="px-5 py-2.5 rounded-lg font-semibold bg-secondary-500 text-white hover:bg-secondary-600 hover:shadow-lg disabled:opacity-50 transition-all duration-200 shadow-md"
             >
               {translationLoading ? (
                 <span className="flex items-center space-x-2">
@@ -96,10 +98,10 @@ const OCRResult = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`rounded-2xl p-8 mb-6 border-2 shadow-inner ${
+        className={`rounded-xl p-8 mb-6 border-2 shadow-sm ${
           (text && (text.includes('Error') || text.includes('error')))
-            ? 'bg-gradient-to-br from-red-50 via-orange-50 to-pink-50 border-red-200'
-            : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-white/50'
+            ? 'bg-red-50 border-red-200'
+            : 'bg-gray-50 border-gray-200'
         }`}
       >
         <div className="mb-4">
@@ -157,32 +159,73 @@ const OCRResult = ({
       </motion.div>
       
       {/* Translation Section */}
-      {showTranslation && Object.keys(translations).length > 0 && (
+      {showTranslation && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-200/50"
+          className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 space-y-4"
         >
           <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
             <span className="mr-2">🌐</span>
             Translations
           </h3>
-          <div className="grid md:grid-cols-2 gap-3">
-            {Object.entries(translations).map(([char, translation], idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50"
-              >
-                <span className="font-bold text-gray-700">{char}</span>
-                <span className="mx-2 text-gray-400">→</span>
-                <span className="text-gray-600">{translation}</span>
-              </motion.div>
-            ))}
-          </div>
+          
+          {/* Devanagari Translation */}
+          {devanagariText && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-lg p-4 border border-gray-300"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">
+                  Devanagari (देवनागरी)
+                </span>
+              </div>
+              <p className="text-2xl font-bold text-gray-800 leading-relaxed">
+                {devanagariText}
+              </p>
+            </motion.div>
+          )}
+          
+          {/* English Translation */}
+          {englishText ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-lg p-4 border border-gray-300"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">
+                  English
+                </span>
+              </div>
+              <p className="text-xl font-semibold text-gray-800 leading-relaxed">
+                {englishText}
+              </p>
+            </motion.div>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={onTranslateToEnglish}
+              disabled={translationLoading || !devanagariText}
+              className="w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              {translationLoading ? (
+                <span className="flex items-center justify-center space-x-2">
+                  <span className="animate-spin">⏳</span>
+                  <span>Translating to English...</span>
+                </span>
+              ) : (
+                <span className="flex items-center justify-center space-x-2">
+                  <span>🇬🇧</span>
+                  <span>Translate to English</span>
+                </span>
+              )}
+            </motion.button>
+          )}
         </motion.div>
       )}
     </motion.div>

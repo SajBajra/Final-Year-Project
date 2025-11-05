@@ -67,22 +67,28 @@ export const translateText = async (text, targetLanguage = 'devanagari') => {
       { text, targetLanguage },
       {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 10000
+        timeout: 30000  // Increased timeout for API calls
       }
     )
     
-    // Java backend returns: { success: true, data: { translatedText: "..." } }
+    // Java backend returns: { success: true, data: { translatedText: "...", ... } }
     if (response.data.success && response.data.data) {
-      return response.data.data.translatedText || text
+      const translatedText = response.data.data.translatedText || response.data.data.text
+      return translatedText || text
     } else {
       throw new Error(response.data.message || 'Translation failed')
     }
   } catch (error) {
-    console.warn('Translation service unavailable, using fallback:', error.message)
+    console.error('Translation service error:', error.message)
     
-    // Fallback: Simple character mapping to Devanagari
-    // This is a basic fallback - actual mapping is done in backend
-    return text  // Return original if translation fails
+    // If it's a network error or API error, return original text
+    if (error.response) {
+      throw new Error(`Translation failed: ${error.response.data?.message || error.response.statusText}`)
+    } else if (error.request) {
+      throw new Error('Translation service is not responding. Please check if the backend is running.')
+    } else {
+      throw new Error(`Translation error: ${error.message}`)
+    }
   }
 }
 
