@@ -4,7 +4,14 @@ import com.lipika.model.TranslationRequest;
 import com.lipika.model.TranslationResponse;
 import com.lipika.service.TranslationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +20,23 @@ import java.util.Map;
 @Service
 public class TranslationServiceImpl implements TranslationService {
     
+    private final RestTemplate restTemplate;
+    
+    @Value("${translation.api.enabled:true}")
+    private boolean translationApiEnabled;
+    
+    @Value("${translation.api.url:https://libretranslate.de/translate}")
+    private String translationApiUrl;
+    
     // Ranjana to Devanagari mapping (comprehensive character mapping)
     private static final Map<String, String> RANJANA_TO_DEVANAGARI = new HashMap<>();
     
     // Basic Ranjana character to English transliteration mapping (for fallback)
     private static final Map<String, String> RANJANA_TO_ENGLISH = new HashMap<>();
+    
+    public TranslationServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
     
     static {
         // ============================================
@@ -190,16 +209,35 @@ public class TranslationServiceImpl implements TranslationService {
             String translatedText;
             String targetLang = request.getTargetLanguage().toLowerCase();
             
+            // Check if input is already Devanagari (for Devanagari -> English translation)
+            boolean isDevanagari = isDevanagariScript(originalText);
+            
             if ("devanagari".equalsIgnoreCase(targetLang) || "dev".equalsIgnoreCase(targetLang) || "hi".equalsIgnoreCase(targetLang)) {
                 // Translate Ranjana to Devanagari
-                translatedText = transliterateToDevanagari(originalText);
+                if (isDevanagari) {
+                    // Already Devanagari, return as is
+                    translatedText = originalText;
+                } else {
+                    translatedText = transliterateToDevanagari(originalText);
+                }
                 log.info("Translated {} characters to Devanagari", translatedText.length());
-            } else if ("en".equalsIgnoreCase(targetLang)) {
-                // Translate to English using transliteration
-                translatedText = transliterateToEnglish(originalText);
+            } else if ("en".equalsIgnoreCase(targetLang) || "english".equalsIgnoreCase(targetLang)) {
+                // Translate to English
+                if (isDevanagari) {
+                    // Use API for Devanagari to English translation
+                    translatedText = translateDevanagariToEnglish(originalText);
+                } else {
+                    // Translate Ranjana to Devanagari first, then to English via API
+                    String devanagariText = transliterateToDevanagari(originalText);
+                    translatedText = translateDevanagariToEnglish(devanagariText);
+                }
             } else {
                 // Default to Devanagari (as per user requirement)
-                translatedText = transliterateToDevanagari(originalText);
+                if (!isDevanagari) {
+                    translatedText = transliterateToDevanagari(originalText);
+                } else {
+                    translatedText = originalText;
+                }
                 log.warn("Unknown target language '{}', defaulting to Devanagari", request.getTargetLanguage());
             }
             
@@ -274,5 +312,78 @@ public class TranslationServiceImpl implements TranslationService {
         }
         
         return result.toString().trim();
+    }
+    
+    /**
+     * Check if text contains Devanagari script characters
+     */
+    private boolean isDevanagariScript(String text) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+        // Devanagari Unicode range: U+0900 to U+097F
+        for (char c : text.toCharArray()) {
+            if (c >= '\u0900' && c <= '\u097F') {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Translate Devanagari text to English using API (LibreTranslate or Google Translate)
+     */
+    private String translateDevanagariToEnglish(String devanagariText) {
+        if (devanagariText == null || devanagariText.trim().isEmpty()) {
+            return "";
+        }
+        
+        // If API is disabled or unavailable, use fallback transliteration
+        if (!translationApiEnabled) {
+            log.warn("Translation API disabled, using fallback transliteration");
+            return transliterateToEnglish(devanagariText);
+        }
+        
+        try {
+            // Use LibreTranslate API (free, no API key required)
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("q", devanagariText);
+            requestBody.put("source", "hi");  // Hindi (Devanagari script)
+            requestBody.put("target", "en");  // English
+            requestBody.put("format", "text");
+            
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+            
+            log.info("Calling translation API: {} -> {}", devanagariText.substring(0, Math.min(50, devanagariText.length())), "en");
+            
+            ResponseEntity<Map> response = restTemplate.exchange(
+                translationApiUrl,
+                HttpMethod.POST,
+                request,
+                Map.class
+            );
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                Map<String, Object> responseBody = response.getBody();
+                String translatedText = (String) responseBody.get("translatedText");
+                
+                if (translatedText != null && !translatedText.isEmpty()) {
+                    log.info("API translation successful: {} characters", translatedText.length());
+                    return translatedText;
+                }
+            }
+            
+            log.warn("Translation API returned empty result, using fallback");
+            return transliterateToEnglish(devanagariText);
+            
+        } catch (Exception e) {
+            log.error("Error calling translation API: {}", e.getMessage());
+            log.info("Falling back to transliteration method");
+            // Fallback to transliteration if API fails
+            return transliterateToEnglish(devanagariText);
+        }
     }
 }
