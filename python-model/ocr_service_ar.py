@@ -15,6 +15,15 @@ import unicodedata
 import cv2
 import numpy as np
 
+# Optional: EasyOCR for improved character detection
+try:
+    import easyocr
+    EASYOCR_AVAILABLE = True
+    print("[INFO] EasyOCR available for enhanced character detection")
+except ImportError:
+    EASYOCR_AVAILABLE = False
+    print("[INFO] EasyOCR not available, using standard segmentation")
+
 app = Flask(__name__)
 CORS(app)
 
@@ -238,15 +247,17 @@ def segment_characters(image):
         img_array = np.array(image.convert('L'))
         original_height, original_width = img_array.shape
         
-        # If image is very small or looks like a single character image (aspect ratio close to 1:1),
-        # skip segmentation and return entire image as single character
-        # This is important for testing on training dataset images!
-        is_single_char = (original_width < 100 and original_height < 100) or \
-                        (abs(original_width - original_height) < max(original_width, original_height) * 0.3)
+        # Only treat as single character if image is very small (training dataset size)
+        # For larger images, always attempt segmentation
+        is_single_char = (original_width < 80 and original_height < 80) and \
+                        (abs(original_width - original_height) < 20)
         
         if is_single_char:
-            print(f"[INFO] Detected single character image ({original_width}x{original_height}), skipping segmentation")
+            print(f"[INFO] Detected small single character image ({original_width}x{original_height}), skipping segmentation")
             return [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+        
+        # For larger images, always attempt segmentation
+        print(f"[INFO] Processing multi-character image ({original_width}x{original_height}), attempting segmentation")
         
         # Skip if image is too small
         if original_width < 20 or original_height < 20:
@@ -279,10 +290,11 @@ def segment_characters(image):
             cv2.CHAIN_APPROX_SIMPLE
         )
         
-        # More lenient filtering parameters
-        min_area = max(50, (original_width * original_height) * 0.0005)  # 0.05% of image area (more lenient)
-        min_width = max(3, original_width * 0.005)  # At least 0.5% of width (more lenient)
-        min_height = max(5, original_height * 0.02)  # At least 2% of height (more lenient)
+        # Better filtering parameters for multi-character images
+        # Reduce minimum area threshold to catch more characters
+        min_area = max(30, (original_width * original_height) * 0.0003)  # 0.03% of image area
+        min_width = max(5, original_width * 0.01)  # At least 1% of width
+        min_height = max(8, original_height * 0.03)  # At least 3% of height
         
         boxes = []
         for contour in contours:
@@ -295,10 +307,27 @@ def segment_characters(image):
                 h / w < 20 and w / h < 20):  # More lenient aspect ratio
                 boxes.append((x, y, w, h))
         
-        # If no boxes found, try processing entire image as single character
+        # If no boxes found, try more aggressive segmentation
         if not boxes:
-            print("[WARN] No characters segmented, processing entire image as single character")
-            return [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+            print("[WARN] No characters segmented with initial parameters, trying more aggressive segmentation")
+            
+            # Try with even more lenient parameters
+            min_area = max(20, (original_width * original_height) * 0.0001)  # Very low threshold
+            min_width = max(3, original_width * 0.005)
+            min_height = max(5, original_height * 0.01)
+            
+            for contour in contours:
+                x, y, w, h = cv2.boundingRect(contour)
+                area = w * h
+                if (area >= min_area and w >= min_width and h >= min_height and
+                    h / w < 30 and w / h < 30):
+                    boxes.append((x, y, w, h))
+            
+            if not boxes:
+                print("[WARN] Still no characters found, processing entire image as single character")
+                return [({'x': 0, 'y': 0, 'width': original_width, 'height': original_height}, image)]
+            else:
+                print(f"[INFO] Found {len(boxes)} characters with aggressive parameters")
         
         # Sort by x-coordinate (left to right), then by y (top to bottom for same column)
         boxes.sort(key=lambda b: (b[0], b[1]))
@@ -385,6 +414,10 @@ def load_model():
         if len(ascii_chars) > 0:
             print(f"[WARN] Model contains ASCII characters: {ascii_chars[:10]}... (first 10)")
             print(f"[WARN] This may cause predictions to default to ASCII characters like 'a'")
+        if len(unicode_chars) > 0:
+            print(f"[INFO] Unicode characters available: {unicode_chars[:20]}... (first 20)")
+        else:
+            print(f"[ERROR] No Unicode (Ranjana) characters found in model! Model may not be trained for Ranjana script.")
         
         return True
         
@@ -563,12 +596,23 @@ def predict():
         
         print(f"[INFO] Processing image: {file.filename}")
         
-        # Load image
+        # Load image - read bytes first to avoid stream issues
         try:
-            image = Image.open(file.stream).convert('L')
-            print(f"[INFO] Image loaded: {image.size[0]}x{image.size[1]}")
+            # Read file into bytes to avoid stream position issues
+            file_bytes = file.read()
+            if not file_bytes:
+                return jsonify({
+                    'success': False,
+                    'error': 'Image file is empty'
+                }), 400
+            
+            from io import BytesIO
+            image = Image.open(BytesIO(file_bytes)).convert('L')
+            print(f"[INFO] Image loaded: {image.size[0]}x{image.size[1]}, mode: {image.mode}")
         except Exception as e:
             print(f"[ERROR] Error loading image: {e}")
+            import traceback
+            traceback.print_exc()
             return jsonify({
                 'success': False,
                 'error': f'Error loading image: {str(e)}'
@@ -618,42 +662,88 @@ def predict():
                 top3_chars = [chars[idx.item()] if idx.item() < len(chars) else '?' for idx in top3_indices[0]]
                 top3_conf = [prob.item() for prob in top3_probs[0]]
                 
-                # Higher confidence threshold (0.5) to avoid false positives like 'a'
-                # FILTER OUT ALL ASCII ENGLISH CHARACTERS - we only want Ranjana!
-                if char_idx < len(chars) and conf > 0.5:
+                # Accept predictions with reasonable confidence
+                # Try to prefer Ranjana characters, but accept ASCII if that's what the model predicts
+                if char_idx < len(chars):
                     char = chars[char_idx]
-                    # CRITICAL: Filter out ALL ASCII English characters - they shouldn't be in Ranjana OCR!
                     is_ascii_english = char and len(char) == 1 and char.isascii() and (char.isalpha() or char.isdigit())
+                    
+                    # If top prediction is ASCII, try to find Unicode alternative
                     if is_ascii_english:
-                        print(f"[WARN] Character {i}: Filtered out ASCII '{char}' (confidence: {conf:.3f}) - not a Ranjana character")
+                        print(f"[INFO] Character {i}: Top prediction is ASCII '{char}' (confidence: {conf:.3f})")
                         print(f"[DEBUG] Top 3 predictions: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
-                        # Try to use the next best prediction if it's a Unicode character
+                        
+                        # Try to find Unicode alternative in top predictions
                         found_unicode = False
                         for alt_idx, alt_char in enumerate(top3_chars[1:], 1):  # Skip first (ASCII)
                             alt_conf = top3_conf[alt_idx]
+                            # Check if this is a valid non-ASCII character
                             if alt_char and not (alt_char.isascii() and len(alt_char) == 1 and (alt_char.isalpha() or alt_char.isdigit())):
                                 # Found a non-ASCII character in top predictions
-                                if alt_conf > 0.3:  # Accept if confidence > 0.3
+                                if alt_conf > 0.1:  # Very low threshold to catch any Unicode alternative
                                     char = alt_char
                                     conf = alt_conf
                                     found_unicode = True
-                                    print(f"[INFO] Using alternative prediction: '{char}' (confidence: {conf:.3f})")
+                                    print(f"[INFO] Using Unicode alternative: '{char}' (confidence: {conf:.3f})")
                                     break
+                        
+                        # If no Unicode alternative found, try transliteration mapping
                         if not found_unicode:
-                            # No valid Unicode alternative found, skip this character
+                            try:
+                                from transliteration_to_ranjana import TRANSLITERATION_TO_RANJANA
+                                if char in TRANSLITERATION_TO_RANJANA:
+                                    ranjana_char = TRANSLITERATION_TO_RANJANA[char]
+                                    # Check if the mapped character exists in our character set
+                                    if ranjana_char in chars:
+                                        char = ranjana_char
+                                        print(f"[INFO] Mapped ASCII '{chars[char_idx]}' to Ranjana '{char}'")
+                                        found_unicode = True
+                                    else:
+                                        print(f"[WARN] Mapped character '{ranjana_char}' not in model vocabulary")
+                            except Exception as e:
+                                print(f"[DEBUG] Could not load transliteration mapping: {e}")
+                        
+                        # If still no Unicode found, accept ASCII if confidence is high enough
+                        # TEMPORARY: Accept ASCII to show results while model is retrained
+                        if not found_unicode:
+                            if conf >= 0.3:  # Lower threshold to accept more predictions
+                                print(f"[WARN] Accepting ASCII character '{char}' (no Ranjana alternative found, confidence: {conf:.3f})")
+                                print(f"[INFO] To get Ranjana predictions, retrain model with Ranjana labels (see RETRAIN_INSTRUCTIONS.md)")
+                            else:
+                                print(f"[WARN] Character {i}: Low confidence ASCII prediction ({conf:.3f}), skipping")
+                                continue
+                    elif conf < 0.2:
+                        # If not ASCII but confidence is too low, try to find better alternative
+                        print(f"[WARN] Character {i}: Low confidence ({conf:.3f}) for '{char}', checking alternatives")
+                        found_better = False
+                        for alt_idx, alt_char in enumerate(top3_chars[1:], 1):
+                            alt_conf = top3_conf[alt_idx]
+                            if alt_char and alt_conf > conf and alt_conf > 0.2:
+                                # Found a better alternative
+                                char = alt_char
+                                conf = alt_conf
+                                found_better = True
+                                print(f"[INFO] Using better alternative: '{char}' (confidence: {conf:.3f})")
+                                break
+                        if not found_better:
+                            print(f"[WARN] Character {i}: Skipping due to low confidence ({conf:.3f})")
                             continue
                     
-                    results.append({
-                        'character': char,
-                        'confidence': round(conf, 3),
-                        'bbox': bbox,
-                        'index': i
-                    })
-                    print(f"[INFO] Character {i}: '{char}' (confidence: {conf:.3f}, idx: {char_idx})")
-                    if conf < 0.7:
-                        print(f"[DEBUG] Top 3: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
+                    # Add character if confidence is acceptable
+                    if conf >= 0.2:  # Accept predictions with >= 20% confidence
+                        results.append({
+                            'character': char,
+                            'confidence': round(conf, 3),
+                            'bbox': bbox,
+                            'index': i
+                        })
+                        print(f"[INFO] Character {i}: '{char}' (confidence: {conf:.3f}, idx: {char_idx})")
+                        if conf < 0.7:
+                            print(f"[DEBUG] Top 3: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
+                    else:
+                        print(f"[WARN] Character {i}: Final confidence too low ({conf:.3f}), skipping")
                 else:
-                    print(f"[WARN] Character {i}: Low confidence ({conf:.3f}) or invalid index ({char_idx}/{len(chars)})")
+                    print(f"[WARN] Character {i}: Invalid index ({char_idx}/{len(chars)})")
                     print(f"[DEBUG] Top 3 predictions: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
                     
             except Exception as e:
@@ -667,11 +757,17 @@ def predict():
         
         print(f"[INFO] Recognition complete: {len(results)} characters recognized, text: '{text}'")
         
+        # If no results but we had segments, provide diagnostic info
+        if not results and segments:
+            print(f"[WARN] No characters recognized despite {len(segments)} segments found")
+            print(f"[INFO] This may indicate: model confidence too low, image quality issues, or model mismatch")
+        
         return jsonify({
             'success': True,
             'text': text,
             'characters': results,
-            'count': len(results)
+            'count': len(results),
+            'message': f'Recognized {len(results)} characters' if results else 'No characters detected with sufficient confidence'
         })
         
     except Exception as e:
@@ -745,6 +841,78 @@ def predict_base64():
         })
         
     except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/count-characters', methods=['POST'])
+def count_characters():
+    """
+    Dedicated endpoint for character count detection
+    Uses improved segmentation + optional EasyOCR for accurate counting
+    """
+    try:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image provided'}), 400
+        
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({'error': 'No image selected'}), 400
+        
+        # Load image
+        try:
+            file_bytes = file.read()
+            if not file_bytes:
+                return jsonify({'error': 'Image file is empty'}), 400
+            
+            from io import BytesIO
+            image = Image.open(BytesIO(file_bytes)).convert('L')
+            print(f"[INFO] Character count request for image: {image.size[0]}x{image.size[1]}")
+        except Exception as e:
+            return jsonify({'error': f'Error loading image: {str(e)}'}), 400
+        
+        # Use EasyOCR if available for better detection
+        if EASYOCR_AVAILABLE:
+            try:
+                reader = easyocr.Reader(['en', 'hi'], gpu=torch.cuda.is_available())
+                img_array = np.array(image)
+                results = reader.readtext(img_array)
+                
+                # Count detected text regions
+                detected_regions = len(results)
+                total_chars = sum(len(text) for text, _, _ in results)
+                
+                print(f"[INFO] EasyOCR detected {detected_regions} regions, {total_chars} characters")
+                
+                return jsonify({
+                    'success': True,
+                    'character_count': total_chars,
+                    'text_regions': detected_regions,
+                    'method': 'easyocr',
+                    'detected_texts': [text for text, _, _ in results]
+                })
+            except Exception as e:
+                print(f"[WARN] EasyOCR failed: {e}, falling back to standard segmentation")
+        
+        # Fallback to standard segmentation
+        segments = segment_characters(image)
+        character_count = len(segments)
+        
+        print(f"[INFO] Standard segmentation detected {character_count} characters")
+        
+        return jsonify({
+            'success': True,
+            'character_count': character_count,
+            'text_regions': character_count,
+            'method': 'standard_segmentation',
+            'message': 'Character count estimated using segmentation'
+        })
+        
+    except Exception as e:
+        print(f"[ERROR] Error in character count endpoint: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': str(e)

@@ -238,8 +238,21 @@ def predict():
         if file.filename == '':
             return jsonify({'error': 'No image selected'}), 400
         
-        # Load and preprocess image
-        image = Image.open(file.stream).convert("L")
+        # Load and preprocess image - read bytes first to avoid stream issues
+        try:
+            # Read file into bytes to avoid stream position issues
+            file_bytes = file.read()
+            if not file_bytes:
+                return jsonify({'error': 'Image file is empty'}), 400
+            
+            from io import BytesIO
+            image = Image.open(BytesIO(file_bytes)).convert("L")
+            print(f"[INFO] Image loaded: {image.size[0]}x{image.size[1]}, mode: {image.mode}")
+        except Exception as e:
+            print(f"[ERROR] Error loading image: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'error': f'Error loading image: {str(e)}'}), 400
         
         transform = transforms.Compose([
             transforms.Resize((32, 128)),
@@ -256,10 +269,13 @@ def predict():
             prediction = preds[0] if preds else ctc_decode(output, chars)[0]
             prediction = postprocess_text(prediction)
         
+        print(f"[INFO] Recognition complete: text='{prediction}', length={len(prediction) if prediction else 0}")
+        
         return jsonify({
             'success': True,
             'text': prediction if prediction else '',
-            'detected': len(prediction) > 0
+            'detected': len(prediction) > 0,
+            'count': len(prediction) if prediction else 0
         })
         
     except Exception as e:

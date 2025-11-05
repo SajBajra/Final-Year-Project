@@ -13,3 +13,4 @@ flask-cors>=3.0.0
 
 # Computer vision
 opencv-python>=4.5.0
+easyocr>=1.7.0  # Optional: For improved character detection and counting
