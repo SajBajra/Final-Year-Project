@@ -383,9 +383,15 @@ class ImprovedCharacterDataset(Dataset):
 # -------------------
 # IMPROVED Training Function
 # -------------------
-def train_improved_model(images_folder, train_labels, val_labels, epochs=150, batch_size=64, learning_rate=0.001, resume_from=None):
+def train_improved_model(images_folder, train_labels, val_labels, epochs=150, batch_size=64, learning_rate=0.001, resume_from=None, checkpoint_interval=5):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+    
+    # Create checkpoints directory for periodic saves
+    ckpt_dir = os.path.join(os.getcwd(), 'checkpoints')
+    os.makedirs(ckpt_dir, exist_ok=True)
+    print(f"Checkpoints will be saved to: {ckpt_dir}")
+    print(f"Periodic checkpoints every {checkpoint_interval} epochs")
     
     # IMPROVED Transforms with better normalization
     train_transform = transforms.Compose([
@@ -557,30 +563,65 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         print(f"  Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
         print(f"  LR: {optimizer.param_groups[0]['lr']:.6f}")
         
+        # Prepare checkpoint data
+        checkpoint_data = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'val_acc': val_acc,
+            'train_acc': train_acc,
+            'val_loss': val_loss,
+            'train_loss': train_loss,
+            'chars': train_dataset.chars,
+            'num_classes': num_classes,
+            'model_type': 'ImprovedCharacterCRNN',
+            'train_losses': train_losses,
+            'val_losses': val_losses,
+            'val_accs': val_accs
+        }
+        
         # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'val_acc': val_acc,
-                'train_acc': train_acc,
-                'val_loss': val_loss,
-                'train_loss': train_loss,
-                'chars': train_dataset.chars,
-                'num_classes': num_classes,
-                'model_type': 'ImprovedCharacterCRNN',
-                'train_losses': train_losses,
-                'val_losses': val_losses,
-                'val_accs': val_accs
-            }, 'best_character_crnn_improved.pth')
+            # Save best model to root directory
+            torch.save(checkpoint_data, 'best_character_crnn_improved.pth')
+            # Also save to checkpoints directory
+            best_ckpt_path = os.path.join(ckpt_dir, 'best_model.pth')
+            torch.save(checkpoint_data, best_ckpt_path)
             print(f"  [OK] Saved best model with val_acc: {val_acc:.2f}%\n")
         else:
             print(f"  Current best val_acc: {best_val_acc:.2f}% (no improvement this epoch)\n")
+        
+        # Periodic checkpoint every N epochs
+        if (epoch + 1) % checkpoint_interval == 0:
+            periodic_path = os.path.join(ckpt_dir, f'epoch_{epoch+1:04d}.pth')
+            torch.save(checkpoint_data, periodic_path)
+            print(f"  [OK] Saved periodic checkpoint: epoch_{epoch+1:04d}.pth\n")
     
     print(f"\nTraining completed!")
     print(f"Best validation accuracy: {best_val_acc:.2f}%")
+    
+    # Save final model
+    final_checkpoint = {
+        'epoch': epochs - 1,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'val_acc': val_acc,
+        'train_acc': train_acc,
+        'val_loss': val_loss,
+        'train_loss': train_loss,
+        'chars': train_dataset.chars,
+        'num_classes': num_classes,
+        'model_type': 'ImprovedCharacterCRNN',
+        'train_losses': train_losses,
+        'val_losses': val_losses,
+        'val_accs': val_accs
+    }
+    final_path = os.path.join(ckpt_dir, 'final_model.pth')
+    torch.save(final_checkpoint, final_path)
+    torch.save(final_checkpoint, 'character_crnn_improved_final.pth')
+    print(f"[OK] Saved final model: {final_path}")
+    print(f"[OK] Saved final model: character_crnn_improved_final.pth")
     
     # Plot training curves
     plt.figure(figsize=(15, 5))
@@ -631,6 +672,8 @@ if __name__ == '__main__':
                         help='Learning rate')
     parser.add_argument('--resume', type=str, default=None,
                         help='Resume training from checkpoint (e.g., best_character_crnn_improved.pth)')
+    parser.add_argument('--checkpoint_interval', type=int, default=5,
+                        help='Save periodic checkpoint every N epochs (default: 5)')
     
     args = parser.parse_args()
     
@@ -643,6 +686,7 @@ if __name__ == '__main__':
     print(f"Epochs: {args.epochs}")
     print(f"Batch size: {args.batch_size}")
     print(f"Learning rate: {args.lr}")
+    print(f"Checkpoint interval: Every {args.checkpoint_interval} epochs")
     print("=" * 60)
     
     best_acc = train_improved_model(
@@ -652,7 +696,8 @@ if __name__ == '__main__':
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.lr,
-        resume_from=args.resume
+        resume_from=args.resume,
+        checkpoint_interval=args.checkpoint_interval
     )
     
     print(f"\n[SUCCESS] Training complete! Best accuracy: {best_acc:.2f}%")

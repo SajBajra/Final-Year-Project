@@ -19,6 +19,8 @@ def main():
                         help='Prepare combined dataset before training')
     parser.add_argument('--convert_labels', action='store_true',
                         help='Convert labels to Ranjana before training')
+    parser.add_argument('--checkpoint_interval', type=int, default=5,
+                        help='Save periodic checkpoint every N epochs (default: 5)')
     
     args = parser.parse_args()
     
@@ -117,8 +119,10 @@ def main():
     print(f"Epochs: {args.epochs}")
     print(f"Batch size: {args.batch_size}")
     print(f"Learning rate: {args.lr}")
+    print(f"Checkpoint interval: Every {args.checkpoint_interval} epochs")
     print()
     print("This will train the model for the full number of epochs (no early stopping)")
+    print(f"Checkpoints will be saved every {args.checkpoint_interval} epochs to: checkpoints/")
     print("Estimated time:")
     print(f"  CPU: ~{args.epochs * 0.02:.1f} hours")
     print(f"  GPU: ~{args.epochs * 0.005:.1f} hours")
@@ -134,7 +138,8 @@ def main():
             epochs=args.epochs,
             batch_size=args.batch_size,
             learning_rate=args.lr,
-            resume_from=None
+            resume_from=None,
+            checkpoint_interval=args.checkpoint_interval
         )
         
         print()
