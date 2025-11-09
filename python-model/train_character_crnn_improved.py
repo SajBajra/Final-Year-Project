@@ -446,6 +446,9 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
     train_losses = []
     val_losses = []
     val_accs = []
+    val_acc_history = []
+    val_loss_history = []
+    last_best_epoch = 0
     
     if resume_from and os.path.exists(resume_from):
         try:
@@ -457,10 +460,26 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
             train_losses = checkpoint.get('train_losses', [])
             val_losses = checkpoint.get('val_losses', [])
             val_accs = checkpoint.get('val_accs', [])
-            print(f"[OK] Resumed from epoch {start_epoch}, best val_acc: {best_val_acc:.2f}%")
+            
+            # Initialize history from checkpoint
+            val_acc_history = val_accs.copy() if val_accs else []
+            val_loss_history = val_losses.copy() if val_losses else []
+            
+            # Find last best epoch
+            if val_accs:
+                last_best_epoch = start_epoch - 1
+                for i, acc in enumerate(val_accs):
+                    if acc >= best_val_acc - 0.0001:  # Allow small floating point differences
+                        last_best_epoch = i
+            
+            print(f"[OK] Resumed from epoch {start_epoch}")
+            print(f"[OK] Best val_acc: {best_val_acc:.4f}% (epoch {last_best_epoch+1})")
+            print(f"[OK] Loaded {len(val_accs)} previous epochs of history")
         except Exception as e:
             print(f"[ERROR] Failed to resume from checkpoint: {e}")
             print("[INFO] Starting training from scratch...")
+            import traceback
+            traceback.print_exc()
     
     print(f"\nImproved Model created with {num_classes} character classes")
     print(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
@@ -488,9 +507,15 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         except Exception as e:
             print(f"[WARN] Could not load optimizer state: {e}")
     
-    # IMPROVED Learning rate scheduler (CosineAnnealingWarmRestarts)
-    scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
-        optimizer, T_0=10, T_mult=2, eta_min=1e-6
+    # IMPROVED Learning rate scheduler - Combine CosineAnnealing with ReduceLROnPlateau
+    # CosineAnnealing for cyclical learning rate
+    cosine_scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+        optimizer, T_0=20, T_mult=2, eta_min=1e-7  # Increased T_0 for slower cycles
+    )
+    
+    # ReduceLROnPlateau for plateau detection (will be called manually)
+    plateau_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='max', factor=0.5, patience=15, verbose=True, min_lr=1e-7
     )
     
     # Training loop
@@ -498,6 +523,14 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         print(f"\nStarting IMPROVED training for {epochs} epochs (full training, no early stopping)...\n")
     else:
         print(f"\nContinuing IMPROVED training from epoch {start_epoch} to {epochs} epochs (full training, no early stopping)...\n")
+    
+    # Track improvement trends
+    improvement_window = 10  # Track improvements over last N epochs
+    # Calculate epochs since improvement from checkpoint
+    if val_accs and len(val_accs) > 0:
+        epochs_since_improvement = len(val_accs) - last_best_epoch - 1
+    else:
+        epochs_since_improvement = 0
     
     for epoch in range(start_epoch, epochs):
         # Training phase
@@ -550,18 +583,69 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         val_loss /= len(val_loader)
         val_acc = 100 * val_correct / val_total
         
-        # Update learning rate
-        scheduler.step()
+        # Update learning rate schedulers
+        cosine_scheduler.step()  # Cosine annealing (cyclical)
+        plateau_scheduler.step(val_acc)  # Reduce LR on plateau (based on val_acc)
         
         train_losses.append(train_loss)
         val_losses.append(val_loss)
         val_accs.append(val_acc)
+        val_acc_history.append(val_acc)
+        val_loss_history.append(val_loss)
         
-        # Print progress
+        # Calculate improvement trends
+        improvement_info = ""
+        trend_info = ""
+        if len(val_acc_history) >= improvement_window:
+            # Calculate average over last N epochs
+            recent_avg = sum(val_acc_history[-improvement_window:]) / improvement_window
+            older_avg = sum(val_acc_history[-improvement_window*2:-improvement_window]) / improvement_window if len(val_acc_history) >= improvement_window*2 else recent_avg
+            
+            # Calculate trend
+            trend = recent_avg - older_avg
+            if trend > 0.01:
+                trend_info = f"📈 Trending UP (+{trend:.3f}% over last {improvement_window} epochs)"
+            elif trend < -0.01:
+                trend_info = f"📉 Trending DOWN ({trend:.3f}% over last {improvement_window} epochs)"
+            else:
+                trend_info = f"➡️  Stable (change: {trend:.3f}% over last {improvement_window} epochs)"
+        
+        # Check for improvement (even small ones)
+        improvement = val_acc - best_val_acc
+        if improvement > 0:
+            epochs_since_improvement = 0
+            last_best_epoch = epoch
+            if improvement >= 0.01:
+                improvement_info = f"✨ IMPROVED by +{improvement:.4f}%"
+            else:
+                improvement_info = f"✨ Small improvement: +{improvement:.4f}%"
+        else:
+            epochs_since_improvement += 1
+            improvement_info = f"⏸️  No improvement ({epochs_since_improvement} epochs)"
+        
+        # Check if validation loss improved (even if accuracy didn't)
+        loss_improvement = ""
+        if len(val_loss_history) >= 2:
+            loss_change = val_loss_history[-2] - val_loss  # Positive = improvement
+            if loss_change > 0.0001:
+                loss_improvement = f" (Loss improved: -{loss_change:.6f})"
+            elif loss_change < -0.0001:
+                loss_improvement = f" (Loss increased: +{abs(loss_change):.6f})"
+        
+        # Print progress with detailed information
         print(f"Epoch {epoch+1}/{epochs}:")
-        print(f"  Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
-        print(f"  Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
-        print(f"  LR: {optimizer.param_groups[0]['lr']:.6f}")
+        print(f"  Train Loss: {train_loss:.6f}, Train Acc: {train_acc:.4f}%")
+        print(f"  Val Loss: {val_loss:.6f}, Val Acc: {val_acc:.4f}%")
+        print(f"  LR: {optimizer.param_groups[0]['lr']:.8f}")
+        if improvement_info:
+            print(f"  {improvement_info}{loss_improvement}")
+        if trend_info:
+            print(f"  {trend_info}")
+        if len(val_acc_history) >= improvement_window:
+            recent_min = min(val_acc_history[-improvement_window:])
+            recent_max = max(val_acc_history[-improvement_window:])
+            print(f"  Recent range: {recent_min:.4f}% - {recent_max:.4f}% (last {improvement_window} epochs)")
+        print()
         
         # Prepare checkpoint data
         checkpoint_data = {
@@ -580,17 +664,21 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
             'val_accs': val_accs
         }
         
-        # Save best model
+        # Save best model (even for tiny improvements)
         if val_acc > best_val_acc:
             best_val_acc = val_acc
+            improvement_amount = val_acc - (val_accs[-2] if len(val_accs) > 1 else val_acc)
             # Save best model to root directory
             torch.save(checkpoint_data, 'best_character_crnn_improved.pth')
             # Also save to checkpoints directory
             best_ckpt_path = os.path.join(ckpt_dir, 'best_model.pth')
             torch.save(checkpoint_data, best_ckpt_path)
-            print(f"  [OK] Saved best model with val_acc: {val_acc:.2f}%\n")
+            print(f"  [✅] Saved best model: {val_acc:.4f}% (improvement: +{improvement_amount:.4f}%)")
+            print(f"  [📊] Best accuracy: {best_val_acc:.4f}% (epoch {epoch+1})\n")
         else:
-            print(f"  Current best val_acc: {best_val_acc:.2f}% (no improvement this epoch)\n")
+            improvement_needed = best_val_acc - val_acc
+            print(f"  [📌] Best: {best_val_acc:.4f}% (epoch {last_best_epoch+1}) | Current: {val_acc:.4f}% | Gap: {improvement_needed:.4f}%")
+            print(f"  [⏱️] {epochs_since_improvement} epochs since last improvement\n")
         
         # Periodic checkpoint every N epochs
         if (epoch + 1) % checkpoint_interval == 0:
@@ -598,8 +686,32 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
             torch.save(checkpoint_data, periodic_path)
             print(f"  [OK] Saved periodic checkpoint: epoch_{epoch+1:04d}.pth\n")
     
-    print(f"\nTraining completed!")
-    print(f"Best validation accuracy: {best_val_acc:.2f}%")
+    print(f"\n{'='*70}")
+    print(f"TRAINING COMPLETED!")
+    print(f"{'='*70}")
+    print(f"Best validation accuracy: {best_val_acc:.4f}% (epoch {last_best_epoch+1})")
+    print(f"Final validation accuracy: {val_accs[-1]:.4f}%")
+    print(f"Total improvement: {best_val_acc - (val_accs[0] if val_accs else best_val_acc):.4f}%")
+    
+    # Calculate statistics
+    if len(val_accs) > 0:
+        print(f"\nAccuracy Statistics:")
+        print(f"  Initial: {val_accs[0]:.4f}%")
+        print(f"  Final: {val_accs[-1]:.4f}%")
+        print(f"  Best: {best_val_acc:.4f}%")
+        print(f"  Average: {sum(val_accs) / len(val_accs):.4f}%")
+        print(f"  Last 10 epochs avg: {sum(val_accs[-10:]) / min(10, len(val_accs)):.4f}%")
+        if len(val_accs) >= 20:
+            print(f"  Last 20 epochs avg: {sum(val_accs[-20:]) / 20:.4f}%")
+    
+    if len(val_losses) > 0:
+        print(f"\nLoss Statistics:")
+        print(f"  Initial: {val_losses[0]:.6f}")
+        print(f"  Final: {val_losses[-1]:.6f}")
+        print(f"  Best: {min(val_losses):.6f}")
+        print(f"  Improvement: {val_losses[0] - val_losses[-1]:.6f}")
+    
+    print(f"{'='*70}\n")
     
     # Save final model
     final_checkpoint = {
@@ -644,10 +756,24 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
     plt.grid(True)
     
     plt.subplot(1, 3, 3)
-    plt.plot([scheduler.get_last_lr()[0] for _ in range(len(train_losses))], color='orange')
-    plt.xlabel('Epoch')
-    plt.ylabel('Learning Rate')
-    plt.title('Learning Rate Schedule')
+    # Plot learning rate (need to track it during training)
+    # For now, show validation accuracy trend
+    if len(val_accs) >= 20:
+        # Show moving average
+        window = 10
+        moving_avg = [sum(val_accs[max(0, i-window):i+1]) / min(i+1, window) for i in range(len(val_accs))]
+        plt.plot(val_accs, label='Val Accuracy', color='green', alpha=0.3)
+        plt.plot(moving_avg, label=f'Moving Avg ({window})', color='darkgreen', linewidth=2)
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy (%)')
+        plt.title('Validation Accuracy Trend')
+        plt.legend()
+    else:
+        plt.plot(val_accs, label='Val Accuracy', color='green')
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy (%)')
+        plt.title('Validation Accuracy')
+        plt.legend()
     plt.grid(True)
     
     plt.tight_layout()
