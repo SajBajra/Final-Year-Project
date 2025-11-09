@@ -21,6 +21,10 @@ def main():
                         help='Convert labels to Ranjana before training')
     parser.add_argument('--checkpoint_interval', type=int, default=5,
                         help='Save periodic checkpoint every N epochs (default: 5)')
+    parser.add_argument('--resume', type=str, default=None,
+                        help='Resume training from checkpoint (e.g., checkpoints/epoch_0200.pth or best_character_crnn_improved.pth)')
+    parser.add_argument('--resume_latest', action='store_true',
+                        help='Automatically resume from latest checkpoint in checkpoints/ directory')
     
     args = parser.parse_args()
     
@@ -120,12 +124,59 @@ def main():
     print(f"Batch size: {args.batch_size}")
     print(f"Learning rate: {args.lr}")
     print(f"Checkpoint interval: Every {args.checkpoint_interval} epochs")
+    
+    # Handle resume from checkpoint
+    resume_from = args.resume
+    if args.resume_latest and not resume_from:
+        # Find latest checkpoint
+        import glob
+        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'checkpoints')
+        if os.path.exists(checkpoint_dir):
+            checkpoint_files = glob.glob(os.path.join(checkpoint_dir, 'epoch_*.pth'))
+            if checkpoint_files:
+                # Sort by epoch number
+                checkpoint_files.sort(key=lambda x: int(os.path.basename(x).split('_')[1].split('.')[0]))
+                resume_from = checkpoint_files[-1]
+                print(f"[INFO] Found latest checkpoint: {os.path.basename(resume_from)}")
+            else:
+                # Try best model or final model
+                best_model = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'best_character_crnn_improved.pth')
+                final_model = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'character_crnn_improved_final.pth')
+                if os.path.exists(final_model):
+                    resume_from = final_model
+                    print(f"[INFO] Found final model: {os.path.basename(resume_from)}")
+                elif os.path.exists(best_model):
+                    resume_from = best_model
+                    print(f"[INFO] Found best model: {os.path.basename(resume_from)}")
+    
+    # Calculate remaining epochs for time estimation
+    remaining = args.epochs
+    if resume_from:
+        print(f"[INFO] Resuming from checkpoint: {resume_from}")
+        # Load checkpoint to get current epoch
+        try:
+            import torch
+            checkpoint = torch.load(resume_from, map_location='cpu')
+            current_epoch = checkpoint.get('epoch', 0)
+            val_acc = checkpoint.get('val_acc', 0.0)
+            print(f"[INFO] Checkpoint info: Epoch {current_epoch + 1}, Val Acc: {val_acc:.2f}%")
+            remaining = max(0, args.epochs - (current_epoch + 1))
+            if remaining <= 0:
+                print(f"[WARN] Checkpoint is already at epoch {current_epoch + 1}, but target is {args.epochs}")
+                print(f"[INFO] Will continue training from epoch {current_epoch + 1} to {args.epochs}")
+                remaining = 0
+        except Exception as e:
+            print(f"[WARN] Could not read checkpoint info: {e}")
+            print("[INFO] Will attempt to resume anyway")
+    else:
+        print("[INFO] Starting training from scratch")
+    
     print()
     print("This will train the model for the full number of epochs (no early stopping)")
     print(f"Checkpoints will be saved every {args.checkpoint_interval} epochs to: checkpoints/")
     print("Estimated time:")
-    print(f"  CPU: ~{args.epochs * 0.02:.1f} hours")
-    print(f"  GPU: ~{args.epochs * 0.005:.1f} hours")
+    print(f"  CPU: ~{remaining * 0.02:.1f} hours ({remaining} epochs)")
+    print(f"  GPU: ~{remaining * 0.005:.1f} hours ({remaining} epochs)")
     print()
     
     try:
@@ -138,7 +189,7 @@ def main():
             epochs=args.epochs,
             batch_size=args.batch_size,
             learning_rate=args.lr,
-            resume_from=None,
+            resume_from=resume_from,
             checkpoint_interval=args.checkpoint_interval
         )
         

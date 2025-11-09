@@ -730,7 +730,11 @@ def predict():
                             continue
                     
                     # Add character if confidence is acceptable
-                    if conf >= 0.2:  # Accept predictions with >= 20% confidence
+                    # For dataset images (training data), model should have high confidence (>0.9)
+                    # For real-world images, lower confidence is acceptable (>=0.15)
+                    # We use a lower threshold to ensure dataset images are always recognized
+                    min_confidence = 0.15  # Lower threshold to ensure dataset images are recognized
+                    if conf >= min_confidence:
                         results.append({
                             'character': char,
                             'confidence': round(conf, 3),
@@ -738,10 +742,13 @@ def predict():
                             'index': i
                         })
                         print(f"[INFO] Character {i}: '{char}' (confidence: {conf:.3f}, idx: {char_idx})")
-                        if conf < 0.7:
+                        # Warn if confidence is low (might be real-world image or misclassification)
+                        if conf < 0.5:
+                            print(f"[WARN] Low confidence prediction - might be real-world image or misclassification")
                             print(f"[DEBUG] Top 3: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
                     else:
-                        print(f"[WARN] Character {i}: Final confidence too low ({conf:.3f}), skipping")
+                        print(f"[WARN] Character {i}: Final confidence too low ({conf:.3f} < {min_confidence}), skipping")
+                        print(f"[DEBUG] Top 3: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
                 else:
                     print(f"[WARN] Character {i}: Invalid index ({char_idx}/{len(chars)})")
                     print(f"[DEBUG] Top 3 predictions: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
