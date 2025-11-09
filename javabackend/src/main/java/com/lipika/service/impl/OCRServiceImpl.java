@@ -2,6 +2,7 @@ package com.lipika.service.impl;
 
 import com.lipika.model.OCRResponse;
 import com.lipika.service.OCRService;
+import com.lipika.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class OCRServiceImpl implements OCRService {
     
     private final RestTemplate restTemplate;
+    private final AdminService adminService;
     
     @Value("${ocr.service.url:http://localhost:5000}")
     private String ocrServiceUrl;
@@ -62,7 +64,24 @@ public class OCRServiceImpl implements OCRService {
             );
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return mapToOCRResponse(response.getBody());
+                OCRResponse ocrResponse = mapToOCRResponse(response.getBody());
+                
+                // Save to history if successful
+                if (ocrResponse.isSuccess() && ocrResponse.getText() != null && !ocrResponse.getText().isEmpty()) {
+                    try {
+                        adminService.saveOCRHistory(
+                            image.getOriginalFilename(),
+                            ocrResponse.getText(),
+                            ocrResponse.getCount(),
+                            ocrResponse.getConfidence()
+                        );
+                    } catch (Exception e) {
+                        log.warn("Failed to save OCR history", e);
+                        // Don't fail the request if history save fails
+                    }
+                }
+                
+                return ocrResponse;
             } else {
                 return createErrorResponse("OCR service returned error status: " + response.getStatusCode());
             }
