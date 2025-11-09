@@ -14,7 +14,6 @@ from PIL import Image, ImageEnhance, ImageFilter
 import unicodedata
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-import argparse
 import random
 import numpy as np
 
@@ -786,49 +785,5 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
     
     return best_val_acc
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Train Improved Character CRNN Model')
-    parser.add_argument('--images', type=str, default='../char_dataset/images',
-                        help='Path to character images folder')
-    parser.add_argument('--train_labels', type=str, default='../char_dataset/train_labels.txt',
-                        help='Path to training labels file')
-    parser.add_argument('--val_labels', type=str, default='../char_dataset/val_labels.txt',
-                        help='Path to validation labels file')
-    parser.add_argument('--epochs', type=int, default=500,
-                        help='Number of training epochs (default: 500)')
-    parser.add_argument('--batch_size', type=int, default=64,
-                        help='Batch size')
-    parser.add_argument('--lr', type=float, default=0.001,
-                        help='Learning rate')
-    parser.add_argument('--resume', type=str, default=None,
-                        help='Resume training from checkpoint (e.g., best_character_crnn_improved.pth)')
-    parser.add_argument('--checkpoint_interval', type=int, default=5,
-                        help='Save periodic checkpoint every N epochs (default: 5)')
-    
-    args = parser.parse_args()
-    
-    print("=" * 60)
-    print("LIPIKA - IMPROVED Character CRNN Training")
-    print("=" * 60)
-    print(f"Images folder: {args.images}")
-    print(f"Train labels: {args.train_labels}")
-    print(f"Val labels: {args.val_labels}")
-    print(f"Epochs: {args.epochs}")
-    print(f"Batch size: {args.batch_size}")
-    print(f"Learning rate: {args.lr}")
-    print(f"Checkpoint interval: Every {args.checkpoint_interval} epochs")
-    print("=" * 60)
-    
-    best_acc = train_improved_model(
-        images_folder=args.images,
-        train_labels=args.train_labels,
-        val_labels=args.val_labels,
-        epochs=args.epochs,
-        batch_size=args.batch_size,
-        learning_rate=args.lr,
-        resume_from=args.resume,
-        checkpoint_interval=args.checkpoint_interval
-    )
-    
-    print(f"\n[SUCCESS] Training complete! Best accuracy: {best_acc:.2f}%")
-    print(f"[FILE] Model saved as: best_character_crnn_improved.pth")
+# Note: This file is now a module. Use train.py as the main entry point.
+# train.py handles dataset preparation, label conversion, and calls train_improved_model()
