@@ -26,9 +26,11 @@ function Home() {
     setOcrResult(result)
     setLoading(false)
     
-    // Auto-translate to Devanagari if characters are detected
+    // OCR already returns Devanagari text, so just set it directly
+    // No need to translate - the model outputs Devanagari directly
     if (result.text && result.text.length > 0) {
-      handleTranslateToDevanagari(result.text)
+      setDevanagariText(result.text)
+      setTranslations({ devanagari: result.text })
     }
   }
 
@@ -43,24 +45,7 @@ function Home() {
   const [devanagariText, setDevanagariText] = useState('')
   const [englishText, setEnglishText] = useState('')
 
-  const handleTranslateToDevanagari = async (text) => {
-    setTranslationLoading(true)
-    setShowTranslation(true)
-    
-    try {
-      // Translate to Devanagari (default)
-      const devanagariResult = await translateText(text, 'devanagari')
-      if (devanagariResult) {
-        setDevanagariText(devanagariResult)
-        setTranslations({ devanagari: devanagariResult })
-      }
-    } catch (error) {
-      console.error('Devanagari translation error:', error)
-      setDevanagariText(text) // Fallback to original text
-    } finally {
-      setTranslationLoading(false)
-    }
-  }
+  // Removed handleTranslateToDevanagari - OCR already returns Devanagari
 
   const handleTranslateToEnglish = async () => {
     setTranslationLoading(true)

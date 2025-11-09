@@ -158,7 +158,7 @@ const OCRResult = ({
         )}
       </motion.div>
       
-      {/* Translation Section */}
+      {/* Translation Section - Only show English translation option */}
       {showTranslation && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -168,10 +168,10 @@ const OCRResult = ({
         >
           <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
             <span className="mr-2">🌐</span>
-            Translations
+            English Translation (Optional)
           </h3>
           
-          {/* Devanagari Translation */}
+          {/* Devanagari Text Display (for context in translation section) */}
           {devanagariText && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -180,7 +180,7 @@ const OCRResult = ({
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">
-                  Devanagari (देवनागरी)
+                  Devanagari (देवनागरी) - Original Output
                 </span>
               </div>
               <p className="text-2xl font-bold text-gray-800 leading-relaxed">

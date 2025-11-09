@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { API_CONFIG, OCR_CONFIG, TRANSLATION_CONFIG } from '../config/constants'
 
-const API_BASE_URL = 'http://localhost:8080/api'
-const OCR_SERVICE_URL = 'http://localhost:5000' // Python OCR service (used directly if needed)
+const API_BASE_URL = API_CONFIG.BASE_URL
+const OCR_SERVICE_URL = API_CONFIG.OCR_SERVICE_URL
 
 export const recognizeText = async (imageFile) => {
   try {
@@ -16,7 +17,7 @@ export const recognizeText = async (imageFile) => {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
-        timeout: 30000 // 30 seconds timeout
+        timeout: API_CONFIG.OCR_TIMEOUT
       }
     )
     
@@ -59,7 +60,7 @@ export const recognizeText = async (imageFile) => {
   }
 }
 
-export const translateText = async (text, targetLanguage = 'devanagari') => {
+export const translateText = async (text, targetLanguage = TRANSLATION_CONFIG.DEFAULT_TARGET) => {
   try {
     // Call Java backend translation service
     const response = await axios.post(
@@ -67,7 +68,7 @@ export const translateText = async (text, targetLanguage = 'devanagari') => {
       { text, targetLanguage },
       {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 30000  // Increased timeout for API calls
+        timeout: API_CONFIG.TRANSLATION_TIMEOUT
       }
     )
     
