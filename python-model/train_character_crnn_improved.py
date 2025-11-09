@@ -515,7 +515,7 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
     
     # ReduceLROnPlateau for plateau detection (will be called manually)
     plateau_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=15, verbose=True, min_lr=1e-7
+        optimizer, mode='max', factor=0.5, patience=15, verbose=False, min_lr=1e-7
     )
     
     # Training loop
@@ -585,7 +585,11 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=150, ba
         
         # Update learning rate schedulers
         cosine_scheduler.step()  # Cosine annealing (cyclical)
+        old_lr = optimizer.param_groups[0]['lr']
         plateau_scheduler.step(val_acc)  # Reduce LR on plateau (based on val_acc)
+        new_lr = optimizer.param_groups[0]['lr']
+        if old_lr != new_lr:
+            print(f"  [🔄] Learning rate reduced: {old_lr:.8f} -> {new_lr:.8f} (plateau detected)")
         
         train_losses.append(train_loss)
         val_losses.append(val_loss)
