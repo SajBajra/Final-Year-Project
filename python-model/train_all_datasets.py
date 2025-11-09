@@ -36,7 +36,7 @@ def main():
         try:
             from prepare_combined_dataset import prepare_combined_dataset
             prepare_combined_dataset(
-                dataset_folders=['../Dataset', '../char_dataset'],
+                dataset_folders=['../Dataset'],  # Only use Dataset folder
                 output_folder='../prepared_dataset',
                 train_split=0.8,
                 exclude_folders=['user_char_datasets', 'user_datasets']

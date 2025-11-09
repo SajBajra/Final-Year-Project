@@ -27,8 +27,8 @@ def prepare_combined_dataset(
     """
     
     if dataset_folders is None:
-        # Default: combine Dataset and char_dataset
-        dataset_folders = ['../Dataset', '../char_dataset']
+        # Default: only use Dataset folder (not char_dataset)
+        dataset_folders = ['../Dataset']
     
     if exclude_folders is None:
         exclude_folders = ['user_char_datasets', 'user_datasets']
