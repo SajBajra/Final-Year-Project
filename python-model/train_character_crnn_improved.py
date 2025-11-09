@@ -513,8 +513,9 @@ def train_improved_model(images_folder, train_labels, val_labels, epochs=500, ba
     )
     
     # ReduceLROnPlateau for plateau detection (will be called manually)
+    # Note: verbose parameter removed (deprecated in PyTorch)
     plateau_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=15, verbose=False, min_lr=1e-7
+        optimizer, mode='max', factor=0.5, patience=15, min_lr=1e-7
     )
     
     # Training loop
