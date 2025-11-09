@@ -1,6 +1,6 @@
 """
-Complete Training Script for All Combined Datasets
-Trains model on all available datasets (Dataset + char_dataset)
+Complete Training Script for Dataset
+Trains model on Dataset folder only (Ranjana script images)
 """
 
 import os
