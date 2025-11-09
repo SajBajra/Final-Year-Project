@@ -1,16 +1,36 @@
 """
-Complete Training Script for Dataset
-Trains model on Dataset folder only (Ranjana script images)
+Lipika - Complete Training Script for Ranjana OCR
+Combines all improvements: dataset preparation, label conversion, and training
+Default: 500 epochs with all enhancements
 """
 
 import os
 import sys
 import argparse
+import glob
 
 def main():
-    parser = argparse.ArgumentParser(description='Train Model on All Combined Datasets')
-    parser.add_argument('--epochs', type=int, default=200,
-                        help='Number of training epochs (default: 200)')
+    parser = argparse.ArgumentParser(
+        description='Train Ranjana OCR Model - Complete Training Script',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Train from scratch (500 epochs, auto-prepare dataset)
+  python train.py
+  
+  # Train with custom epochs
+  python train.py --epochs 300
+  
+  # Resume from latest checkpoint
+  python train.py --resume_latest
+  
+  # Resume from specific checkpoint
+  python train.py --resume checkpoints/epoch_0200.pth
+        """
+    )
+    
+    parser.add_argument('--epochs', type=int, default=500,
+                        help='Number of training epochs (default: 500)')
     parser.add_argument('--batch_size', type=int, default=64,
                         help='Batch size (default: 64)')
     parser.add_argument('--lr', type=float, default=0.001,
@@ -22,25 +42,30 @@ def main():
     parser.add_argument('--checkpoint_interval', type=int, default=5,
                         help='Save periodic checkpoint every N epochs (default: 5)')
     parser.add_argument('--resume', type=str, default=None,
-                        help='Resume training from checkpoint (e.g., checkpoints/epoch_0200.pth or best_character_crnn_improved.pth)')
+                        help='Resume training from checkpoint (e.g., checkpoints/epoch_0200.pth)')
     parser.add_argument('--resume_latest', action='store_true',
-                        help='Automatically resume from latest checkpoint in checkpoints/ directory')
+                        help='Automatically resume from latest checkpoint')
+    parser.add_argument('--auto_setup', action='store_true', default=True,
+                        help='Automatically check and setup dataset/labels if needed (default: True)')
     
     args = parser.parse_args()
     
     print("=" * 70)
-    print("LIPIKA - COMPLETE MODEL TRAINING ON ALL DATASETS")
+    print("LIPIKA - COMPLETE RANJANA OCR TRAINING")
+    print("=" * 70)
+    print(f"Default epochs: 500 (customize with --epochs)")
+    print(f"All improvements included: dual schedulers, progress tracking, etc.")
     print("=" * 70)
     print()
     
-    # Step 1: Prepare combined dataset if requested
-    if args.prepare_dataset:
-        print("[STEP 1/4] Preparing combined dataset...")
+    # Step 1: Prepare dataset if needed
+    if args.prepare_dataset or (args.auto_setup and not os.path.exists('../prepared_dataset/images')):
+        print("[STEP 1/3] Preparing dataset...")
         print("-" * 70)
         try:
             from prepare_combined_dataset import prepare_combined_dataset
             prepare_combined_dataset(
-                dataset_folders=['../Dataset'],  # Only use Dataset folder
+                dataset_folders=['../Dataset'],
                 output_folder='../prepared_dataset',
                 train_split=0.8,
                 exclude_folders=['user_char_datasets', 'user_datasets']
@@ -48,15 +73,24 @@ def main():
             print("[OK] Dataset preparation complete!")
         except Exception as e:
             print(f"[ERROR] Dataset preparation failed: {e}")
-            sys.exit(1)
+            if not args.prepare_dataset:
+                print("[INFO] Dataset already exists or preparation failed. Continuing...")
+            else:
+                sys.exit(1)
         print()
     else:
-        print("[STEP 1/4] Skipping dataset preparation (use --prepare_dataset to enable)")
+        print("[STEP 1/3] Dataset check...")
+        if os.path.exists('../prepared_dataset/images'):
+            image_count = len([f for f in os.listdir('../prepared_dataset/images') 
+                             if f.endswith(('.png', '.jpg', '.jpeg'))])
+            print(f"[OK] Dataset found: {image_count} images")
+        else:
+            print("[WARN] Dataset not found. Run with --prepare_dataset to create it.")
         print()
     
-    # Step 2: Convert labels to Ranjana if requested
-    if args.convert_labels:
-        print("[STEP 2/4] Converting labels to Ranjana...")
+    # Step 2: Convert labels if needed
+    if args.convert_labels or (args.auto_setup and not os.path.exists('../prepared_dataset/train_labels_ranjana.txt')):
+        print("[STEP 2/3] Converting labels to Ranjana...")
         print("-" * 70)
         try:
             import subprocess
@@ -66,22 +100,27 @@ def main():
                 capture_output=True,
                 text=True
             )
-            print(result.stdout)
-            if result.returncode != 0:
-                print(f"[ERROR] Label conversion failed: {result.stderr}")
-                sys.exit(1)
-            print("[OK] Label conversion complete!")
+            if result.returncode == 0:
+                print("[OK] Label conversion complete!")
+            else:
+                print(f"[WARN] Label conversion returned non-zero: {result.stderr}")
+                if not args.convert_labels:
+                    print("[INFO] Labels may already be converted. Continuing...")
         except Exception as e:
-            print(f"[ERROR] Label conversion failed: {e}")
-            sys.exit(1)
+            print(f"[WARN] Label conversion failed: {e}")
+            if not args.convert_labels:
+                print("[INFO] Labels may already be converted. Continuing...")
         print()
     else:
-        print("[STEP 2/4] Skipping label conversion (use --convert_labels to enable)")
-        print("[INFO] Make sure train_labels_ranjana.txt and val_labels_ranjana.txt exist")
+        print("[STEP 2/3] Labels check...")
+        if os.path.exists('../prepared_dataset/train_labels_ranjana.txt'):
+            print("[OK] Ranjana labels found")
+        else:
+            print("[WARN] Ranjana labels not found. Run with --convert_labels to convert them.")
         print()
     
-    # Step 3: Verify dataset files exist
-    print("[STEP 3/4] Verifying dataset files...")
+    # Step 3: Verify dataset files
+    print("[STEP 3/3] Verifying dataset files...")
     print("-" * 70)
     
     images_path = '../prepared_dataset/images'
@@ -92,7 +131,7 @@ def main():
     if not os.path.exists(train_labels):
         train_labels = '../prepared_dataset/train_labels.txt'
         print("[WARN] Ranjana labels not found, using original labels")
-        print("[INFO] Run convert_labels_to_ranjana.py to convert to Ranjana")
+        print("[INFO] Run: python convert_labels_to_ranjana.py to convert to Ranjana")
     
     if not os.path.exists(val_labels):
         val_labels = '../prepared_dataset/val_labels.txt'
@@ -117,19 +156,10 @@ def main():
     print(f"[OK] Validation labels: {val_labels}")
     print()
     
-    # Step 4: Train model
-    print("[STEP 4/4] Starting model training...")
-    print("-" * 70)
-    print(f"Epochs: {args.epochs}")
-    print(f"Batch size: {args.batch_size}")
-    print(f"Learning rate: {args.lr}")
-    print(f"Checkpoint interval: Every {args.checkpoint_interval} epochs")
-    
     # Handle resume from checkpoint
     resume_from = args.resume
     if args.resume_latest and not resume_from:
         # Find latest checkpoint
-        import glob
         checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'checkpoints')
         if os.path.exists(checkpoint_dir):
             checkpoint_files = glob.glob(os.path.join(checkpoint_dir, 'epoch_*.pth'))
@@ -159,7 +189,7 @@ def main():
             checkpoint = torch.load(resume_from, map_location='cpu')
             current_epoch = checkpoint.get('epoch', 0)
             val_acc = checkpoint.get('val_acc', 0.0)
-            print(f"[INFO] Checkpoint info: Epoch {current_epoch + 1}, Val Acc: {val_acc:.2f}%")
+            print(f"[INFO] Checkpoint info: Epoch {current_epoch + 1}, Val Acc: {val_acc:.4f}%")
             remaining = max(0, args.epochs - (current_epoch + 1))
             if remaining <= 0:
                 print(f"[WARN] Checkpoint is already at epoch {current_epoch + 1}, but target is {args.epochs}")
@@ -172,13 +202,29 @@ def main():
         print("[INFO] Starting training from scratch")
     
     print()
-    print("This will train the model for the full number of epochs (no early stopping)")
-    print(f"Checkpoints will be saved every {args.checkpoint_interval} epochs to: checkpoints/")
+    print("=" * 70)
+    print("TRAINING CONFIGURATION")
+    print("=" * 70)
+    print(f"Epochs: {args.epochs}")
+    print(f"Batch size: {args.batch_size}")
+    print(f"Learning rate: {args.lr}")
+    print(f"Checkpoint interval: Every {args.checkpoint_interval} epochs")
+    print(f"Remaining epochs: {remaining}")
+    print()
+    print("Features:")
+    print("  ✅ Dual learning rate schedulers (CosineAnnealing + ReduceLROnPlateau)")
+    print("  ✅ Detailed progress tracking (improvements, trends, loss)")
+    print("  ✅ Advanced data augmentation")
+    print("  ✅ Improved architecture with attention")
+    print("  ✅ Automatic checkpoint resume")
+    print()
     print("Estimated time:")
     print(f"  CPU: ~{remaining * 0.02:.1f} hours ({remaining} epochs)")
     print(f"  GPU: ~{remaining * 0.005:.1f} hours ({remaining} epochs)")
+    print("=" * 70)
     print()
     
+    # Start training
     try:
         from train_character_crnn_improved import train_improved_model
         
@@ -198,7 +244,7 @@ def main():
         print("TRAINING COMPLETE!")
         print("=" * 70)
         print(f"[SUCCESS] Model trained on all combined datasets")
-        print(f"[ACCURACY] Best validation accuracy: {best_acc:.2f}%")
+        print(f"[ACCURACY] Best validation accuracy: {best_acc:.4f}%")
         print(f"[FILE] Model saved as: best_character_crnn_improved.pth")
         print()
         print("Next steps:")

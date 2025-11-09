@@ -794,8 +794,8 @@ if __name__ == '__main__':
                         help='Path to training labels file')
     parser.add_argument('--val_labels', type=str, default='../char_dataset/val_labels.txt',
                         help='Path to validation labels file')
-    parser.add_argument('--epochs', type=int, default=150,
-                        help='Number of training epochs')
+    parser.add_argument('--epochs', type=int, default=500,
+                        help='Number of training epochs (default: 500)')
     parser.add_argument('--batch_size', type=int, default=64,
                         help='Batch size')
     parser.add_argument('--lr', type=float, default=0.001,
