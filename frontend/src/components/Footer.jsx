@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { FaScroll, FaHeart } from 'react-icons/fa'
 
 const Footer = () => {
   return (
@@ -19,7 +20,7 @@ const Footer = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center space-x-3 mb-4">
-              <span className="text-4xl">📜</span>
+              <FaScroll className="text-4xl text-purple-400" />
               <h3 className="text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Lipika
               </h3>
@@ -131,7 +132,7 @@ const Footer = () => {
                 transition={{ repeat: Infinity, duration: 1 }}
                 className="text-red-500"
               >
-                ❤️
+                <FaHeart />
               </motion.span>
               <span>and AI</span>
             </div>
