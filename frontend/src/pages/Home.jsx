@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { FaScroll, FaCamera, FaSearch, FaEye } from 'react-icons/fa'
 import ImageUpload from '../components/ImageUpload'
 import CameraCapture from '../components/CameraCapture'
 import OCRResult from '../components/OCRResult'
@@ -96,7 +97,7 @@ function Home() {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="inline-block mb-6"
           >
-            <div className="text-8xl float-animation">📜</div>
+            <FaScroll className="text-8xl float-animation text-primary-600" />
           </motion.div>
           
           <motion.h1 
@@ -230,32 +231,34 @@ function Home() {
           >
             {[
               {
-                icon: '📸',
+                icon: FaCamera,
                 title: 'Capture or Upload',
                 description: 'Take a photo with your camera or upload an image containing Ranjana script text. Supports all major image formats.',
                 delay: 0.1
               },
               {
-                icon: '🔍',
+                icon: FaSearch,
                 title: 'AI Recognition',
                 description: 'Our advanced CRNN model identifies individual characters with high accuracy using state-of-the-art deep learning.',
                 delay: 0.2
               },
               {
-                icon: '👓',
+                icon: FaEye,
                 title: 'AR Overlay',
                 description: 'See recognized text highlighted in Google Lens style with interactive bounding boxes and confidence scores.',
                 delay: 0.3
               }
-            ].map((card, index) => (
+            ].map((card, index) => {
+              const IconComponent = card.icon
+              return (
               <motion.div
                 key={index}
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
                 className="card group cursor-pointer"
               >
-                <div className="text-6xl mb-6 inline-block p-4 rounded-xl bg-gray-100 group-hover:bg-gray-200 transition-all duration-200">
-                  {card.icon}
+                <div className="text-6xl mb-6 inline-block p-4 rounded-xl bg-gray-100 group-hover:bg-gray-200 transition-all duration-200 flex items-center justify-center">
+                  <IconComponent className="text-primary-600" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-gray-800 group-hover:text-primary-600 transition-all duration-200">
                   {card.title}
@@ -265,7 +268,8 @@ function Home() {
                 </p>
                 <div className="mt-6 h-1 w-0 group-hover:w-full bg-primary-600 rounded-full transition-all duration-300"></div>
               </motion.div>
-            ))}
+              )
+            })}
           </motion.div>
         )}
       </main>
