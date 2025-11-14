@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { FaScroll } from 'react-icons/fa'
 
 const Header = () => {
   const location = useLocation()
@@ -14,9 +15,9 @@ const Header = () => {
             <motion.div
               whileHover={{ rotate: [0, -10, 10, -10, 0] }}
               transition={{ duration: 0.5 }}
-              className="text-4xl"
+              className="text-4xl text-primary-600"
             >
-              📜
+              <FaScroll />
             </motion.div>
             <div>
               <motion.h1
