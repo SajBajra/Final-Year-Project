@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { FaSearch, FaEye, FaGlobe, FaSpinner, FaFlag } from 'react-icons/fa'
 
 const OCRResult = ({ 
   text, 
@@ -24,7 +25,7 @@ const OCRResult = ({
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-4">
           <div className="p-3 rounded-xl bg-primary-600">
-            <span className="text-4xl">🔍</span>
+            <FaSearch className="text-4xl text-white" />
           </div>
           <div>
             <h2 className="text-3xl font-black text-primary-600">
@@ -68,7 +69,9 @@ const OCRResult = ({
                 : 'bg-white text-secondary-500 border-2 border-gray-300 hover:border-primary-600 hover:bg-gray-50'
             }`}
           >
-            {showAR ? '👓 Hide AR' : '👓 Show AR Overlay'}
+            <span className="flex items-center gap-2">
+              <FaEye className="inline" /> {showAR ? 'Hide AR' : 'Show AR Overlay'}
+            </span>
           </motion.button>
           
           {text && (
@@ -81,13 +84,17 @@ const OCRResult = ({
             >
               {translationLoading ? (
                 <span className="flex items-center space-x-2">
-                  <span className="animate-spin">⏳</span>
+                  <FaSpinner className="animate-spin" />
                   <span>Translating...</span>
                 </span>
               ) : showTranslation ? (
-                '🌐 Hide Translation'
+                <span className="flex items-center gap-2">
+                  <FaGlobe /> Hide Translation
+                </span>
               ) : (
-                '🌐 Show Translation'
+                <span className="flex items-center gap-2">
+                  <FaGlobe /> Show Translation
+                </span>
               )}
             </motion.button>
           )}
@@ -167,7 +174,7 @@ const OCRResult = ({
           className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 space-y-4"
         >
           <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <span className="mr-2">🌐</span>
+            <FaGlobe className="mr-2" />
             English Translation (Optional)
           </h3>
           
@@ -215,12 +222,12 @@ const OCRResult = ({
             >
               {translationLoading ? (
                 <span className="flex items-center justify-center space-x-2">
-                  <span className="animate-spin">⏳</span>
+                  <FaSpinner className="animate-spin" />
                   <span>Translating to English...</span>
                 </span>
               ) : (
                 <span className="flex items-center justify-center space-x-2">
-                  <span>🇬🇧</span>
+                  <FaFlag />
                   <span>Translate to English</span>
                 </span>
               )}
