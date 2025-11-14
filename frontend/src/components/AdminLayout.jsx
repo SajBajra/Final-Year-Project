@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
+import { FaChartLine, FaHistory, FaCog, FaBars, FaTimes } from 'react-icons/fa'
 import { ROUTES } from '../config/constants'
 
 const AdminLayout = () => {
@@ -7,9 +8,9 @@ const AdminLayout = () => {
   const location = useLocation()
 
   const menuItems = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/admin/ocr-history', label: 'OCR History', icon: '📜' },
-    { path: '/admin/settings', label: 'Settings', icon: '⚙️' },
+    { path: '/admin/dashboard', label: 'Dashboard', icon: FaChartLine },
+    { path: '/admin/ocr-history', label: 'OCR History', icon: FaHistory },
+    { path: '/admin/settings', label: 'Settings', icon: FaCog },
   ]
 
   const isActive = (path) => location.pathname === path
@@ -24,7 +25,7 @@ const AdminLayout = () => {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <span className="text-2xl">☰</span>
+              {sidebarOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
             </button>
             <h1 className="text-2xl font-bold text-primary-600">Admin Panel</h1>
           </div>
@@ -57,7 +58,7 @@ const AdminLayout = () => {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <span className="text-xl">{item.icon}</span>
+                <item.icon className="text-xl" />
                 <span className="font-semibold">{item.label}</span>
               </Link>
             ))}
