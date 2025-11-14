@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { FaChartBar, FaBullseye, FaFont, FaChartLine } from 'react-icons/fa'
 import { getDashboardStats } from '../../services/adminService'
 
 const AdminDashboard = () => {
@@ -43,7 +44,7 @@ const AdminDashboard = () => {
                 {stats?.totalRecords || 0}
               </p>
             </div>
-            <div className="text-4xl">📊</div>
+            <FaChartBar className="text-4xl text-primary-600" />
           </div>
         </div>
 
@@ -55,7 +56,7 @@ const AdminDashboard = () => {
                 {stats?.avgConfidence ? `${stats.avgConfidence.toFixed(1)}%` : '0%'}
               </p>
             </div>
-            <div className="text-4xl">🎯</div>
+            <FaBullseye className="text-4xl text-primary-600" />
           </div>
         </div>
 
@@ -67,7 +68,7 @@ const AdminDashboard = () => {
                 {stats?.totalCharacters || 0}
               </p>
             </div>
-            <div className="text-4xl">🔤</div>
+            <FaFont className="text-4xl text-primary-600" />
           </div>
         </div>
 
@@ -79,7 +80,7 @@ const AdminDashboard = () => {
                 {stats?.recentActivity || 0}
               </p>
             </div>
-            <div className="text-4xl">📈</div>
+            <FaChartLine className="text-4xl text-primary-600" />
           </div>
         </div>
       </div>
