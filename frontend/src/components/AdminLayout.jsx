@@ -19,7 +19,7 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Top Bar */}
+      {/* Top Bar - Sticky */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 flex-shrink-0">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-4">
@@ -43,12 +43,12 @@ const AdminLayout = () => {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Fixed height, sticky */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Sidebar - Sticky like navbar, positioned below header */}
         <aside
           className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 ${
             sidebarOpen ? 'w-64' : 'w-0'
-          } overflow-hidden flex flex-col fixed md:static h-[calc(100vh-64px)] md:h-auto top-16 md:top-auto z-40`}
+          } overflow-hidden flex flex-col sticky top-16 z-40 h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)]`}
         >
           {/* Sidebar Overlay for mobile */}
           {sidebarOpen && (
@@ -61,28 +61,33 @@ const AdminLayout = () => {
           {/* Sidebar Content */}
           <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="text-xl flex-shrink-0" />
-                  <span className="font-semibold whitespace-nowrap">{item.label}</span>
-                </Link>
-              ))}
+              {menuItems.map((item) => {
+                const IconComponent = item.icon
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                      isActive(item.path)
+                        ? 'bg-primary-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <IconComponent className="text-xl flex-shrink-0" />
+                    <span className="font-semibold whitespace-nowrap">{item.label}</span>
+                  </Link>
+                )
+              })}
             </nav>
           </div>
         </aside>
 
-        {/* Main Content */}
-        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'md:ml-0' : 'md:ml-0'}`}>
-          <div className="p-6">
+        {/* Main Content - Adjust margin for sidebar */}
+        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${
+          sidebarOpen ? 'md:ml-64' : 'md:ml-0'
+        }`}>
+          <div className="p-4 sm:p-6">
             <Outlet />
           </div>
         </main>
@@ -92,4 +97,3 @@ const AdminLayout = () => {
 }
 
 export default AdminLayout
-
