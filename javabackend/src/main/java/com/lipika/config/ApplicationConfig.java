@@ -22,10 +22,10 @@ public class ApplicationConfig {
         RestTemplate restTemplate = new RestTemplate();
         
         // Get default message converters and configure UTF-8
-        List<org.springframework.http.converter.HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
         
         // Configure UTF-8 encoding for String converter
-        for (org.springframework.http.converter.HttpMessageConverter<?> converter : converters) {
+        for (HttpMessageConverter<?> converter : converters) {
             if (converter instanceof StringHttpMessageConverter) {
                 ((StringHttpMessageConverter) converter).setDefaultCharset(StandardCharsets.UTF_8);
             }
