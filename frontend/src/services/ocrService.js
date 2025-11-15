@@ -4,21 +4,29 @@ import { API_CONFIG, OCR_CONFIG, TRANSLATION_CONFIG } from '../config/constants'
 const API_BASE_URL = API_CONFIG.BASE_URL
 const OCR_SERVICE_URL = API_CONFIG.OCR_SERVICE_URL
 
-export const recognizeText = async (imageFile) => {
+export const recognizeText = async (imageFile, authHeaders = {}, cookieId = null) => {
   try {
     const formData = new FormData()
     formData.append('image', imageFile)
+    
+    // Prepare headers with auth and cookie
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+      ...authHeaders
+    }
+    
+    // Add cookie to request if provided
+    const config = {
+      headers,
+      timeout: API_CONFIG.OCR_TIMEOUT,
+      withCredentials: true // Include cookies in request
+    }
     
     // Call Java backend which proxies to Python OCR service
     const response = await axios.post(
       `${API_BASE_URL}/ocr/recognize`,
       formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        timeout: API_CONFIG.OCR_TIMEOUT
-      }
+      config
     )
     
     // Java backend returns: { success: true, message: "...", data: { ... } }
@@ -41,9 +49,21 @@ export const recognizeText = async (imageFile) => {
           index: char.index
         })),
         confidence: ocrData.confidence ? (ocrData.confidence * 100) : 0,
-        count: ocrData.count || 0
+        count: ocrData.count || 0,
+        trialInfo: ocrData.trialInfo || null // Include trial info
       }
     } else {
+      // Check if it's a trial limit error
+      if (response.data.data?.trialInfo?.requiresLogin) {
+        return {
+          text: '',
+          characters: [],
+          confidence: 0,
+          count: 0,
+          trialInfo: response.data.data.trialInfo,
+          error: response.data.message || 'Trial limit exceeded'
+        }
+      }
       throw new Error(response.data.message || 'OCR recognition failed')
     }
     

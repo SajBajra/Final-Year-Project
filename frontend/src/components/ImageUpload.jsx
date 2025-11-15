@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { FaUpload, FaFileImage } from 'react-icons/fa'
 import { recognizeText } from '../services/ocrService'
 
-const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete }) => {
+const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete, authHeaders = {}, cookieId = null }) => {
   const fileInputRef = useRef(null)
   const [dragActive, setDragActive] = useState(false)
   const [preview, setPreview] = useState(null)
@@ -49,7 +49,7 @@ const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete }) => {
     onProcessing()
     
     try {
-      const result = await recognizeText(file)
+      const result = await recognizeText(file, authHeaders, cookieId)
       onOCRComplete(result)
     } catch (error) {
       console.error('OCR Error:', error)

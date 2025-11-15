@@ -4,7 +4,7 @@ import Webcam from 'react-webcam'
 import { FaCamera, FaCameraRetro, FaTimes } from 'react-icons/fa'
 import { recognizeText } from '../services/ocrService'
 
-const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
+const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeaders = {}, cookieId = null }) => {
   const webcamRef = useRef(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [preview, setPreview] = useState(null)
@@ -40,7 +40,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
       onProcessing()
       
       try {
-        const result = await recognizeText(file)
+        const result = await recognizeText(file, authHeaders, cookieId)
         onOCRComplete(result)
       } catch (error) {
         console.error('OCR Error:', error)
