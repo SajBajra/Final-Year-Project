@@ -224,7 +224,6 @@ const Header = () => {
             </>
           )}
         </AnimatePresence>
-        </div>
       </div>
     </header>
   )
