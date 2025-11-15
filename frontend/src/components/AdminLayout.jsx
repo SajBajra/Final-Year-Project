@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { FaChartLine, FaHistory, FaCog, FaBars, FaTimes, FaChartBar, FaFont } from 'react-icons/fa'
+import { FaChartLine, FaHistory, FaCog, FaBars, FaTimes, FaChartBar, FaFont, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { ROUTES } from '../config/constants'
 
 const AdminLayout = () => {
@@ -17,19 +17,25 @@ const AdminLayout = () => {
 
   const isActive = (path) => location.pathname === path
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen)
+  }
+
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Top Bar - Sticky */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 flex-shrink-0">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-4">
+            {/* Mobile Toggle Button */}
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+              onClick={toggleSidebar}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors md:hidden"
               aria-label="Toggle sidebar"
             >
               {sidebarOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
             </button>
+            
             <h1 className="text-2xl font-bold text-primary-600">Admin Panel</h1>
           </div>
           <div className="flex items-center space-x-4">
@@ -44,7 +50,7 @@ const AdminLayout = () => {
       </header>
 
       {/* Main Container - Flex with fixed height */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar - Sticky, 100vh height, scrollable navigation */}
         <aside
           className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 flex flex-col ${
@@ -63,9 +69,28 @@ const AdminLayout = () => {
           )}
           
           {/* Sidebar Content - Fixed container, scrollable navigation */}
-          <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
+          <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden transition-all duration-300`}>
+            {/* Desktop Toggle Button - Inside Sidebar */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+              <div className={`overflow-hidden transition-all duration-300 ${sidebarOpen ? 'w-full' : 'w-0'}`}>
+                <h2 className="text-lg font-bold text-gray-800 whitespace-nowrap">Navigation</h2>
+              </div>
+              <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0 hidden md:flex items-center justify-center"
+                aria-label="Toggle sidebar"
+                title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              >
+                {sidebarOpen ? (
+                  <FaChevronLeft className="text-xl text-gray-600" />
+                ) : (
+                  <FaChevronRight className="text-xl text-gray-600" />
+                )}
+              </button>
+            </div>
+
             {/* Navigation - Scrollable if content is long */}
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+            <nav className={`flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar ${sidebarOpen ? 'w-full' : 'w-0'} overflow-hidden`}>
               {menuItems.map((item) => {
                 const IconComponent = item.icon
                 return (
@@ -73,20 +98,37 @@ const AdminLayout = () => {
                     key={item.path}
                     to={item.path}
                     onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors whitespace-nowrap ${
                       isActive(item.path)
                         ? 'bg-primary-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
+                    title={item.label}
                   >
                     <IconComponent className="text-xl flex-shrink-0" />
-                    <span className="font-semibold whitespace-nowrap">{item.label}</span>
+                    <span className={`font-semibold transition-all duration-300 overflow-hidden ${
+                      sidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+                    }`}>
+                      {item.label}
+                    </span>
                   </Link>
                 )
               })}
             </nav>
           </div>
         </aside>
+
+        {/* Desktop Toggle Button - Outside Sidebar (when collapsed) */}
+        {!sidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-50 p-2 bg-white border border-gray-200 rounded-r-lg shadow-md hover:bg-gray-50 transition-colors hidden md:flex items-center justify-center"
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+          >
+            <FaChevronRight className="text-xl text-gray-600" />
+          </button>
+        )}
 
         {/* Main Content Area - Scrollable */}
         <main 
