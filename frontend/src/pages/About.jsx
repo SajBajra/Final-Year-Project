@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { 
   FaSearch, FaEye, FaGlobe, FaMobileAlt, FaPython, FaJava, FaReact, 
-  FaDatabase, FaChartLine, FaScroll, FaRobot, FaCode, FaServer,
+  FaDatabase, FaChartLine, FaChartBar, FaScroll, FaRobot, FaCode, FaServer,
   FaArrowRight, FaCheckCircle, FaLightbulb, FaShieldAlt, FaStar, FaHeart
 } from 'react-icons/fa'
 
