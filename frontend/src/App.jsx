@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { AuthProvider } from './context/AuthContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
