@@ -18,7 +18,7 @@ const AdminLayout = () => {
   const isActive = (path) => location.pathname === path
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Top Bar - Sticky */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 flex-shrink-0">
         <div className="flex items-center justify-between px-4 py-3">
@@ -43,15 +43,16 @@ const AdminLayout = () => {
         </div>
       </header>
 
+      {/* Main Container - Flex with fixed height */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Sticky vertically (sideways), fixed height, scrollable content */}
+        {/* Sidebar - Sticky, 100vh height, scrollable navigation */}
         <aside
-          className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 ${
+          className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 flex flex-col ${
             sidebarOpen ? 'w-64' : 'w-0'
-          } overflow-hidden flex flex-col ${
-            // Sticky on desktop (vertically), fixed on mobile
-            'fixed md:sticky md:top-16'
-          } h-[calc(100vh-64px)] z-40`}
+          } ${
+            // Desktop: sticky sidebar, Mobile: fixed overlay
+            'md:sticky md:top-16 md:h-[calc(100vh-64px)] fixed top-16 h-[calc(100vh-64px)] z-40'
+          } overflow-hidden`}
         >
           {/* Sidebar Overlay for mobile */}
           {sidebarOpen && (
@@ -61,10 +62,10 @@ const AdminLayout = () => {
             />
           )}
           
-          {/* Sidebar Content - Flex column, full height */}
+          {/* Sidebar Content - Fixed container, scrollable navigation */}
           <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
-            {/* Scrollable Navigation Content */}
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">
+            {/* Navigation - Scrollable if content is long */}
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
               {menuItems.map((item) => {
                 const IconComponent = item.icon
                 return (
@@ -87,9 +88,14 @@ const AdminLayout = () => {
           </div>
         </aside>
 
-        {/* Main Content - Scrollable */}
-        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'md:ml-0' : 'md:ml-0'}`}>
-          <div className="p-4 sm:p-6">
+        {/* Main Content Area - Scrollable */}
+        <main 
+          className={`flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar ${
+            // Add margin on desktop when sidebar is open
+            sidebarOpen ? 'md:ml-0' : 'md:ml-0'
+          }`}
+        >
+          <div className="p-4 sm:p-6 max-w-full">
             <Outlet />
           </div>
         </main>

@@ -65,6 +65,7 @@
   /* Scrollbar Styling */
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
   
   .custom-scrollbar::-webkit-scrollbar-track {
@@ -77,6 +78,12 @@
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-secondary-600;
+  }
+  
+  /* Smooth scrolling */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(100 116 139) rgb(241 245 249);
   }
 }
 
