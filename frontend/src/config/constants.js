@@ -81,6 +81,8 @@ export const ROUTES = {
   ADMIN: '/admin',
   ADMIN_DASHBOARD: '/admin/dashboard',
   ADMIN_OCR_HISTORY: '/admin/ocr-history',
+  ADMIN_ANALYTICS: '/admin/analytics',
+  ADMIN_CHARACTERS: '/admin/characters',
   ADMIN_SETTINGS: '/admin/settings',
 }
 

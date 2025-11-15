@@ -7,6 +7,8 @@ import About from './pages/About'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
+import AdminAnalytics from './pages/admin/AdminAnalytics'
+import AdminCharacterStats from './pages/admin/AdminCharacterStats'
 import AdminSettings from './pages/admin/AdminSettings'
 import { ROUTES } from './config/constants'
 import './index.css'
@@ -49,6 +51,8 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="ocr-history" element={<AdminOCRHistory />} />
+          <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="characters" element={<AdminCharacterStats />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { FaChartLine, FaHistory, FaCog, FaBars, FaTimes } from 'react-icons/fa'
+import { FaChartLine, FaHistory, FaCog, FaBars, FaTimes, FaChartBar, FaFont } from 'react-icons/fa'
 import { ROUTES } from '../config/constants'
 
 const AdminLayout = () => {
@@ -8,9 +8,11 @@ const AdminLayout = () => {
   const location = useLocation()
 
   const menuItems = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: FaChartLine },
-    { path: '/admin/ocr-history', label: 'OCR History', icon: FaHistory },
-    { path: '/admin/settings', label: 'Settings', icon: FaCog },
+    { path: ROUTES.ADMIN_DASHBOARD, label: 'Dashboard', icon: FaChartLine },
+    { path: ROUTES.ADMIN_OCR_HISTORY, label: 'OCR History', icon: FaHistory },
+    { path: ROUTES.ADMIN_ANALYTICS, label: 'Analytics', icon: FaChartBar },
+    { path: ROUTES.ADMIN_CHARACTERS, label: 'Character Stats', icon: FaFont },
+    { path: ROUTES.ADMIN_SETTINGS, label: 'Settings', icon: FaCog },
   ]
 
   const isActive = (path) => location.pathname === path
