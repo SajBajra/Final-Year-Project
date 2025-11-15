@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { 
   FaSearch, FaEye, FaGlobe, FaMobileAlt, FaPython, FaJava, FaReact, 
   FaDatabase, FaChartLine, FaScroll, FaRobot, FaCode, FaServer,
-  FaArrowRight, FaCheckCircle, FaLightbulb, FaShieldAlt
+  FaArrowRight, FaCheckCircle, FaLightbulb, FaShieldAlt, FaStar, FaHeart
 } from 'react-icons/fa'
 
 const About = () => {
@@ -41,30 +41,153 @@ const About = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12 max-w-4xl">
-        {/* Header - Responsive with Animation */}
-        <motion.div 
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center mb-8 sm:mb-12 md:mb-16"
-        >
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
           <motion.div
-            initial={{ scale: 0.8, opacity: 0, rotate: -180 }}
-            animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="inline-block mb-3 sm:mb-4"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.1, 0.2, 0.1],
+              rotate: [0, 120, 0]
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="absolute top-20 -right-20 w-96 h-96 bg-white rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.1, 0.15, 0.1],
+              rotate: [0, -120, 0]
+            }}
+            transition={{
+              duration: 25,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="absolute bottom-20 -left-20 w-96 h-96 bg-white rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.4, 1],
+              opacity: [0.05, 0.1, 0.05],
+              x: [0, 100, 0],
+              y: [0, 50, 0]
+            }}
+            transition={{
+              duration: 30,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="absolute top-1/2 left-1/2 w-80 h-80 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"
+          />
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-center"
           >
-            <FaScroll className="text-4xl sm:text-5xl md:text-6xl text-primary-600" />
+            {/* Icon with Animation */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
+              className="inline-block mb-6"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-white/20 rounded-full blur-xl"></div>
+                <FaScroll className="relative text-6xl sm:text-7xl md:text-8xl text-white drop-shadow-2xl" />
+              </div>
+            </motion.div>
+
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-6 border border-white/30"
+            >
+              <FaHeart className="text-pink-300 text-sm" />
+              <span className="text-white text-sm font-semibold">Preserving Cultural Heritage</span>
+            </motion.div>
+
+            {/* Main Heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight"
+            >
+              About
+              <br />
+              <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300 bg-clip-text text-transparent">
+                Lipika
+              </span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed"
+            >
+              Preserving and digitizing Ranjana script through
+              <br />
+              <span className="text-base sm:text-lg text-white/80">
+                advanced AI technology and modern web development
+              </span>
+            </motion.p>
+
+            {/* Key Points */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 mt-10"
+            >
+              {[
+                { icon: FaRobot, text: 'AI-Powered' },
+                { icon: FaGlobe, text: 'Cultural Preservation' },
+                { icon: FaCode, text: 'Open Source' },
+                { icon: FaStar, text: 'Cutting-Edge Tech' }
+              ].map((point, index) => {
+                const PointIcon = point.icon
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.7 + index * 0.1, type: "spring" }}
+                    whileHover={{ scale: 1.1, y: -5 }}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20"
+                  >
+                    <PointIcon className="text-white text-lg" />
+                    <span className="text-white text-sm sm:text-base font-medium">{point.text}</span>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
           </motion.div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            About Lipika
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-700 px-4">
-            Preserving and digitizing Ranjana script through advanced AI technology
-          </p>
-        </motion.div>
+        </div>
+
+        {/* Wave Divider */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg className="w-full h-12 sm:h-16 md:h-20" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+          </svg>
+        </div>
+      </section>
+
+      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 max-w-4xl -mt-8 sm:-mt-12 md:-mt-16">
 
         {/* Mission Section - Responsive with Animation */}
         <motion.div
