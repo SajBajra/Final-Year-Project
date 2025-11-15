@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FaChartBar, FaBullseye, FaFont, FaChartLine, FaPieChart } from 'react-icons/fa'
+import { FaChartBar, FaBullseye, FaFont, FaChartLine, FaChartPie } from 'react-icons/fa'
 import { 
   LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, BarChart, Bar 
@@ -304,7 +304,7 @@ const AdminDashboard = () => {
         >
           <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
             <div className="p-2 sm:p-3 rounded-xl bg-green-100">
-              <FaPieChart className="text-xl sm:text-2xl text-green-600" />
+              <FaChartPie className="text-xl sm:text-2xl text-green-600" />
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-800">Confidence Distribution</h3>
@@ -356,7 +356,7 @@ const AdminDashboard = () => {
           ) : (
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
               <div className="text-center">
-                <FaPieChart className="text-4xl text-gray-400 mx-auto mb-2" />
+                  <FaChartPie className="text-4xl text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-500">No data available</p>
               </div>
             </div>
