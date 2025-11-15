@@ -11,6 +11,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,11 +57,11 @@ public class OCRServiceImpl implements OCRService {
             String url = ocrServiceUrl + "/predict";
             log.info("Calling OCR service at: {}", url);
             
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 requestEntity,
-                Map.class
+                new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>() {}
             );
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -138,19 +139,28 @@ public class OCRServiceImpl implements OCRService {
             }
         }
         response.setText(text);
-        response.setCount((Integer) responseBody.getOrDefault("count", 0));
         
-        if (responseBody.get("confidence") != null) {
-            Object conf = responseBody.get("confidence");
-            if (conf instanceof Number) {
-                response.setConfidence(((Number) conf).doubleValue());
-            }
+        // Handle count - can be Integer or Long from JSON
+        Object countObj = responseBody.get("count");
+        if (countObj instanceof Number) {
+            response.setCount(((Number) countObj).intValue());
+        } else {
+            response.setCount(0);
         }
         
-        // Map characters
+        // Handle confidence - can be Double or other Number from JSON
+        Object conf = responseBody.get("confidence");
+        if (conf instanceof Number) {
+            response.setConfidence(((Number) conf).doubleValue());
+        }
+        
+        // Map characters - handle words if present
         if (responseBody.get("characters") instanceof java.util.List) {
             java.util.List<Map<String, Object>> chars = (java.util.List<Map<String, Object>>) responseBody.get("characters");
-            response.setCharacters(chars.stream().map(this::mapToCharacterInfo).toList());
+            response.setCharacters(chars.stream()
+                .map(this::mapToCharacterInfo)
+                .filter(charInfo -> charInfo.getCharacter() != null)
+                .toList());
         }
         
         return response;
