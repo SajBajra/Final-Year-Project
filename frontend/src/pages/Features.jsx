@@ -12,63 +12,72 @@ const Features = () => {
       title: 'Multiple Input Methods',
       description: 'Upload images from your device or capture in real-time using your camera. Supports JPG, PNG, WEBP, and BMP formats for maximum flexibility.',
       color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-50'
+      bgColor: 'bg-blue-50',
+      iconColor: 'text-blue-600'
     },
     {
       icon: FaRobot,
       title: 'Advanced AI Recognition',
       description: 'Powered by Character-based CRNN (Convolutional Recurrent Neural Network) deep learning model trained on 500 epochs for accurate character-level recognition of Ranjana script.',
       color: 'from-purple-500 to-pink-500',
-      bgColor: 'bg-purple-50'
+      bgColor: 'bg-purple-50',
+      iconColor: 'text-purple-600'
     },
     {
       icon: FaEye,
       title: 'Google Lens-Style AR Overlay',
       description: 'Interactive augmented reality visualization with individual character bounding boxes, confidence scores, and hover tooltips for detailed recognition insights.',
       color: 'from-green-500 to-emerald-500',
-      bgColor: 'bg-green-50'
+      bgColor: 'bg-green-50',
+      iconColor: 'text-green-600'
     },
     {
       icon: FaGlobe,
       title: 'Ranjana to Devanagari Output',
       description: 'Automatically converts recognized Ranjana script characters to Devanagari (Nepali) text output, with optional English translation support.',
       color: 'from-orange-500 to-red-500',
-      bgColor: 'bg-orange-50'
+      bgColor: 'bg-orange-50',
+      iconColor: 'text-orange-600'
     },
     {
       icon: FaBolt,
       title: 'Fast Processing',
       description: 'Optimized inference pipeline with GPU acceleration support. Process images with character segmentation and recognition in seconds.',
       color: 'from-indigo-500 to-purple-500',
-      bgColor: 'bg-indigo-50'
+      bgColor: 'bg-indigo-50',
+      iconColor: 'text-indigo-600'
     },
     {
       icon: FaBullseye,
       title: 'Character-Level Precision',
       description: 'Individual character detection with precise bounding boxes, confidence scores, and word grouping for perfect AR visualization.',
       color: 'from-pink-500 to-rose-500',
-      bgColor: 'bg-pink-50'
+      bgColor: 'bg-pink-50',
+      iconColor: 'text-pink-600'
     },
     {
       icon: FaChartBar,
       title: 'Confidence Scoring',
       description: 'Each recognized character includes a confidence score (0-100%) with color-coded visualization to help identify recognition accuracy.',
       color: 'from-teal-500 to-cyan-500',
-      bgColor: 'bg-teal-50'
+      bgColor: 'bg-teal-50',
+      iconColor: 'text-teal-600'
     },
     {
       icon: FaMobileAlt,
       title: 'Fully Responsive Design',
       description: 'Beautiful, modern UI that works seamlessly on desktop, tablet, and mobile devices with optimized layouts for every screen size.',
       color: 'from-yellow-500 to-orange-500',
-      bgColor: 'bg-yellow-50'
+      bgColor: 'bg-yellow-50',
+      iconColor: 'text-yellow-600'
     },
     {
       icon: FaLock,
       title: 'Secure & Private',
       description: 'All processing happens on your server. Images are processed in real-time and OCR history is stored securely with admin dashboard access.',
       color: 'from-gray-600 to-gray-800',
-      bgColor: 'bg-gray-50'
+      bgColor: 'bg-gray-50',
+      iconColor: 'text-gray-700'
     }
   ]
 
@@ -282,7 +291,7 @@ const Features = () => {
                   transition={{ delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
                   className={`mb-3 sm:mb-4 inline-block p-3 sm:p-4 rounded-xl ${feature.bgColor} group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <IconComponent className={`text-3xl sm:text-4xl md:text-5xl bg-gradient-to-r ${feature.color} bg-clip-text text-transparent`} />
+                  <IconComponent className={`text-3xl sm:text-4xl md:text-5xl ${feature.iconColor}`} />
                 </motion.div>
                 
                 <motion.h3 
