@@ -27,11 +27,14 @@ function Home() {
     setOcrResult(result)
     setLoading(false)
     
-    // OCR already returns Devanagari text, so just set it directly
-    // No need to translate - the model outputs Devanagari directly
-    if (result.text && result.text.length > 0) {
+    // OCR service returns Devanagari text directly from the model
+    // Ensure we preserve the Devanagari characters exactly as returned
+    if (result && result.text) {
+      // Set Devanagari text directly - no translation needed
       setDevanagariText(result.text)
       setTranslations({ devanagari: result.text })
+      console.log('OCR Result - Devanagari text:', result.text)
+      console.log('OCR Result - Characters:', result.characters)
     }
   }
 

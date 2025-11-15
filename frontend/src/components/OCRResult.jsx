@@ -113,13 +113,13 @@ const OCRResult = ({
       >
         <div className="mb-4">
           <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">
-            {text && (text.includes('Error') || text.includes('error')) ? 'Error Message' : 'Recognized Text'}
+            {text && (text.includes('Error') || text.includes('error')) ? 'Error Message' : 'Recognized Text (Devanagari)'}
           </h3>
           <p className={`text-3xl md:text-4xl font-bold leading-relaxed break-words ${
             (text && (text.includes('Error') || text.includes('error')))
               ? 'text-red-600'
               : 'text-gray-800'
-          }`}>
+          }`} style={{ fontFamily: 'Arial, sans-serif', unicodeBidi: 'embed' }}>
             {text || 'No text detected'}
           </p>
         </div>
