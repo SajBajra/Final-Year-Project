@@ -663,61 +663,59 @@ def predict():
                 top3_conf = [prob.item() for prob in top3_probs[0]]
                 
                 # Accept predictions with reasonable confidence
-                # Try to prefer Ranjana characters, but accept ASCII if that's what the model predicts
+                # Model should be trained with Devanagari labels, so predictions should be Devanagari
                 if char_idx < len(chars):
                     char = chars[char_idx]
                     is_ascii_english = char and len(char) == 1 and char.isascii() and (char.isalpha() or char.isdigit())
                     
-                    # If top prediction is ASCII, try to find Unicode alternative
+                    # If model predicts ASCII, something is wrong (model should only have Devanagari)
+                    # But try to map it to Devanagari as fallback
                     if is_ascii_english:
-                        print(f"[INFO] Character {i}: Top prediction is ASCII '{char}' (confidence: {conf:.3f})")
+                        print(f"[WARN] Character {i}: Model predicted ASCII '{char}' but model should only have Devanagari!")
+                        print(f"[WARN] This suggests the model checkpoint may be misaligned or from old training")
                         print(f"[DEBUG] Top 3 predictions: {[(c, round(conf_val, 3)) for c, conf_val in zip(top3_chars, top3_conf)]}")
+                        print(f"[DEBUG] Model has {len(chars)} characters, predicted index: {char_idx}")
                         
-                        # Try to find Unicode alternative in top predictions
-                        found_unicode = False
+                        # Try to find Devanagari alternative in top predictions
+                        found_devanagari = False
                         for alt_idx, alt_char in enumerate(top3_chars[1:], 1):  # Skip first (ASCII)
                             alt_conf = top3_conf[alt_idx]
-                            # Check if this is a valid non-ASCII character
-                            if alt_char and not (alt_char.isascii() and len(alt_char) == 1 and (alt_char.isalpha() or alt_char.isdigit())):
-                                # Found a non-ASCII character in top predictions
-                                if alt_conf > 0.1:  # Very low threshold to catch any Unicode alternative
+                            # Check if this is a Devanagari character (Unicode > 127)
+                            if alt_char and ord(alt_char) > 127:
+                                # Found a Devanagari character in top predictions
+                                if alt_conf > 0.1:  # Very low threshold to catch any Devanagari alternative
                                     char = alt_char
                                     conf = alt_conf
-                                    found_unicode = True
-                                    print(f"[INFO] Using Unicode alternative: '{char}' (confidence: {conf:.3f})")
+                                    found_devanagari = True
+                                    print(f"[INFO] Using Devanagari alternative: '{char}' (confidence: {conf:.3f})")
                                     break
                         
-                        # If no Unicode alternative found, try transliteration mapping
-                        # Always map ASCII to Devanagari (even if not in model vocab, since model was trained with English)
-                        if not found_unicode:
+                        # If no Devanagari alternative found, try transliteration mapping as last resort
+                        if not found_devanagari:
                             try:
                                 from transliteration_to_ranjana import TRANSLITERATION_TO_RANJANA
                                 if char in TRANSLITERATION_TO_RANJANA:
                                     devanagari_char = TRANSLITERATION_TO_RANJANA[char]
                                     char = devanagari_char
-                                    found_unicode = True
-                                    print(f"[INFO] Mapped ASCII '{chars[char_idx]}' to Devanagari '{char}' (model trained with English labels)")
+                                    found_devanagari = True
+                                    print(f"[INFO] Mapped ASCII '{chars[char_idx]}' to Devanagari '{char}' (fallback mapping)")
                                 else:
                                     # Try lowercase version
                                     char_lower = char.lower()
                                     if char_lower in TRANSLITERATION_TO_RANJANA:
                                         devanagari_char = TRANSLITERATION_TO_RANJANA[char_lower]
                                         char = devanagari_char
-                                        found_unicode = True
+                                        found_devanagari = True
                                         print(f"[INFO] Mapped ASCII '{chars[char_idx]}' (lowercase) to Devanagari '{char}'")
                                     else:
-                                        print(f"[WARN] No mapping found for ASCII character '{char}'")
+                                        print(f"[ERROR] No mapping found for ASCII character '{char}' - model prediction may be wrong")
                             except Exception as e:
                                 print(f"[DEBUG] Could not load transliteration mapping: {e}")
                         
-                        # If still no Unicode found after mapping, accept ASCII but warn
-                        # This should rarely happen now since we have comprehensive mapping
-                        if not found_unicode:
-                            if conf >= 0.15:  # Lower threshold to accept more predictions
-                                print(f"[WARN] Accepting ASCII character '{char}' (no Devanagari mapping found, confidence: {conf:.3f})")
-                            else:
-                                print(f"[WARN] Character {i}: Low confidence ASCII prediction ({conf:.3f}), skipping")
-                                continue
+                        # If still no Devanagari found after mapping, warn and skip
+                        if not found_devanagari:
+                            print(f"[ERROR] Character {i}: Cannot map ASCII '{char}' to Devanagari - skipping (confidence: {conf:.3f})")
+                            continue
                     elif conf < 0.2:
                         # If not ASCII but confidence is too low, try to find better alternative
                         print(f"[WARN] Character {i}: Low confidence ({conf:.3f}) for '{char}', checking alternatives")
