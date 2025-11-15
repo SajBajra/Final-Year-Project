@@ -131,3 +131,19 @@ export const exportOCRHistory = async (filters = {}) => {
   }
 }
 
+export const changePassword = async (currentPassword, newPassword) => {
+  try {
+    const response = await axios.post(`${ADMIN_API_URL}/password/change`, {
+      currentPassword,
+      newPassword
+    }, {
+      timeout: API_CONFIG.TIMEOUT,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error changing password:', error)
+    throw error
+  }
+}
+
