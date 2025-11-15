@@ -51,9 +51,25 @@ function App() {
           </div>
         } />
         
-        {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Auth Routes with AnimatePresence for page transitions */}
+        <Route path="/login" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Login />
+          </motion.div>
+        } />
+        <Route path="/register" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Register />
+          </motion.div>
+        } />
         
         {/* Admin Routes */}
         <Route path={ROUTES.ADMIN} element={
