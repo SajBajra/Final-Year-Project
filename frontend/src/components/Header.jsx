@@ -95,7 +95,10 @@ const Header = () => {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={logout}
+                  onClick={() => {
+                    logout();
+                    navigate('/');
+                  }}
                   className="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 transition-colors"
                   title="Logout"
                 >
