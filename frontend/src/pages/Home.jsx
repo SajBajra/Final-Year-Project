@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FaScroll, FaCamera, FaSearch, FaEye } from 'react-icons/fa'
+import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload } from 'react-icons/fa'
 import ImageUpload from '../components/ImageUpload'
 import CameraCapture from '../components/CameraCapture'
 import OCRResult from '../components/OCRResult'
@@ -15,6 +15,8 @@ function Home() {
   const [translations, setTranslations] = useState({})
   const [showTranslation, setShowTranslation] = useState(false)
   const [translationLoading, setTranslationLoading] = useState(false)
+  const [devanagariText, setDevanagariText] = useState('')
+  const [englishText, setEnglishText] = useState('')
 
   const handleImageUpload = (file) => {
     setImage(file)
@@ -48,11 +50,6 @@ function Home() {
   const toggleAR = () => {
     setShowAR(!showAR)
   }
-
-  const [devanagariText, setDevanagariText] = useState('')
-  const [englishText, setEnglishText] = useState('')
-
-  // Removed handleTranslateToDevanagari - OCR already returns Devanagari
 
   const handleTranslateToEnglish = async () => {
     setTranslationLoading(true)
@@ -88,29 +85,29 @@ function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Enhanced Hero Section */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 max-w-7xl">
+        {/* Enhanced Hero Section - Responsive */}
         <motion.div 
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 md:mb-16"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="inline-block mb-6"
+            className="inline-block mb-4 sm:mb-6"
           >
-            <FaScroll className="text-8xl float-animation text-primary-600" />
+            <FaScroll className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl float-animation text-primary-600" />
           </motion.div>
           
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-7xl md:text-8xl font-black mb-6 text-primary-600 tracking-tight"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-3 sm:mb-4 md:mb-6 text-primary-600 tracking-tight leading-tight"
           >
             Lipika
           </motion.h1>
@@ -119,7 +116,7 @@ function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-2xl md:text-3xl text-gray-800 max-w-4xl mx-auto font-semibold mb-4"
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-800 max-w-4xl mx-auto font-semibold mb-2 sm:mb-3 md:mb-4 px-4"
           >
             Advanced Ranjana Script OCR
           </motion.p>
@@ -128,22 +125,22 @@ function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-lg text-secondary-500 max-w-3xl mx-auto"
+            className="text-sm sm:text-base md:text-lg text-secondary-500 max-w-3xl mx-auto px-4 leading-relaxed"
           >
             Experience Google Lens-style AR overlay and real-time translation powered by cutting-edge AI
           </motion.p>
 
-          {/* Feature Pills */}
+          {/* Feature Pills - Responsive */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="flex flex-wrap justify-center gap-4 mt-8"
+            className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mt-4 sm:mt-6 md:mt-8 px-4"
           >
             {['AI-Powered', 'Real-Time', 'AR Overlay', 'Translation'].map((feature, idx) => (
               <span
                 key={idx}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-semibold text-secondary-500 shadow-sm hover:shadow-md transition-all duration-200"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white border border-gray-300 rounded-full text-xs sm:text-sm font-semibold text-secondary-500 shadow-sm hover:shadow-md transition-all duration-200"
               >
                 {feature}
               </span>
@@ -151,12 +148,12 @@ function Home() {
           </motion.div>
         </motion.div>
 
-        {/* Upload Section with Enhanced Cards */}
+        {/* Upload Section with Enhanced Cards - Responsive Grid */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid md:grid-cols-2 gap-8 mb-12"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12"
         >
           <motion.div variants={itemVariants}>
             <ImageUpload 
@@ -174,32 +171,32 @@ function Home() {
           </motion.div>
         </motion.div>
 
-        {/* Loading State */}
+        {/* Loading State - Responsive */}
         {loading && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="card mb-8 text-center py-16"
+            className="card mb-6 sm:mb-8 text-center py-8 sm:py-12 md:py-16"
           >
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-6"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 border-4 border-primary border-t-transparent mb-4 sm:mb-6"></div>
             <motion.p 
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
-              className="text-xl text-gray-800 font-semibold mb-2"
+              className="text-base sm:text-lg md:text-xl text-gray-800 font-semibold mb-2"
             >
               Processing your image...
             </motion.p>
-            <p className="text-sm text-secondary-500">Our AI is analyzing every character</p>
+            <p className="text-xs sm:text-sm text-secondary-500">Our AI is analyzing every character</p>
           </motion.div>
         )}
 
-        {/* Results Section */}
+        {/* Results Section - Responsive */}
         {ocrResult && !loading && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-8"
+            className="space-y-4 sm:space-y-6 md:space-y-8"
           >
             <OCRResult 
               text={ocrResult.text} 
@@ -227,17 +224,17 @@ function Home() {
           </motion.div>
         )}
 
-        {/* Enhanced Info Cards */}
+        {/* Enhanced Info Cards - Responsive Grid */}
         {!ocrResult && !loading && (
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid md:grid-cols-3 gap-8 mt-20"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16 md:mt-20"
           >
             {[
               {
-                icon: FaCamera,
+                icon: FaUpload,
                 title: 'Capture or Upload',
                 description: 'Take a photo with your camera or upload an image containing Ranjana script text. Supports all major image formats.',
                 delay: 0.1
@@ -263,23 +260,22 @@ function Home() {
                 whileHover={{ y: -5 }}
                 className="card group cursor-pointer"
               >
-                <div className="text-6xl mb-6 inline-block p-4 rounded-xl bg-gray-100 group-hover:bg-gray-200 transition-all duration-200 flex items-center justify-center">
+                <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 inline-block p-3 sm:p-4 rounded-xl bg-gray-100 group-hover:bg-gray-200 transition-all duration-200 flex items-center justify-center">
                   <IconComponent className="text-primary-600" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-800 group-hover:text-primary-600 transition-all duration-200">
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800 group-hover:text-primary-600 transition-all duration-200">
                   {card.title}
                 </h3>
-                <p className="text-secondary-500 leading-relaxed">
+                <p className="text-sm sm:text-base text-secondary-500 leading-relaxed">
                   {card.description}
                 </p>
-                <div className="mt-6 h-1 w-0 group-hover:w-full bg-primary-600 rounded-full transition-all duration-300"></div>
+                <div className="mt-4 sm:mt-6 h-1 w-0 group-hover:w-full bg-primary-600 rounded-full transition-all duration-300"></div>
               </motion.div>
               )
             })}
           </motion.div>
         )}
       </main>
-
     </div>
   )
 }

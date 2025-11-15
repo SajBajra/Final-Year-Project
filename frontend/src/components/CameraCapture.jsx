@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import Webcam from 'react-webcam'
+import { FaCamera, FaCameraRetro, FaTimes } from 'react-icons/fa'
 import { recognizeText } from '../services/ocrService'
 
 const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
@@ -8,8 +10,8 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
   const [preview, setPreview] = useState(null)
 
   const videoConstraints = {
-    width: 1280,
-    height: 720,
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
     facingMode: 'environment'
   }
 
@@ -55,28 +57,58 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
     }
   }
 
+  const clearPreview = () => {
+    setPreview(null)
+    setIsCapturing(false)
+    onImageCapture(null)
+  }
+
   return (
-    <div className="card">
-      <h2 className="text-2xl font-bold mb-4 flex items-center">
-        <span className="mr-3">📷</span>
-        Camera Capture
-      </h2>
+    <div className="card h-full">
+      <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+        <div className="p-2 sm:p-3 rounded-xl bg-secondary-100">
+          <FaCamera className="text-xl sm:text-2xl text-secondary-600" />
+        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+          Camera Capture
+        </h2>
+      </div>
       
       <div className="relative">
         {!isCapturing && !preview && (
-          <div className="aspect-video bg-gray-200 rounded-xl flex items-center justify-center">
-            <button
-              onClick={startCapture}
-              className="btn-primary text-lg px-8"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex flex-col items-center justify-center p-6 sm:p-8"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
             >
-              Start Camera
-            </button>
-          </div>
+              <FaCameraRetro className="text-5xl sm:text-6xl md:text-7xl text-secondary-500 mb-4 sm:mb-6" />
+            </motion.div>
+            <motion.button
+              onClick={startCapture}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn-primary text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-2"
+            >
+              <FaCamera className="text-lg sm:text-xl" />
+              <span>Start Camera</span>
+            </motion.button>
+            <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4 text-center">
+              Click to activate your camera
+            </p>
+          </motion.div>
         )}
         
         {isCapturing && !preview && (
-          <>
-            <div className="aspect-video bg-black rounded-xl overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-4"
+          >
+            <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-xl">
               <Webcam
                 audio={false}
                 ref={webcamRef}
@@ -84,41 +116,53 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
                 videoConstraints={videoConstraints}
                 className="w-full h-full object-cover"
               />
+              <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
             </div>
-            <div className="flex justify-center space-x-4 mt-4">
-              <button
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <motion.button
                 onClick={capture}
-                className="btn-primary"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-primary flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 sm:px-8 py-3"
               >
-                📸 Capture
-              </button>
-              <button
+                <FaCamera className="text-lg sm:text-xl" />
+                <span className="text-sm sm:text-base">Capture</span>
+              </motion.button>
+              <motion.button
                 onClick={stopCapture}
-                className="btn-secondary"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-secondary flex-1 sm:flex-none px-6 sm:px-8 py-3 text-sm sm:text-base"
               >
                 Cancel
-              </button>
+              </motion.button>
             </div>
-          </>
+          </motion.div>
         )}
         
         {preview && (
-          <div>
-            <img
-              src={preview}
-              alt="Captured"
-              className="aspect-video w-full object-cover rounded-xl"
-            />
-            <button
-              onClick={() => {
-                setPreview(null)
-                onImageCapture(null)
-              }}
-              className="btn-secondary w-full mt-4"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-3 sm:space-y-4"
+          >
+            <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl">
+              <img
+                src={preview}
+                alt="Captured"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <motion.button
+              onClick={clearPreview}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="btn-secondary w-full flex items-center justify-center space-x-2 py-3 text-sm sm:text-base"
             >
-              Capture Again
-            </button>
-          </div>
+              <FaTimes className="text-base sm:text-lg" />
+              <span>Capture Again</span>
+            </motion.button>
+          </motion.div>
         )}
       </div>
     </div>
@@ -126,4 +170,3 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete }) => {
 }
 
 export default CameraCapture
-
