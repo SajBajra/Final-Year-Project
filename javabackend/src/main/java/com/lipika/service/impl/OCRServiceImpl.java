@@ -61,7 +61,7 @@ public class OCRServiceImpl implements OCRService {
                 url,
                 HttpMethod.POST,
                 requestEntity,
-                new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>() {}
+                new ParameterizedTypeReference<Map<String, Object>>() {}
             );
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
