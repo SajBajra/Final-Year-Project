@@ -64,7 +64,32 @@ public class OCRServiceImpl implements OCRService {
             );
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                OCRResponse ocrResponse = mapToOCRResponse(response.getBody());
+                Map<String, Object> responseBody = response.getBody();
+                
+                // Log the raw response text for debugging
+                Object rawText = responseBody.get("text");
+                if (rawText != null) {
+                    log.info("Raw OCR response text (before mapping): {}", rawText);
+                    log.info("Raw OCR response text type: {}", rawText.getClass().getName());
+                    log.info("Raw OCR response text length: {}", rawText.toString().length());
+                }
+                
+                OCRResponse ocrResponse = mapToOCRResponse(responseBody);
+                
+                // Log the mapped text to verify UTF-8 handling
+                if (ocrResponse.getText() != null) {
+                    log.info("Mapped OCR response text: {}", ocrResponse.getText());
+                    log.info("Mapped OCR response text length: {}", ocrResponse.getText().length());
+                    // Log first few characters as Unicode code points
+                    if (!ocrResponse.getText().isEmpty()) {
+                        String firstChars = ocrResponse.getText().substring(0, Math.min(10, ocrResponse.getText().length()));
+                        StringBuilder unicodeInfo = new StringBuilder("Unicode codes: ");
+                        for (char c : firstChars.toCharArray()) {
+                            unicodeInfo.append(String.format("U+%04X ", (int) c));
+                        }
+                        log.info(unicodeInfo.toString());
+                    }
+                }
                 
                 // Save to history if successful
                 if (ocrResponse.isSuccess() && ocrResponse.getText() != null && !ocrResponse.getText().isEmpty()) {
@@ -100,7 +125,19 @@ public class OCRServiceImpl implements OCRService {
         OCRResponse response = new OCRResponse();
         
         response.setSuccess((Boolean) responseBody.getOrDefault("success", false));
-        response.setText((String) responseBody.get("text"));
+        
+        // Properly extract text with UTF-8 encoding support
+        Object textObj = responseBody.get("text");
+        String text = null;
+        if (textObj != null) {
+            if (textObj instanceof String) {
+                text = (String) textObj;
+            } else {
+                // Convert to string while preserving UTF-8 characters
+                text = textObj.toString();
+            }
+        }
+        response.setText(text);
         response.setCount((Integer) responseBody.getOrDefault("count", 0));
         
         if (responseBody.get("confidence") != null) {
