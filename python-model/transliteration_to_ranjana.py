@@ -36,7 +36,7 @@ TRANSLITERATION_TO_RANJANA = {
     'ta': 'ट',
     'tha': 'ठ',
     'dda': 'ड',
-    'ddha': 'ध',  # Note: 'ddha' maps to 'ध' (dha) based on dataset
+    'ddha': 'ढ',  # Fixed: 'ddha' should map to 'ढ' (ddha), not 'ध' (dha)
     'nna': 'ण',
     'tta': 'त',
     'ttha': 'थ',

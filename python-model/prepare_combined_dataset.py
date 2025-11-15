@@ -9,6 +9,7 @@ import shutil
 from pathlib import Path
 from PIL import Image
 import random
+from transliteration_to_ranjana import transliterate_to_ranjana
 
 def prepare_combined_dataset(
     dataset_folders=None,
@@ -86,7 +87,10 @@ def prepare_combined_dataset(
             print(f"  Found {len(char_folders)} character folders")
             
             for char_folder in char_folders:
-                char_label = char_folder.name
+                folder_name = char_folder.name  # English transliteration (e.g., 'a', 'ka', 'ba')
+                
+                # Convert English transliteration to Devanagari
+                char_label = transliterate_to_ranjana(folder_name)
                 
                 # Get all image files in this folder
                 image_files = list(char_folder.glob('*.png')) + list(char_folder.glob('*.jpg')) + \
@@ -94,7 +98,7 @@ def prepare_combined_dataset(
                              list(char_folder.glob('*.JPG')) + list(char_folder.glob('*.JPEG'))
                 
                 if len(image_files) > 0:
-                    print(f"    {char_label}: {len(image_files)} images")
+                    print(f"    {folder_name} -> {char_label}: {len(image_files)} images")
                 
                 for img_file in image_files:
                     all_data.append((img_file, char_label))

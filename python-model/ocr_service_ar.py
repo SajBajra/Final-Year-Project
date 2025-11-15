@@ -759,10 +759,94 @@ def predict():
                 traceback.print_exc()
                 continue
         
-        # Construct full text
+        # Construct full text (Devanagari characters)
         text = ''.join([r['character'] for r in results])
         
-        print(f"[INFO] Recognition complete: {len(results)} characters recognized, text: '{text}'")
+        # Group characters into words based on spacing
+        # In Devanagari, words are typically separated by spaces or punctuation
+        words = []
+        current_word = []
+        word_bboxes = []
+        current_word_bbox = None
+        
+        for i, result in enumerate(results):
+            char = result['character']
+            bbox = result.get('bbox', {})
+            
+            # Check if this character starts a new word
+            # (space, punctuation, or significant horizontal gap indicates word boundary)
+            is_word_boundary = False
+            if char.strip() == '' or char in ['।', ',', '.', ';', ':', '!', '?']:
+                is_word_boundary = True
+            elif i > 0 and 'bbox' in results[i-1]:
+                # Check for significant horizontal gap (word spacing)
+                prev_bbox = results[i-1].get('bbox', {})
+                if 'x' in bbox and 'x' in prev_bbox:
+                    gap = bbox['x'] - (prev_bbox.get('x', 0) + prev_bbox.get('width', 0))
+                    # If gap is more than 1.5x average character width, it's likely a word boundary
+                    avg_width = sum([r.get('bbox', {}).get('width', 0) for r in results[:i+1]]) / max(i+1, 1)
+                    if gap > avg_width * 1.5:
+                        is_word_boundary = True
+            
+            if is_word_boundary and current_word:
+                # Save current word
+                word_text = ''.join(current_word)
+                words.append({
+                    'word': word_text,
+                    'characters': current_word,
+                    'bbox': current_word_bbox,
+                    'character_count': len(current_word)
+                })
+                current_word = []
+                current_word_bbox = None
+            
+            if char.strip() != '' and char not in ['।', ',', '.', ';', ':', '!', '?']:
+                current_word.append(char)
+                # Update word bounding box to encompass all characters
+                if current_word_bbox is None:
+                    current_word_bbox = bbox.copy() if bbox else {}
+                else:
+                    # Expand bbox to include this character
+                    if 'x' in bbox:
+                        current_word_bbox['x'] = min(current_word_bbox.get('x', bbox['x']), bbox['x'])
+                    if 'y' in bbox:
+                        current_word_bbox['y'] = min(current_word_bbox.get('y', bbox['y']), bbox['y'])
+                    if 'width' in bbox and 'x' in bbox:
+                        right_edge = max(
+                            current_word_bbox.get('x', 0) + current_word_bbox.get('width', 0),
+                            bbox['x'] + bbox.get('width', 0)
+                        )
+                        current_word_bbox['width'] = right_edge - current_word_bbox.get('x', 0)
+                    if 'height' in bbox:
+                        bottom_edge = max(
+                            current_word_bbox.get('y', 0) + current_word_bbox.get('height', 0),
+                            bbox['y'] + bbox.get('height', 0)
+                        )
+                        current_word_bbox['height'] = bottom_edge - current_word_bbox.get('y', 0)
+        
+        # Add final word if exists
+        if current_word:
+            word_text = ''.join(current_word)
+            words.append({
+                'word': word_text,
+                'characters': current_word,
+                'bbox': current_word_bbox,
+                'character_count': len(current_word)
+            })
+        
+        # If no words found but we have characters, treat all as one word
+        if not words and results:
+            words.append({
+                'word': text,
+                'characters': [r['character'] for r in results],
+                'bbox': results[0].get('bbox', {}) if results else {},
+                'character_count': len(results)
+            })
+        
+        print(f"[INFO] Recognition complete: {len(results)} characters, {len(words)} words recognized")
+        print(f"[INFO] Full text (Devanagari): '{text}'")
+        if words:
+            print(f"[INFO] Words: {[w['word'] for w in words]}")
         
         # If no results but we had segments, provide diagnostic info
         if not results and segments:
@@ -771,10 +855,12 @@ def predict():
         
         return jsonify({
             'success': True,
-            'text': text,
-            'characters': results,
+            'text': text,  # Full Devanagari text
+            'characters': results,  # Individual character results
+            'words': words,  # Word-level recognition
             'count': len(results),
-            'message': f'Recognized {len(results)} characters' if results else 'No characters detected with sufficient confidence'
+            'word_count': len(words),
+            'message': f'Recognized {len(results)} characters in {len(words)} words' if results else 'No characters detected with sufficient confidence'
         })
         
     except Exception as e:
