@@ -17,11 +17,9 @@ spring:
       max-request-size: 10MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/lipika?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/lipika?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
     username: root
-    # password: # Leave empty for XAMPP default (no password)
-    # Uncomment and set if you have a password:
-    # password: your_password
+    # Password is empty for XAMPP default - DO NOT add password property
   jpa:
     hibernate:
       ddl-auto: update
