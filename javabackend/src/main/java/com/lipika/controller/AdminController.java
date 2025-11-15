@@ -235,5 +235,34 @@ public class AdminController {
                     .body("Error exporting OCR history: " + e.getMessage());
         }
     }
+    
+    /**
+     * Change admin password
+     * POST /api/admin/password/change
+     */
+    @PostMapping("/password/change")
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody Map<String, String> request) {
+        try {
+            String currentPassword = request.get("currentPassword");
+            String newPassword = request.get("newPassword");
+            
+            if (currentPassword == null || newPassword == null) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Current password and new password are required"));
+            }
+            
+            boolean changed = adminService.changePassword(currentPassword, newPassword);
+            if (changed) {
+                return ResponseEntity.ok(ApiResponse.success("Password changed successfully", "Password updated"));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Failed to change password. Please check your current password and ensure new password is at least 4 characters."));
+            }
+        } catch (Exception e) {
+            log.error("Error changing password", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error changing password: " + e.getMessage()));
+        }
+    }
 }
 

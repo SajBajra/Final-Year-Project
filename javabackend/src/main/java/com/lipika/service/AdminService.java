@@ -92,5 +92,13 @@ public interface AdminService {
      */
     String exportOCRHistoryToCSV(String search, Double minConfidence, Double maxConfidence,
                                  LocalDateTime startDate, LocalDateTime endDate);
+    
+    /**
+     * Change admin password
+     * @param currentPassword Current password
+     * @param newPassword New password
+     * @return true if password changed successfully, false otherwise
+     */
+    boolean changePassword(String currentPassword, String newPassword);
 }
 

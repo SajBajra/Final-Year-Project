@@ -22,6 +22,9 @@ public class AdminServiceImpl implements AdminService {
     // System settings
     private final Map<String, Object> settings = new ConcurrentHashMap<>();
     
+    // Admin password (in production, use proper password hashing)
+    private String adminPassword = "admin"; // Default password
+    
     public AdminServiceImpl() {
         // Initialize default settings
         settings.put("ocrServiceUrl", "http://localhost:5000");
@@ -427,6 +430,36 @@ public class AdminServiceImpl implements AdminService {
             return true;
         } catch (Exception e) {
             log.error("Error updating settings", e);
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean changePassword(String currentPassword, String newPassword) {
+        try {
+            // Check if current password matches
+            if (currentPassword == null || !currentPassword.equals(adminPassword)) {
+                log.warn("Password change failed: Current password incorrect");
+                return false;
+            }
+            
+            // Validate new password
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                log.warn("Password change failed: New password cannot be empty");
+                return false;
+            }
+            
+            if (newPassword.length() < 4) {
+                log.warn("Password change failed: New password must be at least 4 characters");
+                return false;
+            }
+            
+            // Update password
+            adminPassword = newPassword;
+            log.info("Admin password changed successfully");
+            return true;
+        } catch (Exception e) {
+            log.error("Error changing password", e);
             return false;
         }
     }
