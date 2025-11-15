@@ -5,9 +5,15 @@ import com.lipika.model.OCRHistory;
 import com.lipika.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -41,9 +47,28 @@ public class AdminController {
     @GetMapping("/ocr-history")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getOCRHistory(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Double minConfidence,
+            @RequestParam(required = false) Double maxConfidence,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false, defaultValue = "timestamp") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder) {
         try {
-            Map<String, Object> history = adminService.getOCRHistory(page, size);
+            Map<String, Object> history;
+            if (search != null || minConfidence != null || maxConfidence != null || 
+                startDate != null || endDate != null || 
+                (sortBy != null && !sortBy.equals("timestamp")) || 
+                (sortOrder != null && !sortOrder.equals("desc"))) {
+                // Use filtered endpoint
+                history = adminService.getOCRHistoryFiltered(
+                        page, size, search, minConfidence, maxConfidence, 
+                        startDate, endDate, sortBy, sortOrder);
+            } else {
+                // Use simple pagination
+                history = adminService.getOCRHistory(page, size);
+            }
             return ResponseEntity.ok(ApiResponse.success("OCR history retrieved successfully", history));
         } catch (Exception e) {
             log.error("Error retrieving OCR history", e);
@@ -93,6 +118,27 @@ public class AdminController {
     }
     
     /**
+     * Bulk delete OCR history by IDs
+     * DELETE /api/admin/ocr-history/bulk
+     */
+    @DeleteMapping("/ocr-history/bulk")
+    public ResponseEntity<ApiResponse<String>> bulkDeleteOCRHistory(@RequestBody List<Long> ids) {
+        try {
+            boolean deleted = adminService.bulkDeleteOCRHistory(ids);
+            if (deleted) {
+                return ResponseEntity.ok(ApiResponse.success("OCR history records deleted successfully", "Deleted"));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("No records were deleted"));
+            }
+        } catch (Exception e) {
+            log.error("Error bulk deleting OCR history", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error bulk deleting OCR history: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * Get system settings
      * GET /api/admin/settings
      */
@@ -126,6 +172,67 @@ public class AdminController {
             log.error("Error updating settings", e);
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Error updating settings: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Get analytics data for charts
+     * GET /api/admin/analytics?period=daily&days=30
+     */
+    @GetMapping("/analytics")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAnalytics(
+            @RequestParam(defaultValue = "daily") String period,
+            @RequestParam(defaultValue = "30") int days) {
+        try {
+            Map<String, Object> analytics = adminService.getAnalytics(period, days);
+            return ResponseEntity.ok(ApiResponse.success("Analytics data retrieved successfully", analytics));
+        } catch (Exception e) {
+            log.error("Error retrieving analytics", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error retrieving analytics: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Get character statistics
+     * GET /api/admin/characters/stats
+     */
+    @GetMapping("/characters/stats")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getCharacterStatistics() {
+        try {
+            Map<String, Object> stats = adminService.getCharacterStatistics();
+            return ResponseEntity.ok(ApiResponse.success("Character statistics retrieved successfully", stats));
+        } catch (Exception e) {
+            log.error("Error retrieving character statistics", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error retrieving character statistics: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Export OCR history to CSV
+     * GET /api/admin/ocr-history/export?search=...&minConfidence=...&maxConfidence=...
+     */
+    @GetMapping("/ocr-history/export")
+    public ResponseEntity<String> exportOCRHistoryToCSV(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Double minConfidence,
+            @RequestParam(required = false) Double maxConfidence,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        try {
+            String csv = adminService.exportOCRHistoryToCSV(
+                    search, minConfidence, maxConfidence, startDate, endDate);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            headers.setContentDispositionFormData("attachment", "ocr_history_export.csv");
+            
+            return new ResponseEntity<>(csv, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error exporting OCR history", e);
+            return ResponseEntity.internalServerError()
+                    .body("Error exporting OCR history: " + e.getMessage());
         }
     }
 }
