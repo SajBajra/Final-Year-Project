@@ -688,27 +688,33 @@ def predict():
                                     break
                         
                         # If no Unicode alternative found, try transliteration mapping
+                        # Always map ASCII to Devanagari (even if not in model vocab, since model was trained with English)
                         if not found_unicode:
                             try:
                                 from transliteration_to_ranjana import TRANSLITERATION_TO_RANJANA
                                 if char in TRANSLITERATION_TO_RANJANA:
-                                    ranjana_char = TRANSLITERATION_TO_RANJANA[char]
-                                    # Check if the mapped character exists in our character set
-                                    if ranjana_char in chars:
-                                        char = ranjana_char
-                                        print(f"[INFO] Mapped ASCII '{chars[char_idx]}' to Ranjana '{char}'")
+                                    devanagari_char = TRANSLITERATION_TO_RANJANA[char]
+                                    char = devanagari_char
+                                    found_unicode = True
+                                    print(f"[INFO] Mapped ASCII '{chars[char_idx]}' to Devanagari '{char}' (model trained with English labels)")
+                                else:
+                                    # Try lowercase version
+                                    char_lower = char.lower()
+                                    if char_lower in TRANSLITERATION_TO_RANJANA:
+                                        devanagari_char = TRANSLITERATION_TO_RANJANA[char_lower]
+                                        char = devanagari_char
                                         found_unicode = True
+                                        print(f"[INFO] Mapped ASCII '{chars[char_idx]}' (lowercase) to Devanagari '{char}'")
                                     else:
-                                        print(f"[WARN] Mapped character '{ranjana_char}' not in model vocabulary")
+                                        print(f"[WARN] No mapping found for ASCII character '{char}'")
                             except Exception as e:
                                 print(f"[DEBUG] Could not load transliteration mapping: {e}")
                         
-                        # If still no Unicode found, accept ASCII if confidence is high enough
-                        # TEMPORARY: Accept ASCII to show results while model is retrained
+                        # If still no Unicode found after mapping, accept ASCII but warn
+                        # This should rarely happen now since we have comprehensive mapping
                         if not found_unicode:
-                            if conf >= 0.3:  # Lower threshold to accept more predictions
-                                print(f"[WARN] Accepting ASCII character '{char}' (no Ranjana alternative found, confidence: {conf:.3f})")
-                                print(f"[INFO] To get Ranjana predictions, retrain model with Ranjana labels (see RETRAIN_INSTRUCTIONS.md)")
+                            if conf >= 0.15:  # Lower threshold to accept more predictions
+                                print(f"[WARN] Accepting ASCII character '{char}' (no Devanagari mapping found, confidence: {conf:.3f})")
                             else:
                                 print(f"[WARN] Character {i}: Low confidence ASCII prediction ({conf:.3f}), skipping")
                                 continue
