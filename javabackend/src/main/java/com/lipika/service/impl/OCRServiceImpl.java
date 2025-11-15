@@ -25,7 +25,7 @@ public class OCRServiceImpl implements OCRService {
     private final RestTemplate restTemplate;
     private final AdminService adminService;
     
-    @Value("${ocr.service.url:http://localhost:5000}")
+    @Value("${lipika.ocr.service.url:http://localhost:5000}")
     private String ocrServiceUrl;
     
     @Override

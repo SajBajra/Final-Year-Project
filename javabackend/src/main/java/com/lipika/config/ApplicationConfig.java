@@ -14,7 +14,7 @@ import java.util.Arrays;
 @Configuration
 public class ApplicationConfig {
     
-    @Value("${ocr.service.url:http://localhost:5000}")
+    @Value("${lipika.ocr.service.url:http://localhost:5000}")
     private String ocrServiceUrl;
     
     @Bean
