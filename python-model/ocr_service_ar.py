@@ -374,16 +374,36 @@ def load_model():
     global model, chars
     
     try:
-        model_paths = ["best_character_crnn.pth", "best_character_crnn_improved.pth"]
+        # Load the IMPROVED model first (has Devanagari), fallback to old if not found
+        # IMPORTANT: Load improved model first to get Devanagari characters!
+        model_paths = ["best_character_crnn_improved.pth", "character_crnn_improved_final.pth", "best_character_crnn.pth"]
         checkpoint = None
         model_path = None
         
-        # Try to find and load model file
+        # Try to find and load model file (prefer improved models)
         for path in model_paths:
             if os.path.exists(path):
+                print(f"[INFO] Attempting to load model from: {path}")
                 checkpoint = torch.load(path, map_location=device)
                 model_path = path
-                break
+                
+                # Check if this model has Devanagari characters
+                temp_chars = checkpoint.get('chars', [])
+                ascii_count = len([c for c in temp_chars if c and c.isascii() and (c.isalpha() or c.isdigit())])
+                unicode_count = len([c for c in temp_chars if c and ord(c) > 127])
+                
+                if unicode_count > 0 and ascii_count == 0:
+                    print(f"[OK] Model has Devanagari characters ({unicode_count} Unicode, {ascii_count} ASCII) - using this model")
+                    break
+                elif ascii_count > 0:
+                    print(f"[WARN] Model has ASCII characters ({ascii_count} ASCII, {unicode_count} Unicode) - this is an old model")
+                    print(f"[WARN] Continuing to search for better model...")
+                    # Don't break - continue searching for a better model
+                    checkpoint = None
+                    model_path = None
+                else:
+                    print(f"[INFO] Model has {len(temp_chars)} characters - using this model")
+                    break
         
         if checkpoint is None:
             print("[ERROR] No character model found")
