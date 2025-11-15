@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload } from 'react-icons/fa'
+import { useAuth } from '../context/AuthContext'
+import { getOrCreateTrialCookie } from '../utils/cookieUtils'
 import ImageUpload from '../components/ImageUpload'
 import CameraCapture from '../components/CameraCapture'
 import OCRResult from '../components/OCRResult'
 import AROverlay from '../components/AROverlay'
+import TrialCounter from '../components/TrialCounter'
 import { recognizeText, translateText } from '../services/ocrService'
 
 function Home() {
@@ -17,6 +20,17 @@ function Home() {
   const [translationLoading, setTranslationLoading] = useState(false)
   const [devanagariText, setDevanagariText] = useState('')
   const [englishText, setEnglishText] = useState('')
+  const [trialInfo, setTrialInfo] = useState(null)
+  
+  const { isAuthenticated, getAuthHeaders } = useAuth()
+  const cookieId = getOrCreateTrialCookie()
+  
+  useEffect(() => {
+    // Set cookie if not already set
+    if (!document.cookie.includes('lipika_trial_id')) {
+      getOrCreateTrialCookie()
+    }
+  }, [])
 
   const handleImageUpload = (file) => {
     setImage(file)
@@ -31,6 +45,17 @@ function Home() {
   const handleOCRComplete = async (result) => {
     setOcrResult(result)
     setLoading(false)
+    
+    // Update trial info if present
+    if (result?.trialInfo) {
+      setTrialInfo(result.trialInfo)
+    }
+    
+    // Check if trial limit exceeded
+    if (result?.error && result?.trialInfo?.requiresLogin) {
+      // Don't show OCR result, just show trial limit message
+      return
+    }
     
     // OCR service returns Devanagari text directly from the model
     // Ensure we preserve the Devanagari characters exactly as returned
@@ -148,6 +173,11 @@ function Home() {
           </motion.div>
         </motion.div>
 
+        {/* Trial Counter - Show for unregistered users */}
+        {!isAuthenticated() && (
+          <TrialCounter trialInfo={trialInfo} />
+        )}
+
         {/* Upload Section with Enhanced Cards - Responsive Grid */}
         <motion.div 
           variants={containerVariants}
@@ -160,6 +190,8 @@ function Home() {
               onImageUpload={handleImageUpload}
               onProcessing={handleProcessing}
               onOCRComplete={handleOCRComplete}
+              authHeaders={getAuthHeaders()}
+              cookieId={cookieId}
             />
           </motion.div>
           <motion.div variants={itemVariants}>
@@ -167,6 +199,8 @@ function Home() {
               onImageCapture={handleImageUpload}
               onProcessing={handleProcessing}
               onOCRComplete={handleOCRComplete}
+              authHeaders={getAuthHeaders()}
+              cookieId={cookieId}
             />
           </motion.div>
         </motion.div>
