@@ -43,12 +43,15 @@ const AdminLayout = () => {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden relative">
-        {/* Sidebar - Sticky like navbar, positioned below header */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar - Sticky vertically (sideways), fixed height, scrollable content */}
         <aside
           className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 ${
             sidebarOpen ? 'w-64' : 'w-0'
-          } overflow-hidden flex flex-col sticky top-16 z-40 h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)]`}
+          } overflow-hidden flex flex-col ${
+            // Sticky on desktop (vertically), fixed on mobile
+            'fixed md:sticky md:top-16'
+          } h-[calc(100vh-64px)] z-40`}
         >
           {/* Sidebar Overlay for mobile */}
           {sidebarOpen && (
@@ -58,9 +61,10 @@ const AdminLayout = () => {
             />
           )}
           
-          {/* Sidebar Content */}
+          {/* Sidebar Content - Flex column, full height */}
           <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+            {/* Scrollable Navigation Content */}
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">
               {menuItems.map((item) => {
                 const IconComponent = item.icon
                 return (
@@ -83,10 +87,8 @@ const AdminLayout = () => {
           </div>
         </aside>
 
-        {/* Main Content - Adjust margin for sidebar */}
-        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${
-          sidebarOpen ? 'md:ml-64' : 'md:ml-0'
-        }`}>
+        {/* Main Content - Scrollable */}
+        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'md:ml-0' : 'md:ml-0'}`}>
           <div className="p-4 sm:p-6">
             <Outlet />
           </div>
