@@ -187,66 +187,73 @@ const About = () => {
         </div>
       </section>
 
-      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 max-w-4xl -mt-8 sm:-mt-12 md:-mt-16">
+      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 max-w-7xl -mt-8 sm:-mt-12 md:-mt-16">
 
-        {/* Mission Section - Responsive with Animation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6 }}
-          className="card mb-6 sm:mb-8 md:mb-12 relative overflow-hidden group"
-        >
-          {/* Decorative background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
-          <div className="relative z-10">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
-            >
-              <div className="p-2 sm:p-3 rounded-xl bg-primary-100">
-                <FaLightbulb className="text-2xl sm:text-3xl text-primary-600" />
+        {/* Mission Section - Split into multiple cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            className="card relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative z-10">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 rounded-xl bg-primary-100">
+                  <FaLightbulb className="text-2xl text-primary-600" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-800">What is Lipika?</h2>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Our Mission</h2>
-            </motion.div>
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="space-y-4"
-            >
-              <motion.p variants={itemVariants} className="text-base sm:text-lg text-gray-700 leading-relaxed">
+              <p className="text-base text-gray-700 leading-relaxed">
                 <strong>Lipika</strong> (लिपिका) is an advanced Optical Character Recognition (OCR) system 
                 designed specifically for the Ranjana script, an ancient and beautiful writing system used 
                 in Nepal, Tibet, and other Himalayan regions.
-              </motion.p>
-              <motion.p variants={itemVariants} className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                Our mission is to preserve, digitize, and make accessible historical and modern documents 
-                written in Ranjana script using cutting-edge deep learning technology. The system recognizes 
-                Ranjana characters from images and converts them to Devanagari (Nepali) script output, making 
-                it easier to read, translate, and preserve these valuable texts.
-              </motion.p>
-              <motion.p variants={itemVariants} className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                We combine the power of Convolutional Recurrent Neural Networks (CRNN) with modern web 
-                technologies to create a Google Lens-style experience for Ranjana text recognition with 
-                real-time AR visualization and translation support.
-              </motion.p>
-            </motion.div>
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="card relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative z-10">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 rounded-xl bg-green-100">
+                  <FaRobot className="text-2xl text-green-600" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-800">Our Mission</h2>
+              </div>
+              <p className="text-base text-gray-700 leading-relaxed">
+                To preserve, digitize, and make accessible historical and modern documents 
+                written in Ranjana script using cutting-edge deep learning technology.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Centered Heading Section */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8 sm:mb-12"
+        >
+          <div className="inline-block px-6 py-3 bg-gradient-to-r from-primary-100 via-purple-100 to-pink-100 rounded-full border-2 border-primary-200">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              How We Achieve Our Goals
+            </h2>
           </div>
         </motion.div>
 
-        {/* What We Do - Responsive with Animation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="card mb-6 sm:mb-8 md:mb-12"
-        >
+        {/* What We Do - Split into cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -258,86 +265,71 @@ const About = () => {
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">What We Do</h2>
           </motion.div>
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="space-y-4 sm:space-y-6"
-          >
-            {[
-              {
-                icon: FaSearch,
-                title: 'Ranjana Character Recognition',
-                description: 'Our AI model recognizes individual Ranjana script characters from images with high accuracy, enabling precise text extraction and conversion to Devanagari script for easy reading and processing.',
-                bgColor: 'bg-primary-100',
-                iconColor: 'text-primary-600',
-                delay: 0.1
-              },
-              {
-                icon: FaEye,
-                title: 'AR Overlay Visualization',
-                description: 'Interactive augmented reality overlay shows recognized text with individual character bounding boxes, confidence scores, and hover tooltips - similar to Google Lens - making it easy to understand recognition results.',
-                bgColor: 'bg-green-100',
-                iconColor: 'text-green-600',
-                delay: 0.2
-              },
-              {
-                icon: FaGlobe,
-                title: 'Devanagari Output & Translation',
-                description: 'Automatically converts recognized Ranjana text to Devanagari (Nepali) characters. Optionally translate to English and other languages, helping bridge language barriers and make content accessible to a wider audience.',
-                bgColor: 'bg-orange-100',
-                iconColor: 'text-orange-600',
-                delay: 0.3
-              },
-              {
-                icon: FaMobileAlt,
-                title: 'Modern Web Interface',
-                description: 'Beautiful, fully responsive web application that works seamlessly on desktop, tablet, and mobile devices. Upload images or use your camera for real-time recognition, making OCR accessible to everyone.',
-                bgColor: 'bg-purple-100',
-                iconColor: 'text-purple-600',
-                delay: 0.4
-              }
-            ].map((item, index) => {
-              const ItemIcon = item.icon
-              return (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  initial="rest"
-                  whileHover="hover"
-                  variants={cardHoverVariants}
-                  className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-300 group"
-                >
+          {[
+            {
+              icon: FaSearch,
+              title: 'Ranjana Character Recognition',
+              description: 'Our AI model recognizes individual Ranjana script characters from images with high accuracy, enabling precise text extraction and conversion to Devanagari script.',
+              bgColor: 'bg-primary-100',
+              iconColor: 'text-primary-600',
+              delay: 0.1
+            },
+            {
+              icon: FaEye,
+              title: 'AR Overlay Visualization',
+              description: 'Interactive augmented reality overlay shows recognized text with individual character bounding boxes, confidence scores, and hover tooltips - similar to Google Lens.',
+              bgColor: 'bg-green-100',
+              iconColor: 'text-green-600',
+              delay: 0.2
+            },
+            {
+              icon: FaGlobe,
+              title: 'Devanagari Output & Translation',
+              description: 'Automatically converts recognized Ranjana text to Devanagari (Nepali) characters. Optionally translate to English and other languages.',
+              bgColor: 'bg-orange-100',
+              iconColor: 'text-orange-600',
+              delay: 0.3
+            },
+            {
+              icon: FaMobileAlt,
+              title: 'Modern Web Interface',
+              description: 'Beautiful, fully responsive web application that works seamlessly on desktop, tablet, and mobile devices. Upload images or use your camera for real-time recognition.',
+              bgColor: 'bg-purple-100',
+              iconColor: 'text-purple-600',
+              delay: 0.4
+            }
+          ].map((item, index) => {
+            const ItemIcon = item.icon
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: item.delay }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                className="card group"
+              >
+                <div className="flex items-start space-x-4">
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    className={`p-2 sm:p-3 rounded-xl ${item.bgColor} flex-shrink-0 group-hover:shadow-lg transition-shadow duration-300`}
+                    className={`p-3 rounded-xl ${item.bgColor} flex-shrink-0 group-hover:shadow-lg transition-shadow duration-300`}
                   >
-                    <ItemIcon className={`text-xl sm:text-2xl ${item.iconColor}`} />
+                    <ItemIcon className={`text-2xl ${item.iconColor}`} />
                   </motion.div>
                   <div className="flex-1">
-                    <motion.h3
-                      whileHover={{ x: 5 }}
-                      className="font-bold text-lg sm:text-xl mb-2 text-gray-800 group-hover:text-primary-600 transition-colors duration-300"
-                    >
+                    <h3 className="font-bold text-lg mb-2 text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
                       {item.title}
-                    </motion.h3>
-                    <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    </h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    whileHover={{ opacity: 1, x: 0 }}
-                    className="text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0"
-                  >
-                    <FaArrowRight />
-                  </motion.div>
-                </motion.div>
-              )
-            })}
-          </motion.div>
-        </motion.div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
 
         {/* Technology - Responsive with Animation */}
         <motion.div
@@ -510,60 +502,142 @@ const About = () => {
           </motion.div>
         </motion.div>
 
-        {/* Key Features - Responsive with Animation */}
+        {/* Key Features - Enhanced Layout with Icons */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="card mb-6 sm:mb-8 md:mb-12"
+          className="mb-8 sm:mb-12"
         >
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
+            className="text-center mb-6 sm:mb-8"
           >
-            <div className="p-2 sm:p-3 rounded-xl bg-green-100">
-              <FaCheckCircle className="text-2xl sm:text-3xl text-green-600" />
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100">
+                <FaCheckCircle className="text-3xl text-green-600" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                Key Features
+              </h2>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Key Features</h2>
+            <p className="text-gray-600 text-center max-w-2xl mx-auto">
+              Discover the powerful capabilities that make Lipika the premier OCR solution for Ranjana script
+            </p>
           </motion.div>
+
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
           >
             {[
-              'Character-level recognition with individual bounding boxes',
-              'Ranjana script input to Devanagari output conversion',
-              'Confidence scoring for each recognized character',
-              'Word grouping based on character spacing',
-              'AR overlay visualization similar to Google Lens',
-              'Optional English translation support',
-              'Camera capture and image upload support',
-              'Admin dashboard with analytics and OCR history'
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02, x: 5 }}
-                className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-300 group"
-              >
-                <motion.span
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Infinity, duration: 2, delay: index * 0.2 }}
-                  className="text-green-600 text-lg sm:text-xl font-bold flex-shrink-0"
+              {
+                icon: FaSearch,
+                title: 'Character Recognition',
+                description: 'Individual bounding boxes with precise character-level recognition',
+                color: 'from-blue-500 to-cyan-500',
+                bgColor: 'bg-blue-50',
+                iconColor: 'text-blue-600'
+              },
+              {
+                icon: FaGlobe,
+                title: 'Script Conversion',
+                description: 'Ranjana to Devanagari output conversion seamlessly',
+                color: 'from-purple-500 to-pink-500',
+                bgColor: 'bg-purple-50',
+                iconColor: 'text-purple-600'
+              },
+              {
+                icon: FaChartLine,
+                title: 'Confidence Scoring',
+                description: 'Real-time confidence scores for each recognized character',
+                color: 'from-green-500 to-emerald-500',
+                bgColor: 'bg-green-50',
+                iconColor: 'text-green-600'
+              },
+              {
+                icon: FaEye,
+                title: 'AR Visualization',
+                description: 'Google Lens-style AR overlay with interactive bounding boxes',
+                color: 'from-orange-500 to-red-500',
+                bgColor: 'bg-orange-50',
+                iconColor: 'text-orange-600'
+              },
+              {
+                icon: FaMobileAlt,
+                title: 'Multi-Input Support',
+                description: 'Camera capture and image upload for flexible usage',
+                color: 'from-indigo-500 to-purple-500',
+                bgColor: 'bg-indigo-50',
+                iconColor: 'text-indigo-600'
+              },
+              {
+                icon: FaGlobe,
+                title: 'Translation Support',
+                description: 'Optional English translation to bridge language barriers',
+                color: 'from-teal-500 to-cyan-500',
+                bgColor: 'bg-teal-50',
+                iconColor: 'text-teal-600'
+              },
+              {
+                icon: FaDatabase,
+                title: 'Word Grouping',
+                description: 'Intelligent word grouping based on character spacing',
+                color: 'from-pink-500 to-rose-500',
+                bgColor: 'bg-pink-50',
+                iconColor: 'text-pink-600'
+              },
+              {
+                icon: FaChartBar,
+                title: 'Admin Dashboard',
+                description: 'Comprehensive analytics and OCR history management',
+                color: 'from-yellow-500 to-orange-500',
+                bgColor: 'bg-yellow-50',
+                iconColor: 'text-yellow-600'
+              }
+            ].map((feature, index) => {
+              const FeatureIcon = feature.icon
+              return (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.05, y: -8 }}
+                  className="card group relative overflow-hidden cursor-pointer"
                 >
-                  ✓
-                </motion.span>
-                <span className="text-sm sm:text-base text-gray-700 group-hover:text-gray-900 transition-colors duration-300">
-                  {feature}
-                </span>
-              </motion.div>
-            ))}
+                  {/* Gradient border effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                  
+                  <div className="relative z-10">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className={`w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:shadow-lg transition-shadow duration-300`}
+                    >
+                      <FeatureIcon className={`text-2xl ${feature.iconColor}`} />
+                    </motion.div>
+                    <h3 className="font-bold text-lg mb-2 text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {feature.description}
+                    </p>
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      whileHover={{ opacity: 1, x: 0 }}
+                      className="mt-4 flex items-center text-primary-600 font-semibold text-sm"
+                    >
+                      <span>Learn more</span>
+                      <FaArrowRight className="ml-2" />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )
+            })}
           </motion.div>
         </motion.div>
 
