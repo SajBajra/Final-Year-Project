@@ -153,3 +153,4 @@ After updating the configuration:
 3. Try connecting with MySQL Workbench or phpMyAdmin to verify credentials
 4. Check if Windows Firewall is blocking localhost connections
 
+
