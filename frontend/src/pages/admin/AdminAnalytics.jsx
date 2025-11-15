@@ -243,7 +243,7 @@ const AdminAnalytics = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Confidence Distribution</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+            <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
             <div className="space-y-4">
               <div className="h-6 bg-gray-200 animate-pulse-fast rounded transition-fast"></div>
               {[1, 2, 3, 4, 5].map((i) => (
