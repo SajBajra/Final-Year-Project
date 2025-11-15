@@ -19,7 +19,13 @@ TRANSLITERATION_TO_RANJANA = {
     'o': 'ओ',
     'au': 'औ',
     'am': 'अं',
+    'ah': 'अः',
     'aha': 'अः',
+    'ri': 'ऋ',
+    'rii': 'ॠ',
+    'saa': 'सा',
+    'luu': 'लू',
+    'nnna': 'ऩ',
     
     # Consonants
     'ka': 'क',
