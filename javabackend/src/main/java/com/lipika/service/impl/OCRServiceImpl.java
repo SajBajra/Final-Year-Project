@@ -36,21 +36,24 @@ public class OCRServiceImpl implements OCRService {
             
             // Prepare multipart request
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            // Don't set Content-Type manually - RestTemplate will set it correctly for multipart
             
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             try {
-                body.add("image", new ByteArrayResource(image.getBytes()) {
+                // Create ByteArrayResource with proper filename
+                ByteArrayResource imageResource = new ByteArrayResource(image.getBytes()) {
                     @Override
                     public String getFilename() {
-                        return image.getOriginalFilename();
+                        return image.getOriginalFilename() != null ? image.getOriginalFilename() : "image.png";
                     }
-                });
+                };
+                body.add("image", imageResource);
             } catch (Exception e) {
                 log.error("Error reading image file", e);
                 return createErrorResponse("Error reading image file: " + e.getMessage());
             }
             
+            // Create HttpEntity - RestTemplate will automatically set multipart/form-data Content-Type
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
             // Call Python OCR service

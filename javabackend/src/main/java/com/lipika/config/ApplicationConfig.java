@@ -21,16 +21,29 @@ public class ApplicationConfig {
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         
-        // Configure UTF-8 encoding for all message converters
-        // This ensures Devanagari and other Unicode characters are properly handled
-        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
-        jsonConverter.setDefaultCharset(StandardCharsets.UTF_8);
+        // Get default message converters and configure UTF-8
+        List<org.springframework.http.converter.HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
         
-        // Replace existing converters with UTF-8 configured ones
-        restTemplate.setMessageConverters(Arrays.asList(
-            new StringHttpMessageConverter(StandardCharsets.UTF_8),
-            jsonConverter
-        ));
+        // Configure UTF-8 encoding for String converter
+        for (org.springframework.http.converter.HttpMessageConverter<?> converter : converters) {
+            if (converter instanceof StringHttpMessageConverter) {
+                ((StringHttpMessageConverter) converter).setDefaultCharset(StandardCharsets.UTF_8);
+            }
+            if (converter instanceof MappingJackson2HttpMessageConverter) {
+                ((MappingJackson2HttpMessageConverter) converter).setDefaultCharset(StandardCharsets.UTF_8);
+            }
+        }
+        
+        // Ensure FormHttpMessageConverter is present for multipart/form-data
+        // This is usually included by default, but we ensure it's there
+        boolean hasFormConverter = converters.stream()
+            .anyMatch(c -> c instanceof FormHttpMessageConverter || c instanceof AllEncompassingFormHttpMessageConverter);
+        
+        if (!hasFormConverter) {
+            converters.add(new AllEncompassingFormHttpMessageConverter());
+        }
+        
+        restTemplate.setMessageConverters(converters);
         
         return restTemplate;
     }
