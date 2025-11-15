@@ -31,7 +31,10 @@ const Login = () => {
     const result = await login(formData.usernameOrEmail, formData.password);
 
     if (result.success) {
-      navigate('/');
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        navigate('/');
+      }, 100);
     } else {
       setError(result.error || 'Login failed');
     }
