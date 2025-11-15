@@ -192,7 +192,7 @@ Unknown database 'lipika'
 ### Character Encoding Issues
 
 The database uses `utf8mb4` encoding to support Devanagari and other Unicode characters. If you see encoding issues:
-1. Verify database charset: `SHOW CREATE DATABASE lipika_db;`
+1. Verify database charset: `SHOW CREATE DATABASE lipika;`
 2. Verify table charset: `SHOW CREATE TABLE ocr_history;`
 
 ## Production Recommendations
