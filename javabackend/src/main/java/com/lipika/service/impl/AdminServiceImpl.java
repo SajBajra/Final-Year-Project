@@ -1,31 +1,36 @@
 package com.lipika.service.impl;
 
 import com.lipika.model.OCRHistory;
+import com.lipika.repository.OCRHistoryRepository;
 import com.lipika.service.AdminService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
     
-    // In-memory storage for OCR history (replace with database in production)
-    private final Map<Long, OCRHistory> ocrHistoryStore = new ConcurrentHashMap<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private final OCRHistoryRepository ocrHistoryRepository;
     
-    // System settings
+    // System settings (still in-memory - can be moved to DB later)
     private final Map<String, Object> settings = new ConcurrentHashMap<>();
     
-    // Admin password (in production, use proper password hashing)
+    // Admin password (in production, use proper password hashing and database)
     private String adminPassword = "admin"; // Default password
     
-    public AdminServiceImpl() {
+    {
         // Initialize default settings
         settings.put("ocrServiceUrl", "http://localhost:5000");
         settings.put("translationApiEnabled", true);
@@ -38,10 +43,10 @@ public class AdminServiceImpl implements AdminService {
      * Save OCR history (called by OCR service)
      */
     @Override
+    @Transactional
     public void saveOCRHistory(String imageFilename, String recognizedText, 
                                Integer characterCount, Double confidence) {
         OCRHistory history = new OCRHistory();
-        history.setId(idGenerator.getAndIncrement());
         history.setImageFilename(imageFilename);
         history.setRecognizedText(recognizedText);
         history.setCharacterCount(characterCount);
@@ -49,29 +54,25 @@ public class AdminServiceImpl implements AdminService {
         history.setTimestamp(LocalDateTime.now());
         history.setLanguage("devanagari");
         
-        ocrHistoryStore.put(history.getId(), history);
-        log.info("Saved OCR history: ID={}, Text={}", history.getId(), recognizedText);
+        OCRHistory saved = ocrHistoryRepository.save(history);
+        log.info("Saved OCR history to database: ID={}, Text={}", saved.getId(), recognizedText);
     }
     
     @Override
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
         
-        int totalRecords = ocrHistoryStore.size();
-        double avgConfidence = ocrHistoryStore.values().stream()
-                .mapToDouble(h -> h.getConfidence() != null ? h.getConfidence() : 0.0)
-                .average()
-                .orElse(0.0);
+        long totalRecords = ocrHistoryRepository.count();
         
-        int totalCharacters = ocrHistoryStore.values().stream()
-                .mapToInt(h -> h.getCharacterCount() != null ? h.getCharacterCount() : 0)
-                .sum();
+        Double avgConfidenceObj = ocrHistoryRepository.findAverageConfidence();
+        double avgConfidence = avgConfidenceObj != null ? avgConfidenceObj : 0.0;
+        
+        Long totalCharsObj = ocrHistoryRepository.findTotalCharacterCount();
+        int totalCharacters = totalCharsObj != null ? totalCharsObj.intValue() : 0;
         
         // Recent activity (last 24 hours)
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
-        long recentActivity = ocrHistoryStore.values().stream()
-                .filter(h -> h.getTimestamp().isAfter(yesterday))
-                .count();
+        long recentActivity = ocrHistoryRepository.findByTimestampAfter(yesterday).size();
         
         stats.put("totalRecords", totalRecords);
         stats.put("avgConfidence", Math.round(avgConfidence * 100.0) / 100.0);
@@ -84,38 +85,29 @@ public class AdminServiceImpl implements AdminService {
     
     @Override
     public Map<String, Object> getOCRHistory(int page, int size) {
-        List<OCRHistory> allHistory = new ArrayList<>(ocrHistoryStore.values());
-        
-        // Sort by timestamp descending (newest first)
-        allHistory.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-        
-        // Pagination
-        int start = page * size;
-        int end = Math.min(start + size, allHistory.size());
-        
-        List<OCRHistory> pageData = start < allHistory.size() 
-                ? allHistory.subList(start, end) 
-                : new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
+        Page<OCRHistory> historyPage = ocrHistoryRepository.findAll(pageable);
         
         Map<String, Object> result = new HashMap<>();
-        result.put("data", pageData);
+        result.put("data", historyPage.getContent());
         result.put("page", page);
         result.put("size", size);
-        result.put("total", allHistory.size());
-        result.put("totalPages", (int) Math.ceil((double) allHistory.size() / size));
+        result.put("total", historyPage.getTotalElements());
+        result.put("totalPages", historyPage.getTotalPages());
         
         return result;
     }
     
     @Override
     public OCRHistory getOCRHistoryById(Long id) {
-        return ocrHistoryStore.get(id);
+        return ocrHistoryRepository.findById(id).orElse(null);
     }
     
     @Override
+    @Transactional
     public boolean deleteOCRHistory(Long id) {
-        OCRHistory removed = ocrHistoryStore.remove(id);
-        if (removed != null) {
+        if (ocrHistoryRepository.existsById(id)) {
+            ocrHistoryRepository.deleteById(id);
             log.info("Deleted OCR history: ID={}", id);
             return true;
         }
@@ -123,10 +115,12 @@ public class AdminServiceImpl implements AdminService {
     }
     
     @Override
+    @Transactional
     public boolean bulkDeleteOCRHistory(List<Long> ids) {
         int deleted = 0;
         for (Long id : ids) {
-            if (ocrHistoryStore.remove(id) != null) {
+            if (ocrHistoryRepository.existsById(id)) {
+                ocrHistoryRepository.deleteById(id);
                 deleted++;
             }
         }
@@ -139,86 +133,62 @@ public class AdminServiceImpl implements AdminService {
                                                       Double minConfidence, Double maxConfidence,
                                                       LocalDateTime startDate, LocalDateTime endDate,
                                                       String sortBy, String sortOrder) {
-        List<OCRHistory> filtered = new ArrayList<>(ocrHistoryStore.values());
+        // Build sort
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) 
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
         
-        // Apply filters
-        if (search != null && !search.trim().isEmpty()) {
-            String searchLower = search.toLowerCase();
-            filtered = filtered.stream()
-                    .filter(h -> h.getRecognizedText() != null && 
-                            h.getRecognizedText().toLowerCase().contains(searchLower))
-                    .collect(Collectors.toList());
+        String sortField = sortBy != null ? sortBy : "timestamp";
+        // Map sort field names
+        if ("charactercount".equalsIgnoreCase(sortField)) {
+            sortField = "characterCount";
         }
         
-        if (minConfidence != null) {
-            filtered = filtered.stream()
-                    .filter(h -> h.getConfidence() != null && h.getConfidence() >= minConfidence)
-                    .collect(Collectors.toList());
-        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
         
-        if (maxConfidence != null) {
-            filtered = filtered.stream()
-                    .filter(h -> h.getConfidence() != null && h.getConfidence() <= maxConfidence)
-                    .collect(Collectors.toList());
-        }
+        Page<OCRHistory> historyPage;
         
-        if (startDate != null) {
-            filtered = filtered.stream()
-                    .filter(h -> h.getTimestamp().isAfter(startDate) || h.getTimestamp().isEqual(startDate))
-                    .collect(Collectors.toList());
-        }
-        
-        if (endDate != null) {
-            filtered = filtered.stream()
-                    .filter(h -> h.getTimestamp().isBefore(endDate) || h.getTimestamp().isEqual(endDate))
-                    .collect(Collectors.toList());
-        }
-        
-        // Apply sorting
-        if (sortBy != null && !sortBy.isEmpty()) {
-            boolean ascending = sortOrder == null || "asc".equalsIgnoreCase(sortOrder);
-            switch (sortBy.toLowerCase()) {
-                case "timestamp":
-                    filtered.sort((a, b) -> ascending 
-                            ? a.getTimestamp().compareTo(b.getTimestamp())
-                            : b.getTimestamp().compareTo(a.getTimestamp()));
-                    break;
-                case "confidence":
-                    filtered.sort((a, b) -> {
-                        double aConf = a.getConfidence() != null ? a.getConfidence() : 0.0;
-                        double bConf = b.getConfidence() != null ? b.getConfidence() : 0.0;
-                        return ascending ? Double.compare(aConf, bConf) : Double.compare(bConf, aConf);
-                    });
-                    break;
-                case "charactercount":
-                    filtered.sort((a, b) -> {
-                        int aCount = a.getCharacterCount() != null ? a.getCharacterCount() : 0;
-                        int bCount = b.getCharacterCount() != null ? b.getCharacterCount() : 0;
-                        return ascending ? Integer.compare(aCount, bCount) : Integer.compare(bCount, aCount);
-                    });
-                    break;
-                default:
-                    // Default sort by timestamp descending
-                    filtered.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-            }
+        // Build query based on provided filters
+        if (search != null && !search.trim().isEmpty() && 
+            minConfidence != null && maxConfidence != null &&
+            startDate != null && endDate != null) {
+            // All filters
+            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCaseAndConfidenceBetweenAndTimestampBetween(
+                    search, minConfidence, maxConfidence, startDate, endDate, pageable);
+        } else if (search != null && !search.trim().isEmpty() && 
+                   minConfidence != null && maxConfidence != null) {
+            // Text + confidence
+            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCaseAndConfidenceBetween(
+                    search, minConfidence, maxConfidence, pageable);
+        } else if (search != null && !search.trim().isEmpty() && 
+                   startDate != null && endDate != null) {
+            // Text + date
+            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCaseAndTimestampBetween(
+                    search, startDate, endDate, pageable);
+        } else if (minConfidence != null && maxConfidence != null && 
+                   startDate != null && endDate != null) {
+            // Confidence + date
+            historyPage = ocrHistoryRepository.findByConfidenceBetweenAndTimestampBetween(
+                    minConfidence, maxConfidence, startDate, endDate, pageable);
+        } else if (search != null && !search.trim().isEmpty()) {
+            // Text only
+            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCase(search, pageable);
+        } else if (minConfidence != null && maxConfidence != null) {
+            // Confidence only
+            historyPage = ocrHistoryRepository.findByConfidenceBetween(minConfidence, maxConfidence, pageable);
+        } else if (startDate != null && endDate != null) {
+            // Date only
+            historyPage = ocrHistoryRepository.findByTimestampBetween(startDate, endDate, pageable);
         } else {
-            // Default sort by timestamp descending
-            filtered.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
+            // No filters
+            historyPage = ocrHistoryRepository.findAll(pageable);
         }
-        
-        // Pagination
-        int start = page * size;
-        int end = Math.min(start + size, filtered.size());
-        List<OCRHistory> pageData = start < filtered.size() 
-                ? filtered.subList(start, end) 
-                : new ArrayList<>();
         
         Map<String, Object> result = new HashMap<>();
-        result.put("data", pageData);
+        result.put("data", historyPage.getContent());
         result.put("page", page);
         result.put("size", size);
-        result.put("total", filtered.size());
-        result.put("totalPages", (int) Math.ceil((double) filtered.size() / size));
+        result.put("total", historyPage.getTotalElements());
+        result.put("totalPages", historyPage.getTotalPages());
         
         return result;
     }
@@ -230,9 +200,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime startDate = now.minusDays(days);
         
         // Filter records within date range
-        List<OCRHistory> recentHistory = ocrHistoryStore.values().stream()
-                .filter(h -> h.getTimestamp().isAfter(startDate) || h.getTimestamp().isEqual(startDate))
-                .collect(Collectors.toList());
+        List<OCRHistory> recentHistory = ocrHistoryRepository.findByTimestampBetween(startDate, now);
         
         // Time series data (daily, weekly, monthly)
         Map<String, Integer> timeSeries = new LinkedHashMap<>();
@@ -331,11 +299,14 @@ public class AdminServiceImpl implements AdminService {
     public Map<String, Object> getCharacterStatistics() {
         Map<String, Object> stats = new HashMap<>();
         
+        // Get all OCR history records
+        List<OCRHistory> allHistory = ocrHistoryRepository.findAll();
+        
         // Character frequency analysis
         Map<String, Long> characterFrequency = new HashMap<>();
         Map<String, List<Double>> characterConfidences = new HashMap<>();
         
-        for (OCRHistory history : ocrHistoryStore.values()) {
+        for (OCRHistory history : allHistory) {
             if (history.getRecognizedText() != null) {
                 String text = history.getRecognizedText();
                 Double confidence = history.getConfidence();
@@ -464,4 +435,3 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 }
-
