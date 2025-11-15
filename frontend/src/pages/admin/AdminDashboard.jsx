@@ -4,7 +4,7 @@ import { getDashboardStats } from '../../services/adminService'
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     loadStats()
@@ -22,14 +22,6 @@ const AdminDashboard = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent"></div>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
@@ -40,9 +32,13 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Records</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">
-                {stats?.totalRecords || 0}
-              </p>
+              {loading ? (
+                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {stats?.totalRecords ?? 0}
+                </p>
+              )}
             </div>
             <FaChartBar className="text-4xl text-primary-600" />
           </div>
@@ -52,9 +48,13 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Avg Confidence</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">
-                {stats?.avgConfidence ? `${stats.avgConfidence.toFixed(1)}%` : '0%'}
-              </p>
+              {loading ? (
+                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {stats?.avgConfidence ? `${stats.avgConfidence.toFixed(1)}%` : '0%'}
+                </p>
+              )}
             </div>
             <FaBullseye className="text-4xl text-primary-600" />
           </div>
@@ -64,9 +64,13 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Characters</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">
-                {stats?.totalCharacters || 0}
-              </p>
+              {loading ? (
+                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {stats?.totalCharacters ?? 0}
+                </p>
+              )}
             </div>
             <FaFont className="text-4xl text-primary-600" />
           </div>
@@ -76,9 +80,13 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Recent Activity (24h)</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">
-                {stats?.recentActivity || 0}
-              </p>
+              {loading ? (
+                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {stats?.recentActivity ?? 0}
+                </p>
+              )}
             </div>
             <FaChartLine className="text-4xl text-primary-600" />
           </div>

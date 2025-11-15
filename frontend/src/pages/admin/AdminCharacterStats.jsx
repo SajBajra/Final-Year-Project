@@ -27,23 +27,7 @@ const AdminCharacterStats = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent"></div>
-      </div>
-    )
-  }
-
-  if (!stats) {
-    return (
-      <div className="text-center text-gray-500 py-8">
-        No character statistics available
-      </div>
-    )
-  }
-
-  const topCharacters = stats.topCharacters || []
+  const topCharacters = stats?.topCharacters || []
   const chartData = topCharacters.map((char, index) => ({
     character: char.character === ' ' ? 'Space' : char.character,
     frequency: char.frequency,
@@ -66,9 +50,13 @@ const AdminCharacterStats = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Unique Characters</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">
-                {stats.totalUniqueCharacters || 0}
-              </p>
+              {loading ? (
+                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {stats?.totalUniqueCharacters ?? 0}
+                </p>
+              )}
             </div>
             <FaFont className="text-4xl text-primary-600" />
           </div>
@@ -78,10 +66,16 @@ const AdminCharacterStats = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Top Characters Analyzed</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">
-                {topCharacters.length}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">Displaying top 20</p>
+              {loading ? (
+                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <>
+                  <p className="text-3xl font-bold text-gray-800 mt-2">
+                    {topCharacters.length}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Displaying top 20</p>
+                </>
+              )}
             </div>
             <FaChartBar className="text-4xl text-primary-600" />
           </div>
@@ -91,16 +85,20 @@ const AdminCharacterStats = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 font-semibold">Most Frequent Character</p>
-              <p className="text-2xl font-bold text-gray-800 mt-2">
-                {topCharacters.length > 0 ? (
-                  <>
-                    {topCharacters[0].character === ' ' ? 'Space' : topCharacters[0].character}
-                    <span className="text-sm text-gray-500 ml-2">
-                      ({topCharacters[0].frequency} times)
-                    </span>
-                  </>
-                ) : 'N/A'}
-              </p>
+              {loading ? (
+                <div className="h-10 w-32 bg-gray-200 animate-pulse rounded mt-2"></div>
+              ) : (
+                <p className="text-2xl font-bold text-gray-800 mt-2">
+                  {topCharacters.length > 0 ? (
+                    <>
+                      {topCharacters[0].character === ' ' ? 'Space' : topCharacters[0].character}
+                      <span className="text-sm text-gray-500 ml-2">
+                        ({topCharacters[0].frequency} times)
+                      </span>
+                    </>
+                  ) : 'N/A'}
+                </p>
+              )}
             </div>
             <FaPercent className="text-4xl text-primary-600" />
           </div>
@@ -108,7 +106,12 @@ const AdminCharacterStats = () => {
       </div>
 
       {/* Top Characters Chart */}
-      {chartData.length > 0 && (
+      {loading ? (
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Top 20 Most Recognized Characters</h3>
+          <div className="h-[400px] bg-gray-100 animate-pulse rounded"></div>
+        </div>
+      ) : chartData.length > 0 && (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Top 20 Most Recognized Characters</h3>
           <ResponsiveContainer width="100%" height={400}>
@@ -148,7 +151,18 @@ const AdminCharacterStats = () => {
       )}
 
       {/* Top Characters Table */}
-      {topCharacters.length > 0 && (
+      {loading ? (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <h3 className="text-xl font-bold text-gray-800 p-6 border-b border-gray-200">
+            Character Details
+          </h3>
+          <div className="p-6 space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-12 bg-gray-100 animate-pulse rounded"></div>
+            ))}
+          </div>
+        </div>
+      ) : topCharacters.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <h3 className="text-xl font-bold text-gray-800 p-6 border-b border-gray-200">
             Character Details
@@ -218,9 +232,7 @@ const AdminCharacterStats = () => {
             </table>
           </div>
         </div>
-      )}
-
-      {topCharacters.length === 0 && (
+      ) : (
         <div className="bg-white rounded-lg p-12 shadow-sm border border-gray-200 text-center">
           <FaInfoCircle className="text-5xl text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">No character statistics available yet</p>
