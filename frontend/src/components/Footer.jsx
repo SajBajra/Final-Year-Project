@@ -120,22 +120,10 @@ const Footer = () => {
           viewport={{ once: true }}
           className="border-t border-white/10 pt-6 mt-8"
         >
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-400 text-center md:text-left">
-              © 2024 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">Lipika Project</span>. 
-              Built for Ranjana script preservation and digitization.
+          <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0">
+            <p className="text-sm text-gray-400 text-center">
+              Made By <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">Sajesh Bajracharya</span>
             </p>
-            <div className="flex items-center space-x-2 text-xs text-gray-400">
-              <span>Made with</span>
-              <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1 }}
-                className="text-red-500"
-              >
-                <FaHeart />
-              </motion.span>
-              <span>and AI</span>
-            </div>
           </div>
         </motion.div>
       </div>
