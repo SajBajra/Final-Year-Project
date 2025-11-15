@@ -71,11 +71,6 @@ const AdminLayout = () => {
           
           {/* Sidebar Content - Fixed container, scrollable navigation */}
           <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden transition-all duration-300`}>
-            {/* Sidebar Header */}
-            <div className={`flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 overflow-hidden transition-all duration-300 ${sidebarOpen ? 'w-full' : 'w-0'}`}>
-              <h2 className="text-lg font-bold text-gray-800 whitespace-nowrap">Navigation</h2>
-            </div>
-
             {/* Navigation - Scrollable if content is long */}
             <nav className={`flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar ${sidebarOpen ? 'w-full' : 'w-0'} overflow-hidden`}>
               {menuItems.map((item) => {
