@@ -161,11 +161,11 @@ const Features = () => {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
-              className="inline-block mb-6"
+              className="flex justify-center items-center mb-6"
             >
-              <div className="relative">
+              <div className="relative flex items-center justify-center">
                 <div className="absolute inset-0 bg-white/20 rounded-full blur-xl"></div>
-                <FaRobot className="relative text-6xl sm:text-7xl md:text-8xl text-white drop-shadow-2xl" />
+                <FaRobot className="relative text-6xl sm:text-7xl md:text-8xl text-white drop-shadow-2xl mx-auto" />
               </div>
             </motion.div>
 
