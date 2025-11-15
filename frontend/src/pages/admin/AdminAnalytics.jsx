@@ -92,7 +92,7 @@ const AdminAnalytics = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Records</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {analytics?.totalRecords ?? 0}
@@ -108,7 +108,7 @@ const AdminAnalytics = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Period</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <>
                   <p className="text-2xl font-bold text-gray-800 mt-2 capitalize">
@@ -129,7 +129,7 @@ const AdminAnalytics = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Data Points</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {chartData.length}
@@ -145,7 +145,7 @@ const AdminAnalytics = () => {
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-4">OCR Requests Over Time</h3>
         {loading ? (
-          <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+          <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
@@ -177,7 +177,7 @@ const AdminAnalytics = () => {
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Average Confidence Over Time</h3>
         {loading ? (
-          <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+          <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
@@ -212,7 +212,7 @@ const AdminAnalytics = () => {
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Characters Recognized Over Time</h3>
         {loading ? (
-          <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+          <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
@@ -245,9 +245,9 @@ const AdminAnalytics = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
             <div className="space-y-4">
-              <div className="h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-6 bg-gray-200 animate-pulse-fast rounded transition-fast"></div>
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-12 bg-gray-100 animate-pulse rounded"></div>
+                <div key={i} className="h-12 bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
               ))}
             </div>
           </div>

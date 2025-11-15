@@ -33,7 +33,7 @@ const AdminDashboard = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Records</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {stats?.totalRecords ?? 0}
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Avg Confidence</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {stats?.avgConfidence ? `${stats.avgConfidence.toFixed(1)}%` : '0%'}
@@ -65,7 +65,7 @@ const AdminDashboard = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Characters</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {stats?.totalCharacters ?? 0}
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Recent Activity (24h)</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {stats?.recentActivity ?? 0}

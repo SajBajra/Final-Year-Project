@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fast loading animations */
+@layer utilities {
+  .animate-pulse-fast {
+    animation: pulse 0.3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .transition-fast {
+    transition-duration: 0.3s;
+  }
+}
+
 :root {
   --primary-color: #2563eb;      /* Blue - Primary */
   --secondary-color: #64748b;    /* Slate - Secondary */

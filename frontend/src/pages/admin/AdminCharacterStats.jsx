@@ -51,7 +51,7 @@ const AdminCharacterStats = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Total Unique Characters</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-800 mt-2">
                   {stats?.totalUniqueCharacters ?? 0}
@@ -67,7 +67,7 @@ const AdminCharacterStats = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Top Characters Analyzed</p>
               {loading ? (
-                <div className="h-10 w-20 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <>
                   <p className="text-3xl font-bold text-gray-800 mt-2">
@@ -86,7 +86,7 @@ const AdminCharacterStats = () => {
             <div>
               <p className="text-sm text-gray-500 font-semibold">Most Frequent Character</p>
               {loading ? (
-                <div className="h-10 w-32 bg-gray-200 animate-pulse rounded mt-2"></div>
+                <div className="h-10 w-32 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-2xl font-bold text-gray-800 mt-2">
                   {topCharacters.length > 0 ? (
@@ -109,7 +109,7 @@ const AdminCharacterStats = () => {
       {loading ? (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Top 20 Most Recognized Characters</h3>
-          <div className="h-[400px] bg-gray-100 animate-pulse rounded"></div>
+          <div className="h-[400px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
         </div>
       ) : chartData.length > 0 && (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
@@ -158,7 +158,7 @@ const AdminCharacterStats = () => {
           </h3>
           <div className="p-6 space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-12 bg-gray-100 animate-pulse rounded"></div>
+              <div key={i} className="h-12 bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
             ))}
           </div>
         </div>
