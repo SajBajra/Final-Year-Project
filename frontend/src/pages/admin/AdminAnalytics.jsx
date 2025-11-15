@@ -1,0 +1,278 @@
+import { useState, useEffect } from 'react'
+import { FaChartLine, FaChartBar, FaChartPie, FaDownload } from 'react-icons/fa'
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { getAnalytics } from '../../services/adminService'
+
+const AdminAnalytics = () => {
+  const [analytics, setAnalytics] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [period, setPeriod] = useState('daily')
+  const [days, setDays] = useState(30)
+
+  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+
+  useEffect(() => {
+    loadAnalytics()
+  }, [period, days])
+
+  const loadAnalytics = async () => {
+    try {
+      setLoading(true)
+      const response = await getAnalytics(period, days)
+      if (response.success) {
+        setAnalytics(response.data)
+      }
+    } catch (error) {
+      console.error('Error loading analytics:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const formatTimeSeriesData = () => {
+    if (!analytics || !analytics.timeSeries) return []
+    
+    const timeSeries = analytics.timeSeries
+    const confidenceSeries = analytics.confidenceSeries || {}
+    const characterSeries = analytics.characterSeries || {}
+    
+    return Object.keys(timeSeries).map(key => ({
+      date: key,
+      requests: timeSeries[key] || 0,
+      avgConfidence: ((confidenceSeries[key] || 0) * 100).toFixed(1),
+      characters: characterSeries[key] || 0
+    }))
+  }
+
+  const formatConfidenceDistribution = () => {
+    if (!analytics || !analytics.confidenceDistribution) return []
+    
+    const dist = analytics.confidenceDistribution
+    return Object.keys(dist).map(key => ({
+      name: key,
+      value: dist[key]
+    }))
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent"></div>
+      </div>
+    )
+  }
+
+  const chartData = formatTimeSeriesData()
+  const distributionData = formatConfidenceDistribution()
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold text-gray-800">Analytics Dashboard</h2>
+        <div className="flex items-center gap-4">
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+          <select
+            value={days}
+            onChange={(e) => setDays(parseInt(e.target.value))}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+          >
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last year</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Summary Stats */}
+      {analytics && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 font-semibold">Total Records</p>
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {analytics.totalRecords || 0}
+                </p>
+              </div>
+              <FaChartLine className="text-4xl text-primary-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 font-semibold">Period</p>
+                <p className="text-2xl font-bold text-gray-800 mt-2 capitalize">
+                  {analytics.period || 'daily'}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {analytics.days || days} days
+                </p>
+              </div>
+              <FaChartBar className="text-4xl text-primary-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 font-semibold">Data Points</p>
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  {chartData.length}
+                </p>
+              </div>
+              <FaChartPie className="text-4xl text-primary-600" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OCR Requests Over Time */}
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">OCR Requests Over Time</h3>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="requests" 
+                stroke="#2563eb" 
+                strokeWidth={2}
+                name="OCR Requests"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="text-center text-gray-500 py-8">No data available for selected period</div>
+        )}
+      </div>
+
+      {/* Average Confidence Over Time */}
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Average Confidence Over Time</h3>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis 
+                domain={[0, 100]}
+                label={{ value: 'Confidence (%)', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="avgConfidence" 
+                stroke="#10b981" 
+                strokeWidth={2}
+                name="Avg Confidence (%)"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="text-center text-gray-500 py-8">No data available for selected period</div>
+        )}
+      </div>
+
+      {/* Characters Recognized Over Time */}
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Characters Recognized Over Time</h3>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar 
+                dataKey="characters" 
+                fill="#8b5cf6"
+                name="Characters Recognized"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="text-center text-gray-500 py-8">No data available for selected period</div>
+        )}
+      </div>
+
+      {/* Confidence Distribution */}
+      {distributionData.length > 0 && (
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Confidence Distribution</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={distributionData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {distributionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="space-y-4">
+              <h4 className="font-semibold text-gray-700">Distribution Breakdown</h4>
+              {distributionData.map((item, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="font-medium text-gray-700">{item.name}</span>
+                  </div>
+                  <span className="font-bold text-gray-900">{item.value} records</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default AdminAnalytics
+
