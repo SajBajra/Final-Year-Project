@@ -56,3 +56,4 @@ public interface OCRHistoryRepository extends JpaRepository<OCRHistory, Long> {
     Long findTotalCharacterCount();
 }
 
+
