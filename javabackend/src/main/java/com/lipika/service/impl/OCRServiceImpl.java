@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -35,19 +37,53 @@ public class OCRServiceImpl implements OCRService {
             log.info("Processing OCR request for image: {}", image.getOriginalFilename());
             
             // Prepare multipart request
-            HttpHeaders headers = new HttpHeaders();
             // Don't set Content-Type manually - RestTemplate will set it correctly for multipart
+            HttpHeaders headers = new HttpHeaders();
             
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             try {
+                // Read image bytes
+                byte[] imageBytes = image.getBytes();
+                
                 // Create ByteArrayResource with proper filename
-                ByteArrayResource imageResource = new ByteArrayResource(image.getBytes()) {
+                // This is a Resource that RestTemplate can handle for multipart
+                Resource imageResource = new ByteArrayResource(imageBytes) {
                     @Override
                     public String getFilename() {
-                        return image.getOriginalFilename() != null ? image.getOriginalFilename() : "image.png";
+                        String filename = image.getOriginalFilename();
+                        return filename != null && !filename.isEmpty() ? filename : "image.png";
                     }
                 };
-                body.add("image", imageResource);
+                
+                // Add as HttpEntity with proper ContentType
+                String contentType = image.getContentType();
+                if (contentType == null || contentType.isEmpty()) {
+                    // Guess content type from filename
+                    String filename = image.getOriginalFilename();
+                    if (filename != null) {
+                        if (filename.toLowerCase().endsWith(".png")) {
+                            contentType = "image/png";
+                        } else if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".jpeg")) {
+                            contentType = "image/jpeg";
+                        } else if (filename.toLowerCase().endsWith(".webp")) {
+                            contentType = "image/webp";
+                        } else {
+                            contentType = "image/png"; // Default
+                        }
+                    } else {
+                        contentType = "image/png";
+                    }
+                }
+                
+                HttpHeaders fileHeaders = new HttpHeaders();
+                fileHeaders.setContentType(MediaType.parseMediaType(contentType));
+                HttpEntity<Resource> fileEntity = new HttpEntity<>(imageResource, fileHeaders);
+                
+                body.add("image", fileEntity);
+                
+                log.debug("Prepared multipart request: filename={}, contentType={}, size={} bytes", 
+                    imageResource.getFilename(), contentType, imageBytes.length);
+                
             } catch (Exception e) {
                 log.error("Error reading image file", e);
                 return createErrorResponse("Error reading image file: " + e.getMessage());
