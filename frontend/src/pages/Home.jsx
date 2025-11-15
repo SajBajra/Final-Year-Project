@@ -21,6 +21,9 @@ function Home() {
     setOcrResult(null)
     setShowAR(false)
     setTranslations({})
+    setDevanagariText('')
+    setEnglishText('')
+    setShowTranslation(false)
   }
 
   const handleOCRComplete = async (result) => {
