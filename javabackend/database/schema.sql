@@ -1,10 +1,10 @@
 -- Lipika OCR System Database Schema
--- MySQL Database Setup Script
+-- MySQL Database Setup Script (XAMPP)
 
 -- Create database if not exists
-CREATE DATABASE IF NOT EXISTS lipika_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS lipika CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE lipika_db;
+USE lipika;
 
 -- OCR History Table
 CREATE TABLE IF NOT EXISTS ocr_history (

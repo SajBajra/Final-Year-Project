@@ -2,77 +2,87 @@
 
 This directory contains the database schema and setup instructions for the Lipika OCR System.
 
-## Database Configuration
+## Database Configuration (XAMPP)
 
 The database configuration is set in `src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/lipika_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+spring.datasource.url=jdbc:mysql://localhost:3306/lipika?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 spring.datasource.username=root
-spring.datasource.password=root
+spring.datasource.password=
 ```
 
-**⚠️ IMPORTANT:** Change the `username` and `password` in `application.properties` to match your MySQL installation.
+**⚠️ NOTE:** This configuration is set for XAMPP's default MySQL setup (no password for root user). If you've changed your XAMPP MySQL root password, update it in `application.properties`.
 
-## Setup Instructions
+## Setup Instructions (XAMPP)
 
-### 1. Install MySQL
+### 1. Start XAMPP
 
-If you don't have MySQL installed:
+1. Open **XAMPP Control Panel**
+2. Start **Apache** (if needed for other services)
+3. Start **MySQL** by clicking the "Start" button
 
-- **Windows**: Download from [MySQL Downloads](https://dev.mysql.com/downloads/mysql/)
-- **macOS**: Use Homebrew: `brew install mysql`
-- **Linux**: Use package manager:
-  - Ubuntu/Debian: `sudo apt-get install mysql-server`
-  - CentOS/RHEL: `sudo yum install mysql-server`
+### 2. Create Database and Tables
 
-### 2. Start MySQL Server
+#### Option A: Using phpMyAdmin (Recommended for XAMPP)
 
-**Windows:**
-- MySQL usually starts automatically as a Windows service
-- Or use MySQL Workbench to start the server
+1. Open your browser and go to: `http://localhost/phpmyadmin`
+2. Click on **"SQL"** tab at the top
+3. Copy and paste the entire contents of `database/schema.sql`
+4. Click **"Go"** to execute
 
-**macOS/Linux:**
-```bash
-sudo systemctl start mysql
-# or
-sudo service mysql start
-```
+The script will:
+- Create the `lipika` database
+- Create all necessary tables
+- Insert default settings
 
-### 3. Create Database and Tables
-
-#### Option A: Using MySQL Command Line
+#### Option B: Using MySQL Command Line
 
 ```bash
-# Login to MySQL
-mysql -u root -p
+# Navigate to XAMPP MySQL bin directory
+cd C:\xampp\mysql\bin
+
+# Login to MySQL (no password for default XAMPP setup)
+mysql.exe -u root
+
+# Or if you have MySQL in PATH
+mysql -u root
 
 # Run the schema script
-source /path/to/javabackend/database/schema.sql
+source E:\Cllz\FYP\javabackend\database\schema.sql
 
 # Or execute SQL directly
-mysql -u root -p < database/schema.sql
+mysql.exe -u root < E:\Cllz\FYP\javabackend\database\schema.sql
 ```
 
-#### Option B: Using Spring Boot Auto-Update (Recommended for Development)
+#### Option C: Using Spring Boot Auto-Update (Recommended for Development)
 
-Spring Boot will automatically create the database and tables if:
+Spring Boot will automatically create tables if:
 - `spring.jpa.hibernate.ddl-auto=update` is set (already configured)
-- `createDatabaseIfNotExist=true` is in the connection URL (already configured)
+- Database `lipika` already exists
 
-Just start the Spring Boot application and it will create everything automatically.
+**Steps:**
+1. Create database manually in phpMyAdmin: `CREATE DATABASE lipika;`
+2. Start Spring Boot application
+3. It will automatically create all tables
 
-#### Option C: Using MySQL Workbench
+#### Option D: Manual Creation via phpMyAdmin
 
-1. Open MySQL Workbench
-2. Connect to your MySQL server
-3. Open `database/schema.sql`
-4. Execute the script
+1. Open phpMyAdmin: `http://localhost/phpmyadmin`
+2. Click **"New"** to create a new database
+3. Enter database name: `lipika`
+4. Select collation: `utf8mb4_unicode_ci`
+5. Click **"Create"**
+6. Select the `lipika` database
+7. Click **"SQL"** tab and paste the table creation queries from `schema.sql`
 
-### 4. Verify Database Creation
+### 3. Verify Database Creation
 
-```bash
-mysql -u root -p -e "USE lipika_db; SHOW TABLES;"
+In phpMyAdmin or MySQL command line:
+
+```sql
+USE lipika;
+SHOW TABLES;
 ```
 
 You should see:
@@ -80,17 +90,21 @@ You should see:
 - `system_settings`
 - `admin_users` (for future use)
 
-### 5. Update Application Properties
+### 4. Verify Application Properties
 
-Edit `src/main/resources/application.properties` and update:
-
+The configuration is already set for XAMPP default:
 ```properties
-# Change these to match your MySQL installation
-spring.datasource.username=your_username
+spring.datasource.url=jdbc:mysql://localhost:3306/lipika
+spring.datasource.username=root
+spring.datasource.password=
+```
+
+**⚠️ If you changed XAMPP MySQL root password**, update `application.properties`:
+```properties
 spring.datasource.password=your_password
 ```
 
-### 6. Test Database Connection
+### 5. Test Database Connection
 
 Start the Spring Boot application. If the database connection is successful, you should see no errors in the logs. If there are errors, check:
 
@@ -144,9 +158,9 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failur
 ```
 
 **Solution:**
-1. Check if MySQL server is running
-2. Verify the connection URL and port (default: 3306)
-3. Check firewall settings
+1. **Check XAMPP MySQL is running**: Open XAMPP Control Panel and ensure MySQL is started (green status)
+2. Verify MySQL port (default: 3306) - check XAMPP Control Panel
+3. Check Windows Firewall if blocking localhost connections
 
 ### Access Denied Error
 
@@ -155,24 +169,25 @@ Access denied for user 'root'@'localhost'
 ```
 
 **Solution:**
-1. Verify username and password in `application.properties`
-2. Create a MySQL user with proper permissions:
-   ```sql
-   CREATE USER 'lipika_user'@'localhost' IDENTIFIED BY 'your_password';
-   GRANT ALL PRIVILEGES ON lipika_db.* TO 'lipika_user'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-3. Update `application.properties` with the new credentials
+1. **XAMPP Default**: XAMPP MySQL root user has no password by default - leave `password=` empty in `application.properties`
+2. **If you set a password**: Update `spring.datasource.password=your_password` in `application.properties`
+3. **Reset XAMPP MySQL password** (if needed):
+   - Stop MySQL in XAMPP
+   - Delete `mysql/data/mysql` folder (backup first!)
+   - Restart MySQL in XAMPP
+   - Default: no password for root
 
 ### Unknown Database Error
 
 ```
-Unknown database 'lipika_db'
+Unknown database 'lipika'
 ```
 
 **Solution:**
-- Make sure `createDatabaseIfNotExist=true` is in the connection URL
-- Or manually create the database: `CREATE DATABASE lipika_db;`
+- **Create database manually** in phpMyAdmin:
+  1. Go to `http://localhost/phpmyadmin`
+  2. Click "New" → Enter `lipika` → Select `utf8mb4_unicode_ci` → Click "Create"
+- **Or run schema.sql** which creates the database automatically
 
 ### Character Encoding Issues
 
@@ -197,4 +212,6 @@ For production deployment:
 - The application uses JPA/Hibernate with `ddl-auto=update`, which automatically updates the schema
 - For production, consider using `ddl-auto=validate` or migration tools like Flyway/Liquibase
 - The `ocr_history` table uses UTF-8MB4 encoding to properly store Devanagari characters
+- **XAMPP Note**: Default MySQL root user has no password. If you've changed it, update `application.properties`
+- **XAMPP MySQL Port**: Default is 3306. If you changed it in XAMPP config, update the connection URL
 
