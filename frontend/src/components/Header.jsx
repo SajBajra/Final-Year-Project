@@ -46,77 +46,58 @@ const Header = () => {
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1">
-              {navItems.map((item, index) => (
-              <motion.div
-                key={item.path}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
+              {navItems.map((item) => (
                 <Link 
+                  key={item.path}
                   to={item.path}
-                  className="relative px-4 py-2 rounded-lg font-medium transition-all duration-300 group"
-                >
-                  <span className={`relative z-10 ${
+                  className={`px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200 ${
                     isActive(item.path)
-                      ? 'text-blue-600 font-semibold'
-                      : 'text-gray-600 group-hover:text-blue-600'
-                  }`}>
-                    {item.label}
-                  </span>
-                  
-                  {isActive(item.path) && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg opacity-50"
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                  
-                  <div className="absolute inset-0 bg-gray-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                      ? 'text-primary-600 bg-primary-50'
+                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {item.label}
                 </Link>
-              </motion.div>
-            ))}
+              ))}
             
             {isAuthenticated() ? (
               <div className="ml-4 flex items-center gap-2">
                 {isAdmin() && (
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                  <button
                     onClick={() => navigate('/admin')}
-                    className="p-2 bg-purple-100 hover:bg-purple-200 rounded-lg text-purple-600 transition-colors"
+                    className="p-2 text-gray-600 hover:text-purple-600 hover:bg-gray-100 rounded-md transition-colors"
                     title="Admin Dashboard"
                   >
                     <FaCog />
-                  </motion.button>
+                  </button>
                 )}
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-2 px-3 py-2 bg-primary-100 rounded-lg"
-                >
-                  <FaUser className="text-primary-600" />
-                  <span className="text-sm font-medium text-primary-700">{user?.username}</span>
-                </motion.div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-md">
+                  <FaUser className="text-gray-600 text-sm" />
+                  <span className="text-sm font-medium text-gray-700">{user?.username}</span>
+                </div>
+                <button
                   onClick={() => {
                     logout();
                     navigate('/');
                   }}
-                  className="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 transition-colors"
+                  className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-md transition-colors"
                   title="Logout"
                 >
                   <FaSignOutAlt />
-                </motion.button>
+                </button>
               </div>
             ) : (
               <div className="ml-4 flex items-center gap-2">
-                <Link to="/login" className="btn-outline text-sm px-4 py-2">
+                <Link 
+                  to="/login" 
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+                >
                   Login
                 </Link>
-                <Link to="/register" className="btn-primary text-sm px-4 py-2">
+                <Link 
+                  to="/register" 
+                  className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                >
                   Register
                 </Link>
               </div>
@@ -199,19 +180,13 @@ const Header = () => {
                         <Link
                           to={item.path}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                          className={`block px-4 py-3 rounded-md font-medium transition-colors ${
                             isActive(item.path)
-                              ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
-                              : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                              ? 'bg-primary-50 text-primary-600'
+                              : 'text-gray-700 hover:bg-gray-100'
                           }`}
                         >
-                          <span className="flex-1">{item.label}</span>
-                          {isActive(item.path) && (
-                            <motion.div
-                              layoutId="mobileActiveIndicator"
-                              className="w-1.5 h-1.5 rounded-full bg-primary-600"
-                            />
-                          )}
+                          {item.label}
                         </Link>
                       </motion.div>
                     ))}
