@@ -54,6 +54,15 @@ public interface OCRHistoryRepository extends JpaRepository<OCRHistory, Long> {
     // Count total characters
     @Query("SELECT COALESCE(SUM(h.characterCount), 0) FROM OCRHistory h WHERE h.characterCount IS NOT NULL")
     Long findTotalCharacterCount();
+    
+    // Find by user ID
+    Page<OCRHistory> findByUserId(Long userId, Pageable pageable);
+    
+    // Count by registered status
+    long countByIsRegistered(Boolean isRegistered);
+    
+    // Find by registered status
+    Page<OCRHistory> findByIsRegistered(Boolean isRegistered, Pageable pageable);
 }
 
 

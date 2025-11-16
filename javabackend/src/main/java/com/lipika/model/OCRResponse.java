@@ -1,5 +1,6 @@
 package com.lipika.model;
 
+import com.lipika.dto.TrialInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class OCRResponse {
     private Double confidence;
     private int count;
     private String message;
+    private TrialInfo trialInfo;
     
     @Data
     @NoArgsConstructor
