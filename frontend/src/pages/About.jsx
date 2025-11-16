@@ -260,11 +260,13 @@ const About = () => {
           transition={{ duration: 0.6 }}
           className="mb-8 sm:mb-12"
         >
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 rounded-xl bg-green-100">
-              <FaRobot className="text-2xl text-green-600" />
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center space-x-3 mb-3">
+              <div className="p-2 rounded-xl bg-green-100">
+                <FaRobot className="text-2xl text-green-600" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">What We Do</h2>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">What We Do</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -340,16 +342,17 @@ const About = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8 sm:mb-12"
         >
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 rounded-xl bg-blue-100">
-              <FaCode className="text-2xl text-blue-600" />
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center space-x-3 mb-3">
+              <div className="p-2 rounded-xl bg-blue-100">
+                <FaCode className="text-2xl text-blue-600" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Technology Stack</h2>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Technology Stack</h2>
+            <p className="text-base text-gray-700 leading-relaxed max-w-3xl mx-auto">
+              Lipika is built using a modern three-layer architecture for optimal performance and scalability:
+            </p>
           </div>
-          
-          <p className="text-base text-gray-700 leading-relaxed mb-6">
-            Lipika is built using a modern three-layer architecture for optimal performance and scalability:
-          </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
