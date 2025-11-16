@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FaChartBar, FaBullseye, FaFont, FaChartLine, FaChartPie } from 'react-icons/fa'
+import { FaChartBar, FaUser, FaFont, FaChartLine, FaChartPie } from 'react-icons/fa'
 import { 
   LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, BarChart, Bar 
@@ -69,25 +69,19 @@ const AdminDashboard = () => {
     }))
   }
 
-  // Format confidence distribution for pie chart
-  const formatConfidenceDistribution = () => {
-    if (!analytics || !analytics.confidenceDistribution) {
+  // Format user type distribution for pie chart
+  const formatUserTypeDistribution = () => {
+    if (!analytics || !analytics.userTypeDistribution) {
       return [
-        { name: '90-100%', value: 0, color: '#10b981' },
-        { name: '80-90%', value: 0, color: '#3b82f6' },
-        { name: '70-80%', value: 0, color: '#f59e0b' },
-        { name: '60-70%', value: 0, color: '#ef4444' },
-        { name: 'Below 60%', value: 0, color: '#ef4444' }
+        { name: 'Registered', value: 0, color: '#10b981' },
+        { name: 'Unregistered', value: 0, color: '#3b82f6' }
       ]
     }
     
-    const dist = analytics.confidenceDistribution || {}
+    const dist = analytics.userTypeDistribution || {}
     return [
-      { name: '90-100%', value: dist['90-100%'] || 0, color: '#10b981' },
-      { name: '80-90%', value: dist['80-90%'] || 0, color: '#3b82f6' },
-      { name: '70-80%', value: dist['70-80%'] || 0, color: '#f59e0b' },
-      { name: '60-70%', value: dist['60-70%'] || 0, color: '#ef4444' },
-      { name: 'Below 60%', value: dist['Below 60%'] || 0, color: '#ef4444' }
+      { name: 'Registered', value: dist['Registered'] || 0, color: '#10b981' },
+      { name: 'Unregistered', value: dist['Unregistered'] || 0, color: '#3b82f6' }
     ].filter(item => item.value > 0)
   }
 
@@ -108,9 +102,9 @@ const AdminDashboard = () => {
   }
 
   const activityChartData = formatActivityChartData()
-  const confidencePieData = formatConfidenceDistribution()
+  const userTypePieData = formatUserTypeDistribution()
   const characterChartData = formatCharacterCountData()
-  const totalConfidenceRecords = confidencePieData.reduce((sum, item) => sum + item.value, 0)
+  const totalUserTypeRecords = userTypePieData.reduce((sum, item) => sum + item.value, 0)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -180,17 +174,17 @@ const AdminDashboard = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs sm:text-sm text-gray-500 font-semibold">Avg Confidence</p>
+              <p className="text-xs sm:text-sm text-gray-500 font-semibold">Registered Users</p>
               {loading ? (
                 <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
-                  {stats?.avgConfidence ? `${(stats.avgConfidence * 100).toFixed(1)}%` : '0%'}
+                  {stats?.registeredCount ?? 0}
                 </p>
               )}
             </div>
             <div className="p-3 rounded-xl bg-green-100">
-              <FaBullseye className="text-2xl sm:text-3xl md:text-4xl text-green-600" />
+              <FaUser className="text-2xl sm:text-3xl md:text-4xl text-green-600" />
             </div>
           </div>
         </motion.div>
@@ -295,7 +289,7 @@ const AdminDashboard = () => {
           )}
         </motion.div>
 
-        {/* Confidence Distribution Pie Chart */}
+        {/* User Type Distribution Pie Chart */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -307,19 +301,19 @@ const AdminDashboard = () => {
               <FaChartPie className="text-xl sm:text-2xl text-green-600" />
             </div>
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Confidence Distribution</h3>
-              <p className="text-xs sm:text-sm text-gray-500">Accuracy levels of OCR results</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800">User Type Distribution</h3>
+              <p className="text-xs sm:text-sm text-gray-500">Registered vs Unregistered users</p>
             </div>
           </div>
           {chartLoading ? (
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
             </div>
-          ) : totalConfidenceRecords > 0 ? (
+          ) : totalUserTypeRecords > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
-                  data={confidencePieData}
+                  data={userTypePieData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -328,7 +322,7 @@ const AdminDashboard = () => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {confidencePieData.map((entry, index) => (
+                  {userTypePieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -343,7 +337,7 @@ const AdminDashboard = () => {
                 <Legend 
                   wrapperStyle={{ fontSize: '12px' }}
                   formatter={(value, entry) => {
-                    const item = confidencePieData.find(d => d.name === value)
+                    const item = userTypePieData.find(d => d.name === value)
                     return (
                       <span style={{ color: item?.color || '#000' }}>
                         {value} ({item?.value || 0})

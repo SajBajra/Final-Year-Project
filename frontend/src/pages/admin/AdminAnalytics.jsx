@@ -33,21 +33,19 @@ const AdminAnalytics = () => {
     if (!analytics || !analytics.timeSeries) return []
     
     const timeSeries = analytics.timeSeries
-    const confidenceSeries = analytics.confidenceSeries || {}
     const characterSeries = analytics.characterSeries || {}
     
     return Object.keys(timeSeries).map(key => ({
       date: key,
       requests: timeSeries[key] || 0,
-      avgConfidence: ((confidenceSeries[key] || 0) * 100).toFixed(1),
       characters: characterSeries[key] || 0
     }))
   }
 
-  const formatConfidenceDistribution = () => {
-    if (!analytics || !analytics.confidenceDistribution) return []
+  const formatUserTypeDistribution = () => {
+    if (!analytics || !analytics.userTypeDistribution) return []
     
-    const dist = analytics.confidenceDistribution
+    const dist = analytics.userTypeDistribution
     return Object.keys(dist).map(key => ({
       name: key,
       value: dist[key]
@@ -55,7 +53,7 @@ const AdminAnalytics = () => {
   }
 
   const chartData = formatTimeSeriesData()
-  const distributionData = formatConfidenceDistribution()
+  const distributionData = formatUserTypeDistribution()
 
   return (
     <div className="space-y-6">
@@ -173,41 +171,6 @@ const AdminAnalytics = () => {
         )}
       </div>
 
-      {/* Average Confidence Over Time */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Average Confidence Over Time</h3>
-        {loading ? (
-          <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
-        ) : chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="date" 
-                angle={-45}
-                textAnchor="end"
-                height={80}
-              />
-              <YAxis 
-                domain={[0, 100]}
-                label={{ value: 'Confidence (%)', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="avgConfidence" 
-                stroke="#10b981" 
-                strokeWidth={2}
-                name="Avg Confidence (%)"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="text-center text-gray-500 py-8">No data available for selected period</div>
-        )}
-      </div>
-
       {/* Characters Recognized Over Time */}
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Characters Recognized Over Time</h3>
@@ -238,15 +201,15 @@ const AdminAnalytics = () => {
         )}
       </div>
 
-      {/* Confidence Distribution */}
+      {/* User Type Distribution */}
       {loading ? (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Confidence Distribution</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">User Type Distribution</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
             <div className="space-y-4">
               <div className="h-6 bg-gray-200 animate-pulse-fast rounded transition-fast"></div>
-              {[1, 2, 3, 4, 5].map((i) => (
+              {[1, 2].map((i) => (
                 <div key={i} className="h-12 bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
               ))}
             </div>
@@ -254,7 +217,7 @@ const AdminAnalytics = () => {
         </div>
       ) : distributionData.length > 0 && (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Confidence Distribution</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">User Type Distribution</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>

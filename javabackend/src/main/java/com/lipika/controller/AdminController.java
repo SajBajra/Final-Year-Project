@@ -269,13 +269,11 @@ public class AdminController {
     @GetMapping("/ocr-history/export")
     public ResponseEntity<String> exportOCRHistoryToCSV(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Double minConfidence,
-            @RequestParam(required = false) Double maxConfidence,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         try {
             String csv = adminService.exportOCRHistoryToCSV(
-                    search, minConfidence, maxConfidence, startDate, endDate);
+                    search, startDate, endDate);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.TEXT_PLAIN);

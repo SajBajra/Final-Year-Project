@@ -85,14 +85,11 @@ public interface AdminService {
     /**
      * Export OCR history to CSV format
      * @param search Search filter
-     * @param minConfidence Minimum confidence
-     * @param maxConfidence Maximum confidence
      * @param startDate Start date
      * @param endDate End date
      * @return CSV content as string
      */
-    String exportOCRHistoryToCSV(String search, Double minConfidence, Double maxConfidence,
-                                 LocalDateTime startDate, LocalDateTime endDate);
+    String exportOCRHistoryToCSV(String search, LocalDateTime startDate, LocalDateTime endDate);
     
     /**
      * Change admin password

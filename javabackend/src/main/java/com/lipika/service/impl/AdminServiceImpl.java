@@ -70,9 +70,6 @@ public class AdminServiceImpl implements AdminService {
         
         long totalRecords = ocrHistoryRepository.count();
         
-        Double avgConfidenceObj = ocrHistoryRepository.findAverageConfidence();
-        double avgConfidence = avgConfidenceObj != null ? avgConfidenceObj : 0.0;
-        
         Long totalCharsObj = ocrHistoryRepository.findTotalCharacterCount();
         int totalCharacters = totalCharsObj != null ? totalCharsObj.intValue() : 0;
         
@@ -80,10 +77,15 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         long recentActivity = ocrHistoryRepository.findByTimestampAfter(yesterday).size();
         
+        // User type distribution
+        long registeredCount = ocrHistoryRepository.countByIsRegistered(true);
+        long unregisteredCount = ocrHistoryRepository.countByIsRegistered(false);
+        
         stats.put("totalRecords", totalRecords);
-        stats.put("avgConfidence", Math.round(avgConfidence * 100.0) / 100.0);
         stats.put("totalCharacters", totalCharacters);
         stats.put("recentActivity", recentActivity);
+        stats.put("registeredCount", registeredCount);
+        stats.put("unregisteredCount", unregisteredCount);
         stats.put("timestamp", LocalDateTime.now().toString());
         
         return stats;
@@ -213,7 +215,6 @@ public class AdminServiceImpl implements AdminService {
         
         // Time series data (daily, weekly, monthly)
         Map<String, Integer> timeSeries = new LinkedHashMap<>();
-        Map<String, Double> confidenceSeries = new LinkedHashMap<>();
         Map<String, Integer> characterSeries = new LinkedHashMap<>();
         
         if ("daily".equalsIgnoreCase(period)) {
@@ -229,11 +230,6 @@ public class AdminServiceImpl implements AdminService {
                         .collect(Collectors.toList());
                 
                 timeSeries.put(key, dayRecords.size());
-                confidenceSeries.put(key, dayRecords.stream()
-                        .filter(h -> h.getConfidence() != null)
-                        .mapToDouble(OCRHistory::getConfidence)
-                        .average()
-                        .orElse(0.0));
                 characterSeries.put(key, dayRecords.stream()
                         .mapToInt(h -> h.getCharacterCount() != null ? h.getCharacterCount() : 0)
                         .sum());
@@ -250,11 +246,6 @@ public class AdminServiceImpl implements AdminService {
             for (String week : weeklyGroups.keySet()) {
                 List<OCRHistory> weekRecords = weeklyGroups.get(week);
                 timeSeries.put(week, weekRecords.size());
-                confidenceSeries.put(week, weekRecords.stream()
-                        .filter(h -> h.getConfidence() != null)
-                        .mapToDouble(OCRHistory::getConfidence)
-                        .average()
-                        .orElse(0.0));
                 characterSeries.put(week, weekRecords.stream()
                         .mapToInt(h -> h.getCharacterCount() != null ? h.getCharacterCount() : 0)
                         .sum());
@@ -270,33 +261,24 @@ public class AdminServiceImpl implements AdminService {
             for (String month : monthlyGroups.keySet()) {
                 List<OCRHistory> monthRecords = monthlyGroups.get(month);
                 timeSeries.put(month, monthRecords.size());
-                confidenceSeries.put(month, monthRecords.stream()
-                        .filter(h -> h.getConfidence() != null)
-                        .mapToDouble(OCRHistory::getConfidence)
-                        .average()
-                        .orElse(0.0));
                 characterSeries.put(month, monthRecords.stream()
                         .mapToInt(h -> h.getCharacterCount() != null ? h.getCharacterCount() : 0)
                         .sum());
             }
         }
         
-        // Confidence distribution (buckets)
-        Map<String, Long> confidenceDistribution = recentHistory.stream()
-                .filter(h -> h.getConfidence() != null)
-                .collect(Collectors.groupingBy(h -> {
-                    double conf = h.getConfidence();
-                    if (conf >= 0.9) return "90-100%";
-                    if (conf >= 0.8) return "80-90%";
-                    if (conf >= 0.7) return "70-80%";
-                    if (conf >= 0.6) return "60-70%";
-                    return "Below 60%";
-                }, Collectors.counting()));
+        // User type distribution
+        Map<String, Long> userTypeDistribution = new HashMap<>();
+        long registeredCount = recentHistory.stream()
+                .filter(h -> h.getIsRegistered() != null && h.getIsRegistered())
+                .count();
+        long unregisteredCount = recentHistory.size() - registeredCount;
+        userTypeDistribution.put("Registered", registeredCount);
+        userTypeDistribution.put("Unregistered", unregisteredCount);
         
         analytics.put("timeSeries", timeSeries);
-        analytics.put("confidenceSeries", confidenceSeries);
         analytics.put("characterSeries", characterSeries);
-        analytics.put("confidenceDistribution", confidenceDistribution);
+        analytics.put("userTypeDistribution", userTypeDistribution);
         analytics.put("totalRecords", recentHistory.size());
         analytics.put("period", period);
         analytics.put("days", days);
@@ -313,34 +295,17 @@ public class AdminServiceImpl implements AdminService {
         
         // Character frequency analysis
         Map<String, Long> characterFrequency = new HashMap<>();
-        Map<String, List<Double>> characterConfidences = new HashMap<>();
         
         for (OCRHistory history : allHistory) {
             if (history.getRecognizedText() != null) {
                 String text = history.getRecognizedText();
-                Double confidence = history.getConfidence();
                 
                 // Count each character
                 for (char c : text.toCharArray()) {
                     String charStr = String.valueOf(c);
                     characterFrequency.put(charStr, characterFrequency.getOrDefault(charStr, 0L) + 1);
-                    
-                    if (confidence != null) {
-                        characterConfidences.putIfAbsent(charStr, new ArrayList<>());
-                        characterConfidences.get(charStr).add(confidence);
-                    }
                 }
             }
-        }
-        
-        // Calculate average confidence per character
-        Map<String, Double> characterAvgConfidence = new HashMap<>();
-        for (Map.Entry<String, List<Double>> entry : characterConfidences.entrySet()) {
-            double avg = entry.getValue().stream()
-                    .mapToDouble(Double::doubleValue)
-                    .average()
-                    .orElse(0.0);
-            characterAvgConfidence.put(entry.getKey(), avg);
         }
         
         // Get top 20 most frequent characters
@@ -351,7 +316,6 @@ public class AdminServiceImpl implements AdminService {
                     Map<String, Object> charStat = new HashMap<>();
                     charStat.put("character", entry.getKey());
                     charStat.put("frequency", entry.getValue());
-                    charStat.put("avgConfidence", characterAvgConfidence.getOrDefault(entry.getKey(), 0.0));
                     return charStat;
                 })
                 .collect(Collectors.toList());
@@ -359,17 +323,15 @@ public class AdminServiceImpl implements AdminService {
         stats.put("totalUniqueCharacters", characterFrequency.size());
         stats.put("topCharacters", topCharacters);
         stats.put("characterFrequency", characterFrequency);
-        stats.put("characterAvgConfidence", characterAvgConfidence);
         
         return stats;
     }
     
     @Override
-    public String exportOCRHistoryToCSV(String search, Double minConfidence, Double maxConfidence,
-                                        LocalDateTime startDate, LocalDateTime endDate) {
+    public String exportOCRHistoryToCSV(String search, LocalDateTime startDate, LocalDateTime endDate) {
         // Use the filtered method to get filtered data
         Map<String, Object> filteredResult = getOCRHistoryFiltered(
-                0, Integer.MAX_VALUE, search, minConfidence, maxConfidence, 
+                0, Integer.MAX_VALUE, search, null, null, 
                 startDate, endDate, "timestamp", "desc");
         
         @SuppressWarnings("unchecked")
@@ -377,14 +339,13 @@ public class AdminServiceImpl implements AdminService {
         
         // Build CSV
         StringBuilder csv = new StringBuilder();
-        csv.append("ID,Image Filename,Recognized Text,Character Count,Confidence,Timestamp,Language\n");
+        csv.append("ID,Image Filename,Recognized Text,Character Count,Timestamp,Language\n");
         
         for (OCRHistory record : history) {
             csv.append(record.getId()).append(",");
             csv.append("\"").append(escapeCSV(record.getImageFilename())).append("\",");
             csv.append("\"").append(escapeCSV(record.getRecognizedText())).append("\",");
             csv.append(record.getCharacterCount() != null ? record.getCharacterCount() : 0).append(",");
-            csv.append(record.getConfidence() != null ? String.format("%.4f", record.getConfidence()) : "0.0000").append(",");
             csv.append(record.getTimestamp() != null ? record.getTimestamp().toString() : "").append(",");
             csv.append(record.getLanguage() != null ? record.getLanguage() : "").append("\n");
         }

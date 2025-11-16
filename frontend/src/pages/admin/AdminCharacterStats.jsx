@@ -30,8 +30,7 @@ const AdminCharacterStats = () => {
   const topCharacters = stats?.topCharacters || []
   const chartData = topCharacters.map((char, index) => ({
     character: char.character === ' ' ? 'Space' : char.character,
-    frequency: char.frequency,
-    avgConfidence: (char.avgConfidence * 100).toFixed(1)
+    frequency: char.frequency
   }))
 
   return (
@@ -124,27 +123,14 @@ const AdminCharacterStats = () => {
                 height={100}
                 interval={0}
               />
-              <YAxis yAxisId="left" label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
-              <YAxis 
-                yAxisId="right" 
-                orientation="right"
-                domain={[0, 100]}
-                label={{ value: 'Avg Confidence (%)', angle: 90, position: 'insideRight' }}
-              />
+              <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
               <Tooltip />
               <Legend />
-              <Bar yAxisId="left" dataKey="frequency" fill="#2563eb" name="Recognition Frequency">
+              <Bar dataKey="frequency" fill="#2563eb" name="Recognition Frequency">
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Bar>
-              <Bar 
-                yAxisId="right" 
-                dataKey="avgConfidence" 
-                fill="#10b981" 
-                name="Avg Confidence (%)"
-                opacity={0.7}
-              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -184,9 +170,6 @@ const AdminCharacterStats = () => {
                     Frequency
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Avg Confidence
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Percentage
                   </th>
                 </tr>
@@ -213,14 +196,6 @@ const AdminCharacterStats = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
                         {char.frequency.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`font-semibold ${
-                          char.avgConfidence >= 0.8 ? 'text-green-600' :
-                          char.avgConfidence >= 0.6 ? 'text-yellow-600' : 'text-red-600'
-                        }`}>
-                          {(char.avgConfidence * 100).toFixed(2)}%
-                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {percentage}%
