@@ -125,148 +125,170 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2.5 rounded-lg text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
+            <motion.div
+              animate={{ rotate: mobileMenuOpen ? 90 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {mobileMenuOpen ? (
+                <FaTimes className="text-xl text-gray-700" />
+              ) : (
+                <FaBars className="text-xl text-gray-700" />
+              )}
+            </motion.div>
           </button>
         </div>
+      </div>
 
-        {/* Mobile Navigation Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <>
-              {/* Overlay with backdrop blur */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setMobileMenuOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
-              />
-              
-              {/* Menu - Slide from right with better styling */}
-              <motion.nav
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: '100%', opacity: 0 }}
-                transition={{ 
-                  type: 'spring', 
-                  damping: 30, 
-                  stiffness: 300,
-                  mass: 0.8
-                }}
-                className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden overflow-y-auto"
-              >
-                {/* Menu Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-                  <h2 className="text-lg font-bold text-gray-900">Menu</h2>
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-                    aria-label="Close menu"
-                  >
-                    <FaTimes className="text-xl" />
-                  </button>
-                </div>
+      {/* Mobile Navigation Menu - Offcanvas Style */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop/Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              aria-hidden="true"
+            />
+            
+            {/* Offcanvas Menu */}
+            <motion.aside
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ 
+                type: 'tween',
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }}
+              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden flex flex-col"
+            >
+              {/* Header with Close Button */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+                <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  aria-label="Close menu"
+                >
+                  <FaTimes className="text-xl" />
+                </button>
+              </div>
 
-                {/* Menu Content */}
-                <div className="p-6 space-y-1">
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto">
+                <nav className="p-4">
                   {/* Navigation Links */}
-                  {navItems.map((item, index) => (
-                    <motion.div
-                      key={item.path}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
-                    >
-                      <Link
-                        to={item.path}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
-                          isActive(item.path)
-                            ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 font-semibold shadow-sm'
-                            : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'
-                        }`}
+                  <div className="space-y-1 mb-4">
+                    {navItems.map((item, index) => (
+                      <motion.div
+                        key={item.path}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05, duration: 0.2 }}
                       >
-                        <span className="text-lg">{item.label}</span>
-                      </Link>
-                    </motion.div>
-                  ))}
-                  
+                        <Link
+                          to={item.path}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                            isActive(item.path)
+                              ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
+                              : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                          }`}
+                        >
+                          <span className="flex-1">{item.label}</span>
+                          {isActive(item.path) && (
+                            <motion.div
+                              layoutId="mobileActiveIndicator"
+                              className="w-1.5 h-1.5 rounded-full bg-primary-600"
+                            />
+                          )}
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+
                   {/* Divider */}
-                  <div className="border-t border-gray-200 my-6"></div>
-                  
+                  <div className="border-t border-gray-200 my-4" />
+
                   {/* Auth Section */}
                   {isAuthenticated() ? (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="space-y-2"
-                    >
+                    <div className="space-y-3">
+                      {/* User Info Card */}
+                      <div className="bg-gradient-to-r from-primary-50 to-purple-50 rounded-lg p-4 border border-primary-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
+                            <FaUser className="text-white text-sm" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {user?.username}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {isAdmin() ? 'Administrator' : 'User'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Admin Dashboard Button */}
                       {isAdmin() && (
                         <button
                           onClick={() => {
                             navigate('/admin');
                             setMobileMenuOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all active:scale-95"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors font-medium"
                         >
-                          <FaCog className="text-lg" />
-                          <span className="font-medium">Admin Dashboard</span>
+                          <FaCog className="text-gray-600" />
+                          <span>Admin Dashboard</span>
                         </button>
                       )}
-                      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border border-primary-100">
-                        <div className="p-2 bg-primary-100 rounded-lg">
-                          <FaUser className="text-primary-600" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-xs text-gray-500">Logged in as</p>
-                          <p className="text-sm font-semibold text-primary-700">{user?.username}</p>
-                        </div>
-                      </div>
+
+                      {/* Logout Button */}
                       <button
                         onClick={() => {
                           logout();
                           navigate('/');
                           setMobileMenuOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all active:scale-95 font-medium"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors font-medium shadow-sm"
                       >
-                        <FaSignOutAlt className="text-lg" />
+                        <FaSignOutAlt />
                         <span>Logout</span>
                       </button>
-                    </motion.div>
+                    </div>
                   ) : (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="space-y-3"
-                    >
+                    <div className="space-y-3">
                       <Link
                         to="/login"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block w-full px-4 py-3 rounded-xl border-2 border-gray-300 text-center font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all active:scale-95"
+                        className="block w-full px-4 py-3 rounded-lg border-2 border-gray-300 text-center font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
                       >
                         Login
                       </Link>
                       <Link
                         to="/register"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block w-full px-4 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 text-white text-center font-semibold hover:from-primary-700 hover:to-purple-700 transition-all active:scale-95 shadow-lg"
+                        className="block w-full px-4 py-3 rounded-lg bg-primary-600 text-white text-center font-medium hover:bg-primary-700 transition-colors shadow-md"
                       >
                         Register
                       </Link>
-                    </motion.div>
+                    </div>
                   )}
-                </div>
-              </motion.nav>
-            </>
-          )}
-        </AnimatePresence>
+                </nav>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
       </div>
     </header>
   )
