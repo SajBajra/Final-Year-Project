@@ -19,32 +19,33 @@ const Header = () => {
   ]
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 border-b border-white/20 shadow-sm">
-      <div className="container mx-auto px-4 py-4 max-w-7xl">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3 group">
-            <motion.div
-              whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl text-primary-600"
-            >
-              <FaScroll />
-            </motion.div>
-            <div>
-              <motion.h1
-                whileHover={{ scale: 1.05 }}
-                className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+    <>
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 border-b border-white/20 shadow-sm">
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center space-x-3 group">
+              <motion.div
+                whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                transition={{ duration: 0.5 }}
+                className="text-4xl text-primary-600"
               >
-                Lipika
-              </motion.h1>
-              <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
-                Ranjana OCR System
-              </p>
-            </div>
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+                <FaScroll />
+              </motion.div>
+              <div>
+                <motion.h1
+                  whileHover={{ scale: 1.05 }}
+                  className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+                >
+                  Lipika
+                </motion.h1>
+                <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
+                  Ranjana OCR System
+                </p>
+              </div>
+            </Link>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item, index) => (
               <motion.div
                 key={item.path}
@@ -139,9 +140,10 @@ const Header = () => {
                 <FaBars className="text-xl text-gray-700" />
               )}
             </motion.div>
-          </button>
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Mobile Navigation Menu - Offcanvas Style */}
       <AnimatePresence>
@@ -154,7 +156,7 @@ const Header = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] md:hidden"
               aria-hidden="true"
             />
             
@@ -168,7 +170,7 @@ const Header = () => {
                 duration: 0.3,
                 ease: [0.4, 0, 0.2, 1]
               }}
-              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden flex flex-col"
+              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-[70] md:hidden flex flex-col"
             >
               {/* Header with Close Button */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
@@ -289,7 +291,7 @@ const Header = () => {
           </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   )
 }
 
