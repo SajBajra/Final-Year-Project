@@ -92,18 +92,36 @@ public class AdminController {
             @RequestParam(required = false, defaultValue = "desc") String sortOrder) {
         try {
             Map<String, Object> history;
-            if (search != null || minConfidence != null || maxConfidence != null || 
-                startDate != null || endDate != null || 
-                (sortBy != null && !sortBy.equals("timestamp")) || 
-                (sortOrder != null && !sortOrder.equals("desc"))) {
+            
+            // Check if any actual filters are provided (not just defaults)
+            boolean hasFilters = (search != null && !search.trim().isEmpty()) || 
+                               minConfidence != null || 
+                               maxConfidence != null || 
+                               startDate != null || 
+                               endDate != null;
+            
+            // Check if sort differs from defaults
+            boolean hasCustomSort = (sortBy != null && !sortBy.equals("timestamp")) || 
+                                   (sortOrder != null && !sortOrder.equals("desc"));
+            
+            log.info("OCR History request: page={}, size={}, hasFilters={}, hasCustomSort={}, search={}, sortBy={}, sortOrder={}", 
+                page, size, hasFilters, hasCustomSort, search, sortBy, sortOrder);
+            
+            if (hasFilters || hasCustomSort) {
                 // Use filtered endpoint
                 history = adminService.getOCRHistoryFiltered(
                         page, size, search, minConfidence, maxConfidence, 
                         startDate, endDate, sortBy, sortOrder);
+                log.info("Using filtered query, returned {} records", 
+                    history.get("data") != null ? ((java.util.List<?>) history.get("data")).size() : 0);
             } else {
                 // Use simple pagination
                 history = adminService.getOCRHistory(page, size);
+                log.info("Using simple query, returned {} records, total={}", 
+                    history.get("data") != null ? ((java.util.List<?>) history.get("data")).size() : 0,
+                    history.get("total"));
             }
+            
             return ResponseEntity.ok(ApiResponse.success("OCR history retrieved successfully", history));
         } catch (Exception e) {
             log.error("Error retrieving OCR history", e);

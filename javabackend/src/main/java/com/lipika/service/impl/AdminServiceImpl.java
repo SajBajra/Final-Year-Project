@@ -94,6 +94,9 @@ public class AdminServiceImpl implements AdminService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
         Page<OCRHistory> historyPage = ocrHistoryRepository.findAll(pageable);
         
+        log.info("getOCRHistory: page={}, size={}, totalElements={}, totalPages={}, contentSize={}", 
+            page, size, historyPage.getTotalElements(), historyPage.getTotalPages(), historyPage.getContent().size());
+        
         Map<String, Object> result = new HashMap<>();
         result.put("data", historyPage.getContent());
         result.put("page", page);
