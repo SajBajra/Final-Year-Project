@@ -4,12 +4,16 @@ import com.lipika.model.ApiResponse;
 import com.lipika.model.OCRRequest;
 import com.lipika.model.OCRResponse;
 import com.lipika.service.OCRService;
+import com.lipika.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,10 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class OCRController {
     
     private final OCRService ocrService;
+    private final JwtUtil jwtUtil;
     
     @PostMapping(value = "/recognize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<OCRResponse>> recognizeText(
-            @RequestParam("image") MultipartFile image) {
+            @RequestParam("image") MultipartFile image,
+            HttpServletRequest request) {
         
         log.info("Received OCR request for image: {}", image.getOriginalFilename());
         
@@ -42,15 +48,38 @@ public class OCRController {
                     .body(ApiResponse.error("File must be an image"));
         }
         
+        // Extract user ID from authentication if present
+        Long userId = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getName().equals("anonymousUser")) {
+            try {
+                // Try to extract from JWT token in Authorization header
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String token = authHeader.substring(7);
+                    userId = jwtUtil.extractUserId(token);
+                }
+            } catch (Exception e) {
+                log.debug("Could not extract user ID from token", e);
+            }
+        }
+        
         try {
-            OCRResponse response = ocrService.recognizeText(image);
+            OCRResponse response = ocrService.recognizeText(image, request, userId);
             
             if (response.isSuccess()) {
                 return ResponseEntity.ok(ApiResponse.success("Text recognized successfully", response));
             } else {
+                // Check if it's a trial limit error
+                if (response.getTrialInfo() != null && response.getTrialInfo().getRequiresLogin()) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body(ApiResponse.error(response.getMessage() != null ? 
+                                    response.getMessage() : "Trial limit exceeded", response));
+                }
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(ApiResponse.error(response.getMessage() != null ? 
-                                response.getMessage() : "OCR recognition failed"));
+                                response.getMessage() : "OCR recognition failed", response));
             }
             
         } catch (Exception e) {
