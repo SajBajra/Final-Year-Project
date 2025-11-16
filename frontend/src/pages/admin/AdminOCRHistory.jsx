@@ -50,10 +50,25 @@ const AdminOCRHistory = () => {
         setHistory(response.data.data || [])
         setTotalPages(response.data.totalPages || 0)
         setTotal(response.data.total || 0)
+      } else {
+        console.error('Failed to load history:', response.message)
+        setHistory([])
+        setTotalPages(0)
+        setTotal(0)
       }
       setSelectedIds([])
     } catch (error) {
       console.error('Error loading history:', error)
+      if (error.response) {
+        console.error('Response status:', error.response.status)
+        console.error('Response data:', error.response.data)
+        if (error.response.status === 401 || error.response.status === 403) {
+          alert('Authentication required. Please log in again.')
+        }
+      }
+      setHistory([])
+      setTotalPages(0)
+      setTotal(0)
     } finally {
       setLoading(false)
     }
