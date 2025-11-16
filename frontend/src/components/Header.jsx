@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaScroll, FaUser, FaSignOutAlt, FaCog, FaBars, FaTimes } from 'react-icons/fa'
+import { FaScroll, FaUser, FaSignOutAlt, FaCog, FaBars, FaTimes, FaChevronDown } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 
 const Header = () => {
@@ -9,6 +9,8 @@ const Header = () => {
   const navigate = useNavigate()
   const { isAuthenticated, user, logout, isAdmin } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const profileDropdownRef = useRef(null)
 
   const isActive = (path) => location.pathname === path
 
@@ -17,6 +19,23 @@ const Header = () => {
     { path: '/features', label: 'Features' },
     { path: '/about', label: 'About' }
   ]
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false)
+      }
+    }
+
+    if (profileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [profileDropdownOpen])
 
   return (
     <>
@@ -61,30 +80,68 @@ const Header = () => {
               ))}
             
             {isAuthenticated() ? (
-              <div className="ml-4 flex items-center gap-2">
-                {isAdmin() && (
-                  <button
-                    onClick={() => navigate('/admin')}
-                    className="p-2 text-gray-600 hover:text-purple-600 hover:bg-gray-100 rounded-md transition-colors"
-                    title="Admin Dashboard"
-                  >
-                    <FaCog />
-                  </button>
-                )}
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-md">
+              <div className="ml-4 relative" ref={profileDropdownRef}>
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                >
                   <FaUser className="text-gray-600 text-sm" />
                   <span className="text-sm font-medium text-gray-700">{user?.username}</span>
-                </div>
-                <button
-                  onClick={() => {
-                    logout();
-                    navigate('/');
-                  }}
-                  className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-md transition-colors"
-                  title="Logout"
-                >
-                  <FaSignOutAlt />
+                  <FaChevronDown 
+                    className={`text-gray-500 text-xs transition-transform duration-200 ${
+                      profileDropdownOpen ? 'rotate-180' : ''
+                    }`} 
+                  />
                 </button>
+
+                {/* Profile Dropdown Menu */}
+                <AnimatePresence>
+                  {profileDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                    >
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-200">
+                        <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {isAdmin() ? 'Administrator' : 'User'}
+                        </p>
+                      </div>
+
+                      {/* Settings (Admin only) */}
+                      {isAdmin() && (
+                        <button
+                          onClick={() => {
+                            navigate('/admin/settings');
+                            setProfileDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <FaCog className="text-gray-500" />
+                          <span>Settings</span>
+                        </button>
+                      )}
+
+                      {/* Logout */}
+                      <button
+                        onClick={() => {
+                          logout();
+                          navigate('/');
+                          setProfileDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <FaSignOutAlt />
+                        <span>Logout</span>
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <div className="ml-4 flex items-center gap-2">
