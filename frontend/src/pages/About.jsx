@@ -245,11 +245,7 @@ const About = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-8 sm:mb-12"
         >
-          <div className="inline-block px-6 py-3 bg-gradient-to-r from-primary-100 via-purple-100 to-pink-100 rounded-full border-2 border-primary-200">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              How We Achieve Our Goals
-            </h2>
-          </div>
+        
         </motion.div>
 
         {/* What We Do Section */}
