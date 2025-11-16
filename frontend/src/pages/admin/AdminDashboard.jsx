@@ -69,19 +69,23 @@ const AdminDashboard = () => {
     }))
   }
 
-  // Format user type distribution for pie chart
-  const formatUserTypeDistribution = () => {
-    if (!analytics || !analytics.userTypeDistribution) {
+  // Format text length distribution for pie chart
+  const formatTextLengthDistribution = () => {
+    if (!analytics || !analytics.textLengthDistribution) {
       return [
-        { name: 'Registered', value: 0, color: '#10b981' },
-        { name: 'Unregistered', value: 0, color: '#3b82f6' }
+        { name: 'Short (1-10 chars)', value: 0, color: '#10b981' },
+        { name: 'Medium (11-50 chars)', value: 0, color: '#3b82f6' },
+        { name: 'Long (51-100 chars)', value: 0, color: '#f59e0b' },
+        { name: 'Very Long (100+ chars)', value: 0, color: '#ef4444' }
       ]
     }
     
-    const dist = analytics.userTypeDistribution || {}
+    const dist = analytics.textLengthDistribution || {}
     return [
-      { name: 'Registered', value: dist['Registered'] || 0, color: '#10b981' },
-      { name: 'Unregistered', value: dist['Unregistered'] || 0, color: '#3b82f6' }
+      { name: 'Short (1-10 chars)', value: dist['Short (1-10 chars)'] || 0, color: '#10b981' },
+      { name: 'Medium (11-50 chars)', value: dist['Medium (11-50 chars)'] || 0, color: '#3b82f6' },
+      { name: 'Long (51-100 chars)', value: dist['Long (51-100 chars)'] || 0, color: '#f59e0b' },
+      { name: 'Very Long (100+ chars)', value: dist['Very Long (100+ chars)'] || 0, color: '#ef4444' }
     ].filter(item => item.value > 0)
   }
 
@@ -102,9 +106,9 @@ const AdminDashboard = () => {
   }
 
   const activityChartData = formatActivityChartData()
-  const userTypePieData = formatUserTypeDistribution()
+  const textLengthPieData = formatTextLengthDistribution()
   const characterChartData = formatCharacterCountData()
-  const totalUserTypeRecords = userTypePieData.reduce((sum, item) => sum + item.value, 0)
+  const totalTextLengthRecords = textLengthPieData.reduce((sum, item) => sum + item.value, 0)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -289,7 +293,7 @@ const AdminDashboard = () => {
           )}
         </motion.div>
 
-        {/* User Type Distribution Pie Chart */}
+        {/* Text Length Distribution Pie Chart */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -301,19 +305,19 @@ const AdminDashboard = () => {
               <FaChartPie className="text-xl sm:text-2xl text-green-600" />
             </div>
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">User Type Distribution</h3>
-              <p className="text-xs sm:text-sm text-gray-500">Registered vs Unregistered users</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Text Length Distribution</h3>
+              <p className="text-xs sm:text-sm text-gray-500">OCR records by character count ranges</p>
             </div>
           </div>
           {chartLoading ? (
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
             </div>
-          ) : totalUserTypeRecords > 0 ? (
+          ) : totalTextLengthRecords > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
-                  data={userTypePieData}
+                  data={textLengthPieData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -322,7 +326,7 @@ const AdminDashboard = () => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {userTypePieData.map((entry, index) => (
+                  {textLengthPieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -337,7 +341,7 @@ const AdminDashboard = () => {
                 <Legend 
                   wrapperStyle={{ fontSize: '12px' }}
                   formatter={(value, entry) => {
-                    const item = userTypePieData.find(d => d.name === value)
+                    const item = textLengthPieData.find(d => d.name === value)
                     return (
                       <span style={{ color: item?.color || '#000' }}>
                         {value} ({item?.value || 0})

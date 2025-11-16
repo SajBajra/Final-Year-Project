@@ -267,18 +267,29 @@ public class AdminServiceImpl implements AdminService {
             }
         }
         
-        // User type distribution
-        Map<String, Long> userTypeDistribution = new HashMap<>();
-        long registeredCount = recentHistory.stream()
-                .filter(h -> h.getIsRegistered() != null && h.getIsRegistered())
+        // Text length distribution (by character count)
+        Map<String, Long> textLengthDistribution = new HashMap<>();
+        long shortText = recentHistory.stream()
+                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 0 && h.getCharacterCount() <= 10)
                 .count();
-        long unregisteredCount = recentHistory.size() - registeredCount;
-        userTypeDistribution.put("Registered", registeredCount);
-        userTypeDistribution.put("Unregistered", unregisteredCount);
+        long mediumText = recentHistory.stream()
+                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 10 && h.getCharacterCount() <= 50)
+                .count();
+        long longText = recentHistory.stream()
+                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 50 && h.getCharacterCount() <= 100)
+                .count();
+        long veryLongText = recentHistory.stream()
+                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 100)
+                .count();
+        
+        textLengthDistribution.put("Short (1-10 chars)", shortText);
+        textLengthDistribution.put("Medium (11-50 chars)", mediumText);
+        textLengthDistribution.put("Long (51-100 chars)", longText);
+        textLengthDistribution.put("Very Long (100+ chars)", veryLongText);
         
         analytics.put("timeSeries", timeSeries);
         analytics.put("characterSeries", characterSeries);
-        analytics.put("userTypeDistribution", userTypeDistribution);
+        analytics.put("textLengthDistribution", textLengthDistribution);
         analytics.put("totalRecords", recentHistory.size());
         analytics.put("period", period);
         analytics.put("days", days);

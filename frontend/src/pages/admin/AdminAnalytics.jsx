@@ -42,10 +42,10 @@ const AdminAnalytics = () => {
     }))
   }
 
-  const formatUserTypeDistribution = () => {
-    if (!analytics || !analytics.userTypeDistribution) return []
+  const formatTextLengthDistribution = () => {
+    if (!analytics || !analytics.textLengthDistribution) return []
     
-    const dist = analytics.userTypeDistribution
+    const dist = analytics.textLengthDistribution
     return Object.keys(dist).map(key => ({
       name: key,
       value: dist[key]
@@ -53,7 +53,7 @@ const AdminAnalytics = () => {
   }
 
   const chartData = formatTimeSeriesData()
-  const distributionData = formatUserTypeDistribution()
+  const distributionData = formatTextLengthDistribution()
 
   return (
     <div className="space-y-6">
@@ -201,15 +201,15 @@ const AdminAnalytics = () => {
         )}
       </div>
 
-      {/* User Type Distribution */}
+      {/* Text Length Distribution */}
       {loading ? (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">User Type Distribution</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Text Length Distribution</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="h-[300px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
             <div className="space-y-4">
               <div className="h-6 bg-gray-200 animate-pulse-fast rounded transition-fast"></div>
-              {[1, 2].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-12 bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
               ))}
             </div>
@@ -217,7 +217,7 @@ const AdminAnalytics = () => {
         </div>
       ) : distributionData.length > 0 && (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">User Type Distribution</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Text Length Distribution</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
