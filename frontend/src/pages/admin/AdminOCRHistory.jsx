@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { FaSearch, FaFilter, FaDownload, FaTrash, FaSort } from 'react-icons/fa'
 import { getOCRHistory, deleteOCRHistory, bulkDeleteOCRHistory, exportOCRHistory } from '../../services/adminService'
+import ConfirmModal from '../../components/ConfirmModal'
 
 const AdminOCRHistory = () => {
   const [history, setHistory] = useState([])
@@ -20,6 +21,10 @@ const AdminOCRHistory = () => {
   const [sortOrder, setSortOrder] = useState('desc')
   const [showFilters, setShowFilters] = useState(false)
   const [exporting, setExporting] = useState(false)
+  
+  // Modal states
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null })
+  const [bulkDeleteModal, setBulkDeleteModal] = useState({ isOpen: false })
 
   useEffect(() => {
     loadHistory()
@@ -74,31 +79,41 @@ const AdminOCRHistory = () => {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
-      try {
-        await deleteOCRHistory(id)
-        loadHistory()
-      } catch (error) {
-        console.error('Error deleting history:', error)
-        alert('Failed to delete record')
-      }
+  const handleDeleteClick = (id) => {
+    setDeleteModal({ isOpen: true, id })
+  }
+
+  const handleDelete = async () => {
+    if (!deleteModal.id) return
+    
+    try {
+      await deleteOCRHistory(deleteModal.id)
+      loadHistory()
+      setDeleteModal({ isOpen: false, id: null })
+    } catch (error) {
+      console.error('Error deleting history:', error)
+      alert('Failed to delete record')
+      setDeleteModal({ isOpen: false, id: null })
     }
   }
 
-  const handleBulkDelete = async () => {
+  const handleBulkDeleteClick = () => {
     if (selectedIds.length === 0) {
       alert('Please select records to delete')
       return
     }
-    if (window.confirm(`Are you sure you want to delete ${selectedIds.length} record(s)?`)) {
-      try {
-        await bulkDeleteOCRHistory(selectedIds)
-        loadHistory()
-      } catch (error) {
-        console.error('Error bulk deleting history:', error)
-        alert('Failed to delete records')
-      }
+    setBulkDeleteModal({ isOpen: true })
+  }
+
+  const handleBulkDelete = async () => {
+    try {
+      await bulkDeleteOCRHistory(selectedIds)
+      loadHistory()
+      setBulkDeleteModal({ isOpen: false })
+    } catch (error) {
+      console.error('Error bulk deleting history:', error)
+      alert('Failed to delete records')
+      setBulkDeleteModal({ isOpen: false })
     }
   }
 
@@ -184,7 +199,7 @@ const AdminOCRHistory = () => {
           </button>
           {selectedIds.length > 0 && (
             <button
-              onClick={handleBulkDelete}
+              onClick={handleBulkDeleteClick}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
             >
               <FaTrash /> Delete Selected ({selectedIds.length})
@@ -372,7 +387,7 @@ const AdminOCRHistory = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDeleteClick(item.id)}
                       className="text-red-600 hover:text-red-800 font-semibold"
                     >
                       Delete
@@ -407,6 +422,30 @@ const AdminOCRHistory = () => {
           </button>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, id: null })}
+        onConfirm={handleDelete}
+        title="Delete OCR Record"
+        message="Are you sure you want to delete this OCR record? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      {/* Bulk Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={bulkDeleteModal.isOpen}
+        onClose={() => setBulkDeleteModal({ isOpen: false })}
+        onConfirm={handleBulkDelete}
+        title="Delete Multiple Records"
+        message={`Are you sure you want to delete ${selectedIds.length} record(s)? This action cannot be undone.`}
+        confirmText="Delete All"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   )
 }
