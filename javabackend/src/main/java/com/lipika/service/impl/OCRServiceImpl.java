@@ -3,6 +3,10 @@ package com.lipika.service.impl;
 import com.lipika.model.OCRResponse;
 import com.lipika.service.OCRService;
 import com.lipika.service.AdminService;
+import com.lipika.service.TrialTrackingService;
+import com.lipika.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,12 +31,37 @@ public class OCRServiceImpl implements OCRService {
     
     private final RestTemplate restTemplate;
     private final AdminService adminService;
+    private final TrialTrackingService trialTrackingService;
+    private final JwtUtil jwtUtil;
     
     @Value("${lipika.ocr.service.url:http://localhost:5000}")
     private String ocrServiceUrl;
     
     @Override
-    public OCRResponse recognizeText(MultipartFile image) {
+    public OCRResponse recognizeText(MultipartFile image, HttpServletRequest request, Long userId) {
+        // Extract tracking info
+        String ipAddress = getClientIpAddress(request);
+        String cookieId = getCookieId(request);
+        String fingerprint = generateFingerprint(request);
+        
+        // Check if user is authenticated
+        boolean isAuthenticated = userId != null;
+        
+        // If not authenticated, check trial limits
+        if (!isAuthenticated) {
+            if (!trialTrackingService.canPerformOCR(ipAddress, cookieId, fingerprint)) {
+                OCRResponse errorResponse = new OCRResponse();
+                errorResponse.setSuccess(false);
+                errorResponse.setMessage("Trial limit exceeded. Please create an account or login to continue.");
+                errorResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
+                    0,
+                    10,
+                    10,
+                    true
+                ));
+                return errorResponse;
+            }
+        }
         try {
             log.info("Processing OCR request for image: {}", image.getOriginalFilename());
             
@@ -116,10 +145,17 @@ public class OCRServiceImpl implements OCRService {
                 
                 OCRResponse ocrResponse = mapToOCRResponse(responseBody);
                 
+                // Ensure success is set if we have text (Python service might not return success field)
+                if (ocrResponse.getText() != null && !ocrResponse.getText().isEmpty()) {
+                    ocrResponse.setSuccess(true);
+                }
+                
                 // Log the mapped text to verify UTF-8 handling
                 if (ocrResponse.getText() != null) {
                     log.info("Mapped OCR response text: {}", ocrResponse.getText());
                     log.info("Mapped OCR response text length: {}", ocrResponse.getText().length());
+                    log.info("OCR Response success: {}, count: {}, confidence: {}", 
+                        ocrResponse.isSuccess(), ocrResponse.getCount(), ocrResponse.getConfidence());
                     // Log first few characters as Unicode code points
                     if (!ocrResponse.getText().isEmpty()) {
                         String firstChars = ocrResponse.getText().substring(0, Math.min(10, ocrResponse.getText().length()));
@@ -131,19 +167,55 @@ public class OCRServiceImpl implements OCRService {
                     }
                 }
                 
+                // Increment trial count if not authenticated
+                if (!isAuthenticated) {
+                    trialTrackingService.incrementTrialCount(ipAddress, cookieId, fingerprint);
+                    int remaining = trialTrackingService.getRemainingTrials(ipAddress, cookieId, fingerprint);
+                    ocrResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
+                        remaining,
+                        10 - remaining,
+                        10,
+                        remaining == 0
+                    ));
+                } else {
+                    ocrResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
+                        null, null, null, false
+                    ));
+                }
+                
                 // Save to history if successful
-                if (ocrResponse.isSuccess() && ocrResponse.getText() != null && !ocrResponse.getText().isEmpty()) {
+                boolean shouldSave = ocrResponse.isSuccess() && 
+                                   ocrResponse.getText() != null && 
+                                   !ocrResponse.getText().isEmpty();
+                
+                log.info("Should save OCR history: success={}, hasText={}, textLength={}", 
+                    ocrResponse.isSuccess(), 
+                    ocrResponse.getText() != null, 
+                    ocrResponse.getText() != null ? ocrResponse.getText().length() : 0);
+                
+                if (shouldSave) {
                     try {
+                        log.info("Saving OCR history: filename={}, userId={}, isRegistered={}", 
+                            image.getOriginalFilename(), userId, isAuthenticated);
                         adminService.saveOCRHistory(
                             image.getOriginalFilename(),
                             ocrResponse.getText(),
                             ocrResponse.getCount(),
-                            ocrResponse.getConfidence()
+                            ocrResponse.getConfidence(),
+                            userId,
+                            isAuthenticated,
+                            ipAddress,
+                            cookieId
                         );
+                        log.info("OCR history saved successfully");
                     } catch (Exception e) {
-                        log.warn("Failed to save OCR history", e);
+                        log.error("Failed to save OCR history", e);
                         // Don't fail the request if history save fails
                     }
+                } else {
+                    log.warn("Skipping OCR history save: success={}, text={}", 
+                        ocrResponse.isSuccess(), 
+                        ocrResponse.getText() != null ? "present" : "null");
                 }
                 
                 return ocrResponse;
@@ -254,5 +326,46 @@ public class OCRServiceImpl implements OCRService {
         response.setMessage(message);
         response.setCount(0);
         return response;
+    }
+    
+    private String getClientIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        // Handle multiple IPs (X-Forwarded-For can contain multiple IPs)
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
+    }
+    
+    private String getCookieId(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("lipika_trial_id".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        // Generate new cookie ID if not found
+        return trialTrackingService.generateCookieId();
+    }
+    
+    private String generateFingerprint(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        String acceptLanguage = request.getHeader("Accept-Language");
+        String acceptEncoding = request.getHeader("Accept-Encoding");
+        return trialTrackingService.generateFingerprint(userAgent, acceptLanguage, acceptEncoding);
     }
 }

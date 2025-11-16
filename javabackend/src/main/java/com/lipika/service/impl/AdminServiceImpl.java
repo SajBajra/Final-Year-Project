@@ -45,7 +45,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void saveOCRHistory(String imageFilename, String recognizedText, 
-                               Integer characterCount, Double confidence) {
+                               Integer characterCount, Double confidence,
+                               Long userId, Boolean isRegistered, String ipAddress, String cookieId) {
         OCRHistory history = new OCRHistory();
         history.setImageFilename(imageFilename);
         history.setRecognizedText(recognizedText);
@@ -53,9 +54,14 @@ public class AdminServiceImpl implements AdminService {
         history.setConfidence(confidence);
         history.setTimestamp(LocalDateTime.now());
         history.setLanguage("devanagari");
+        history.setUserId(userId);
+        history.setIsRegistered(isRegistered != null ? isRegistered : false);
+        history.setIpAddress(ipAddress);
+        history.setCookieId(cookieId);
         
         OCRHistory saved = ocrHistoryRepository.save(history);
-        log.info("Saved OCR history to database: ID={}, Text={}", saved.getId(), recognizedText);
+        log.info("Saved OCR history to database: ID={}, UserId={}, IsRegistered={}, Text={}", 
+                saved.getId(), userId, isRegistered, recognizedText);
     }
     
     @Override
@@ -433,5 +439,29 @@ public class AdminServiceImpl implements AdminService {
             log.error("Error changing password", e);
             return false;
         }
+    }
+    
+    @Override
+    public long getTotalRecordCount() {
+        return ocrHistoryRepository.count();
+    }
+    
+    @Override
+    public Map<String, Object> getSampleRecord() {
+        List<OCRHistory> records = ocrHistoryRepository.findAll(PageRequest.of(0, 1)).getContent();
+        if (records.isEmpty()) {
+            return null;
+        }
+        OCRHistory record = records.get(0);
+        Map<String, Object> sample = new HashMap<>();
+        sample.put("id", record.getId());
+        sample.put("imageFilename", record.getImageFilename());
+        sample.put("recognizedText", record.getRecognizedText());
+        sample.put("characterCount", record.getCharacterCount());
+        sample.put("confidence", record.getConfidence());
+        sample.put("timestamp", record.getTimestamp());
+        sample.put("userId", record.getUserId());
+        sample.put("isRegistered", record.getIsRegistered());
+        return sample;
     }
 }

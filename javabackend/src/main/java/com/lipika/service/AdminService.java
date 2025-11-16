@@ -65,7 +65,8 @@ public interface AdminService {
      * Save OCR history (called by OCR service)
      */
     void saveOCRHistory(String imageFilename, String recognizedText, 
-                       Integer characterCount, Double confidence);
+                       Integer characterCount, Double confidence,
+                       Long userId, Boolean isRegistered, String ipAddress, String cookieId);
     
     /**
      * Get analytics data for charts
@@ -100,5 +101,15 @@ public interface AdminService {
      * @return true if password changed successfully, false otherwise
      */
     boolean changePassword(String currentPassword, String newPassword);
+    
+    /**
+     * Get total record count for diagnostics
+     */
+    long getTotalRecordCount();
+    
+    /**
+     * Get a sample record for diagnostics
+     */
+    Map<String, Object> getSampleRecord();
 }
 

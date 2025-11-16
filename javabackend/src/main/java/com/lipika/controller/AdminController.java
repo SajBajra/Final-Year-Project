@@ -41,6 +41,41 @@ public class AdminController {
     }
     
     /**
+     * Diagnostic endpoint to check database connection and record count
+     * GET /api/admin/diagnostics
+     */
+    @GetMapping("/diagnostics")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDiagnostics() {
+        try {
+            Map<String, Object> diagnostics = new HashMap<>();
+            
+            // Check total record count
+            long totalRecords = adminService.getTotalRecordCount();
+            diagnostics.put("totalRecords", totalRecords);
+            
+            // Check database connection
+            diagnostics.put("databaseConnected", true);
+            
+            // Get sample record if exists
+            if (totalRecords > 0) {
+                Map<String, Object> sample = adminService.getSampleRecord();
+                diagnostics.put("sampleRecord", sample);
+            } else {
+                diagnostics.put("sampleRecord", null);
+                diagnostics.put("message", "No OCR records found. Perform an OCR operation to create history.");
+            }
+            
+            return ResponseEntity.ok(ApiResponse.success("Diagnostics retrieved", diagnostics));
+        } catch (Exception e) {
+            log.error("Error getting diagnostics", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("databaseConnected", false);
+            error.put("error", e.getMessage());
+            return ResponseEntity.ok(ApiResponse.error("Error getting diagnostics: " + e.getMessage(), error));
+        }
+    }
+    
+    /**
      * Get OCR history with pagination
      * GET /api/admin/ocr-history?page=0&size=10
      */
