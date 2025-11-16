@@ -133,14 +133,34 @@ Stores system configuration (for future use):
 - `setting_value`: Setting value
 - `description`: Setting description
 
-### admin_users Table
+### users Table
 
-Stores admin user accounts (for future use when implementing proper authentication):
+Stores all user accounts (both regular users and admins):
 - `id`: Auto-increment primary key
-- `username`: Admin username
-- `password_hash`: Hashed password
-- `email`: Admin email
+- `username`: Unique username
+- `email`: Unique email address
+- `password_hash`: BCrypt hashed password
+- `role`: User role (USER or ADMIN)
 - `is_active`: Whether account is active
+- `created_at`: Account creation timestamp
+- `updated_at`: Last update timestamp
+- `last_login`: Last login timestamp
+
+**Default Admin User:**
+The application automatically creates a default admin user on first startup:
+- **Username:** `admin`
+- **Password:** `admin123`
+- **Email:** `admin@lipika.com`
+- **Role:** `ADMIN`
+
+⚠️ **IMPORTANT:** Change the default admin password after first login!
+
+You can configure the default admin credentials in `application.properties`:
+```properties
+admin.default.username=admin
+admin.default.password=admin123
+admin.default.email=admin@lipika.com
+```
 
 ## Migration from In-Memory Storage
 

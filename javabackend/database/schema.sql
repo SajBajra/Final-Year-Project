@@ -6,9 +6,13 @@ CREATE DATABASE IF NOT EXISTS lipika CHARACTER SET utf8mb4 COLLATE utf8mb4_unico
 
 USE lipika;
 
--- OCR History Table
+-- OCR History Table (updated with user tracking)
 CREATE TABLE IF NOT EXISTS ocr_history (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NULL,
+    is_registered BOOLEAN DEFAULT FALSE,
+    ip_address VARCHAR(45),
+    cookie_id VARCHAR(255),
     image_filename VARCHAR(500),
     recognized_text TEXT,
     character_count INT,
@@ -18,7 +22,11 @@ CREATE TABLE IF NOT EXISTS ocr_history (
     INDEX idx_timestamp (timestamp),
     INDEX idx_confidence (confidence),
     INDEX idx_language (language),
-    FULLTEXT INDEX ft_recognized_text (recognized_text)
+    INDEX idx_user_id (user_id),
+    INDEX idx_is_registered (is_registered),
+    INDEX idx_ip_address (ip_address),
+    FULLTEXT INDEX ft_recognized_text (recognized_text),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- System Settings Table (for future use)
@@ -40,17 +48,47 @@ INSERT INTO system_settings (setting_key, setting_value, description) VALUES
 ('supported_formats', 'image/jpeg,image/png,image/jpg,image/webp', 'Supported image formats')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
 
--- Admin Users Table (for future use - currently password is in-memory)
-CREATE TABLE IF NOT EXISTS admin_users (
+-- Users Table with Roles
+CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    email VARCHAR(255),
+    role VARCHAR(20) NOT NULL DEFAULT 'USER',
+    is_active BOOLEAN DEFAULT TRUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
+    last_login DATETIME,
     INDEX idx_username (username),
+    INDEX idx_email (email),
+    INDEX idx_role (role),
     INDEX idx_is_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Note: Default admin user is created automatically by DataInitializer component on application startup
+-- Default credentials (configured in application.properties):
+-- Username: admin
+-- Password: admin123
+-- Email: admin@lipika.com
+-- Role: ADMIN
+-- 
+-- IMPORTANT: Change the default admin password after first login!
+
+-- Trial Tracking Table (for unregistered users)
+CREATE TABLE IF NOT EXISTS trial_tracking (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ip_address VARCHAR(45) NOT NULL,
+    cookie_id VARCHAR(255),
+    fingerprint VARCHAR(255),
+    trial_count INT DEFAULT 0,
+    first_attempt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_attempt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_blocked BOOLEAN DEFAULT FALSE,
+    INDEX idx_ip_address (ip_address),
+    INDEX idx_cookie_id (cookie_id),
+    INDEX idx_fingerprint (fingerprint),
+    INDEX idx_is_blocked (is_blocked),
+    UNIQUE KEY unique_tracking (ip_address, cookie_id, fingerprint)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create indexes for better query performance
