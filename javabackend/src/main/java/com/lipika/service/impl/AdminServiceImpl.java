@@ -268,24 +268,40 @@ public class AdminServiceImpl implements AdminService {
         }
         
         // Text length distribution (by character count)
+        // Use characterCount if available, otherwise calculate from recognizedText
         Map<String, Long> textLengthDistribution = new HashMap<>();
         long shortText = recentHistory.stream()
-                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 0 && h.getCharacterCount() <= 10)
+                .filter(h -> {
+                    int count = getCharacterCount(h);
+                    return count > 0 && count <= 10;
+                })
                 .count();
         long mediumText = recentHistory.stream()
-                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 10 && h.getCharacterCount() <= 50)
+                .filter(h -> {
+                    int count = getCharacterCount(h);
+                    return count > 10 && count <= 50;
+                })
                 .count();
         long longText = recentHistory.stream()
-                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 50 && h.getCharacterCount() <= 100)
+                .filter(h -> {
+                    int count = getCharacterCount(h);
+                    return count > 50 && count <= 100;
+                })
                 .count();
         long veryLongText = recentHistory.stream()
-                .filter(h -> h.getCharacterCount() != null && h.getCharacterCount() > 100)
+                .filter(h -> {
+                    int count = getCharacterCount(h);
+                    return count > 100;
+                })
                 .count();
         
         textLengthDistribution.put("Short (1-10 chars)", shortText);
         textLengthDistribution.put("Medium (11-50 chars)", mediumText);
         textLengthDistribution.put("Long (51-100 chars)", longText);
         textLengthDistribution.put("Very Long (100+ chars)", veryLongText);
+        
+        log.info("Text length distribution: Short={}, Medium={}, Long={}, VeryLong={}, Total={}", 
+            shortText, mediumText, longText, veryLongText, recentHistory.size());
         
         analytics.put("timeSeries", timeSeries);
         analytics.put("characterSeries", characterSeries);
@@ -438,5 +454,20 @@ public class AdminServiceImpl implements AdminService {
         sample.put("userId", record.getUserId());
         sample.put("isRegistered", record.getIsRegistered());
         return sample;
+    }
+    
+    /**
+     * Helper method to get character count from OCRHistory
+     * Uses characterCount field if available, otherwise calculates from recognizedText
+     */
+    private int getCharacterCount(OCRHistory history) {
+        if (history.getCharacterCount() != null && history.getCharacterCount() > 0) {
+            return history.getCharacterCount();
+        }
+        // Fallback: calculate from recognizedText
+        if (history.getRecognizedText() != null) {
+            return history.getRecognizedText().length();
+        }
+        return 0;
     }
 }

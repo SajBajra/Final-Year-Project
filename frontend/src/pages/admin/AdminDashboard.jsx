@@ -72,21 +72,22 @@ const AdminDashboard = () => {
   // Format text length distribution for pie chart
   const formatTextLengthDistribution = () => {
     if (!analytics || !analytics.textLengthDistribution) {
-      return [
-        { name: 'Short (1-10 chars)', value: 0, color: '#10b981' },
-        { name: 'Medium (11-50 chars)', value: 0, color: '#3b82f6' },
-        { name: 'Long (51-100 chars)', value: 0, color: '#f59e0b' },
-        { name: 'Very Long (100+ chars)', value: 0, color: '#ef4444' }
-      ]
+      console.log('No textLengthDistribution in analytics:', analytics)
+      return []
     }
     
     const dist = analytics.textLengthDistribution || {}
-    return [
+    console.log('Text length distribution data:', dist)
+    
+    const result = [
       { name: 'Short (1-10 chars)', value: dist['Short (1-10 chars)'] || 0, color: '#10b981' },
       { name: 'Medium (11-50 chars)', value: dist['Medium (11-50 chars)'] || 0, color: '#3b82f6' },
       { name: 'Long (51-100 chars)', value: dist['Long (51-100 chars)'] || 0, color: '#f59e0b' },
       { name: 'Very Long (100+ chars)', value: dist['Very Long (100+ chars)'] || 0, color: '#ef4444' }
     ].filter(item => item.value > 0)
+    
+    console.log('Formatted pie chart data:', result)
+    return result
   }
 
   // Format character count distribution (if available)
