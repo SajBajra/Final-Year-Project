@@ -46,7 +46,7 @@ const Header = () => {
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item, index) => (
+              {navItems.map((item, index) => (
               <motion.div
                 key={item.path}
                 initial={{ opacity: 0, y: -20 }}
