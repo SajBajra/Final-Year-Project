@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { FaChartLine, FaHistory, FaCog, FaBars, FaChartBar, FaFont } from 'react-icons/fa'
+import { FaChartLine, FaHistory, FaCog, FaBars, FaChartBar, FaFont, FaUsers } from 'react-icons/fa'
 import { ROUTES } from '../config/constants'
 
 const AdminLayout = () => {
@@ -12,6 +12,7 @@ const AdminLayout = () => {
     { path: ROUTES.ADMIN_OCR_HISTORY, label: 'OCR History', icon: FaHistory },
     { path: ROUTES.ADMIN_ANALYTICS, label: 'Analytics', icon: FaChartBar },
     { path: ROUTES.ADMIN_CHARACTERS, label: 'Character Stats', icon: FaFont },
+    { path: ROUTES.ADMIN_USER_MANAGEMENT, label: 'User Management', icon: FaUsers },
     { path: ROUTES.ADMIN_SETTINGS, label: 'Settings', icon: FaCog },
   ]
 
