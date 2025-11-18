@@ -36,7 +36,10 @@ const AdminCharacterStats = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">Character Statistics</h2>
+        <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <FaFont className="text-primary-600" />
+          Character Statistics
+        </h2>
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <FaInfoCircle />
           <span>Analysis of recognized characters across all OCR requests</span>

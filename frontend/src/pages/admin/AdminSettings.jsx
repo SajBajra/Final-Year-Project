@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaLock, FaEye, FaEyeSlash, FaCog } from 'react-icons/fa'
 import { changePassword } from '../../services/adminService'
 
 const AdminSettings = () => {
@@ -52,7 +52,10 @@ const AdminSettings = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800">Settings</h2>
+      <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <FaCog className="text-primary-600" />
+        Settings
+      </h2>
 
       {message && (
         <div className={`p-4 rounded-lg ${
@@ -63,7 +66,8 @@ const AdminSettings = () => {
       )}
 
       {/* Password Change Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-2xl">
+      <div className="flex justify-center">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-2xl w-full">
         <div className="flex items-center gap-3 mb-6">
           <FaLock className="text-2xl text-primary-600" />
           <h3 className="text-xl font-bold text-gray-800">Change Admin Password</h3>
@@ -148,6 +152,7 @@ const AdminSettings = () => {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   )

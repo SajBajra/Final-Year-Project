@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FaChartBar, FaUser, FaFont, FaChartLine, FaChartPie } from 'react-icons/fa'
+import { FaChartBar, FaUser, FaFont, FaChartLine, FaChartPie, FaTachometerAlt } from 'react-icons/fa'
 import { 
   LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, BarChart, Bar 
@@ -140,7 +140,10 @@ const AdminDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between"
       >
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Dashboard</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <FaTachometerAlt className="text-primary-600" />
+          Dashboard
+        </h2>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

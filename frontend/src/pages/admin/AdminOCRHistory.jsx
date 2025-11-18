@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaSearch, FaFilter, FaDownload, FaTrash, FaSort } from 'react-icons/fa'
+import { FaSearch, FaFilter, FaDownload, FaTrash, FaSort, FaHistory } from 'react-icons/fa'
 import { getOCRHistory, deleteOCRHistory, bulkDeleteOCRHistory, exportOCRHistory } from '../../services/adminService'
 import ConfirmModal from '../../components/ConfirmModal'
 
@@ -156,7 +156,10 @@ const AdminOCRHistory = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">OCR History</h2>
+        <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <FaHistory className="text-primary-600" />
+          OCR History
+        </h2>
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-500">Total: {total} records</p>
           <button
