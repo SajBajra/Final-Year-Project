@@ -2,7 +2,6 @@ package com.lipika.service;
 
 import com.lipika.dto.AuthResponse;
 import com.lipika.dto.LoginRequest;
-import com.lipika.dto.RegisterRequest;
 import com.lipika.model.User;
 import com.lipika.repository.UserRepository;
 import com.lipika.util.JwtUtil;
@@ -25,42 +24,6 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final TrialTrackingService trialTrackingService;
     
-    @Transactional
-    public AuthResponse register(RegisterRequest request) {
-        // Check if username or email already exists
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-        
-        // Create new user
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole("USER");
-        user.setIsActive(true);
-        
-        user = userRepository.save(user);
-        
-        log.info("User registered: {}", user.getUsername());
-        
-        // Generate token
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
-        
-        return new AuthResponse(
-            token,
-            "Bearer",
-            user.getId(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getRole(),
-            null // Unlimited for registered users
-        );
-    }
-    
     public AuthResponse login(LoginRequest request) {
         // Find user by username or email
         Optional<User> userOpt = userRepository.findByUsername(request.getUsernameOrEmail())
@@ -71,6 +34,11 @@ public class AuthService {
         }
         
         User user = userOpt.get();
+        
+        // Ensure only ADMIN users can log in via this endpoint.
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+            throw new RuntimeException("Only admin accounts can log in here");
+        }
         
         // Check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {

@@ -29,7 +29,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (usernameOrEmail, password) => {
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      // Admin-only login endpoint (backend is now mounted at /api/admin/auth/login)
+      const response = await fetch('http://localhost:8080/api/admin/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,36 +60,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (username, email, password) => {
-    try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      const { token: newToken, userId, username: newUsername, email: newEmail, role } = data.data;
-      
-      const userData = { userId, username: newUsername, email: newEmail, role };
-      
-      localStorage.setItem('token', newToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      setToken(newToken);
-      setUser(userData);
-
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
+  // Registration is no longer exposed for general users.
+  // If we ever need admin-only registration, we can wire it here against /api/admin/auth/register.
+  const register = async () => {
+    return { success: false, error: 'Registration is disabled. This application is free to use without accounts.' };
   };
 
   const logout = () => {

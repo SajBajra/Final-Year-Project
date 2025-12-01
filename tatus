@@ -1,0 +1,225 @@
+[1mdiff --git a/frontend/src/App.jsx b/frontend/src/App.jsx[m
+[1mindex fc20c95..6ab4ea8 100644[m
+[1m--- a/frontend/src/App.jsx[m
+[1m+++ b/frontend/src/App.jsx[m
+[36m@@ -7,7 +7,6 @@[m [mimport Home from './pages/Home'[m
+ import Features from './pages/Features'[m
+ import About from './pages/About'[m
+ import Login from './pages/Login'[m
+[31m-import Register from './pages/Register'[m
+ import AdminLayout from './components/AdminLayout'[m
+ import AdminDashboard from './pages/admin/AdminDashboard'[m
+ import AdminOCRHistory from './pages/admin/AdminOCRHistory'[m
+[36m@@ -63,15 +62,6 @@[m [mfunction App() {[m
+             <Login />[m
+           </motion.div>[m
+         } />[m
+[31m-        <Route path="/register" element={[m
+[31m-          <motion.div[m
+[31m-            initial={{ opacity: 0 }}[m
+[31m-            animate={{ opacity: 1 }}[m
+[31m-            exit={{ opacity: 0 }}[m
+[31m-          >[m
+[31m-            <Register />[m
+[31m-          </motion.div>[m
+[31m-        } />[m
+         [m
+         {/* Admin Routes */}[m
+         <Route path={ROUTES.ADMIN} element={[m
+[1mdiff --git a/frontend/src/components/Header.jsx b/frontend/src/components/Header.jsx[m
+[1mindex 17876b5..7db6634 100644[m
+[1m--- a/frontend/src/components/Header.jsx[m
+[1m+++ b/frontend/src/components/Header.jsx[m
+[36m@@ -147,15 +147,9 @@[m [mconst Header = () => {[m
+               <div className="ml-4 flex items-center gap-2">[m
+                 <Link [m
+                   to="/login" [m
+[31m-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"[m
+[31m-                >[m
+[31m-                  Login[m
+[31m-                </Link>[m
+[31m-                <Link [m
+[31m-                  to="/register" [m
+                   className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"[m
+                 >[m
+[31m-                  Register[m
+[32m+[m[32m                  Admin Login[m
+                 </Link>[m
+               </div>[m
+             )}[m
+[36m@@ -304,16 +298,9 @@[m [mconst Header = () => {[m
+                       <Link[m
+                         to="/login"[m
+                         onClick={() => setMobileMenuOpen(false)}[m
+[31m-                        className="block w-full px-4 py-3 rounded-lg border-2 border-gray-300 text-center font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"[m
+[31m-                      >[m
+[31m-                        Login[m
+[31m-                      </Link>[m
+[31m-                      <Link[m
+[31m-                        to="/register"[m
+[31m-                        onClick={() => setMobileMenuOpen(false)}[m
+                         className="block w-full px-4 py-3 rounded-lg bg-primary-600 text-white text-center font-medium hover:bg-primary-700 transition-colors shadow-md"[m
+                       >[m
+[31m-                        Register[m
+[32m+[m[32m                        Admin Login[m
+                       </Link>[m
+                     </div>[m
+                   )}[m
+[1mdiff --git a/frontend/src/context/AuthContext.jsx b/frontend/src/context/AuthContext.jsx[m
+[1mindex 1b1c142..9ab94ba 100644[m
+[1m--- a/frontend/src/context/AuthContext.jsx[m
+[1m+++ b/frontend/src/context/AuthContext.jsx[m
+[36m@@ -29,7 +29,8 @@[m [mexport const AuthProvider = ({ children }) => {[m
+ [m
+   const login = async (usernameOrEmail, password) => {[m
+     try {[m
+[31m-      const response = await fetch('http://localhost:8080/api/auth/login', {[m
+[32m+[m[32m      // Admin-only login endpoint (backend is now mounted at /api/admin/auth/login)[m
+[32m+[m[32m      const response = await fetch('http://localhost:8080/api/admin/auth/login', {[m
+         method: 'POST',[m
+         headers: {[m
+           'Content-Type': 'application/json',[m
+[36m@@ -59,36 +60,10 @@[m [mexport const AuthProvider = ({ children }) => {[m
+     }[m
+   };[m
+ [m
+[31m-  const register = async (username, email, password) => {[m
+[31m-    try {[m
+[31m-      const response = await fetch('http://localhost:8080/api/auth/register', {[m
+[31m-        method: 'POST',[m
+[31m-        headers: {[m
+[31m-          'Content-Type': 'application/json',[m
+[31m-        },[m
+[31m-        body: JSON.stringify({ username, email, password }),[m
+[31m-      });[m
+[31m-[m
+[31m-      const data = await response.json();[m
+[31m-[m
+[31m-      if (!response.ok) {[m
+[31m-        throw new Error(data.message || 'Registration failed');[m
+[31m-      }[m
+[31m-[m
+[31m-      const { token: newToken, userId, username: newUsername, email: newEmail, role } = data.data;[m
+[31m-      [m
+[31m-      const userData = { userId, username: newUsername, email: newEmail, role };[m
+[31m-      [m
+[31m-      localStorage.setItem('token', newToken);[m
+[31m-      localStorage.setItem('user', JSON.stringify(userData));[m
+[31m-      [m
+[31m-      setToken(newToken);[m
+[31m-      setUser(userData);[m
+[31m-[m
+[31m-      return { success: true };[m
+[31m-    } catch (error) {[m
+[31m-      return { success: false, error: error.message };[m
+[31m-    }[m
+[32m+[m[32m  // Registration is no longer exposed for general users.[m
+[32m+[m[32m  // If we ever need admin-only registration, we can wire it here against /api/admin/auth/register.[m
+[32m+[m[32m  const register = async () => {[m
+[32m+[m[32m    return { success: false, error: 'Registration is disabled. This application is free to use without accounts.' };[m
+   };[m
+ [m
+   const logout = () => {[m
+[1mdiff --git a/frontend/src/pages/Login.jsx b/frontend/src/pages/Login.jsx[m
+[1mindex f6f9afa..0664f0f 100644[m
+[1m--- a/frontend/src/pages/Login.jsx[m
+[1m+++ b/frontend/src/pages/Login.jsx[m
+[36m@@ -49,10 +49,10 @@[m [mconst Login = () => {[m
+               <FaUser className="text-3xl text-primary-600" />[m
+             </div>[m
+             <h1 className="text-2xl font-bold text-gray-900 mb-2">[m
+[31m-              Welcome Back[m
+[32m+[m[32m              Admin Login[m
+             </h1>[m
+             <p className="text-gray-600 text-sm">[m
+[31m-              Login to continue using Lipika OCR[m
+[32m+[m[32m              Admins sign in here. Normal users can use Lipika OCR without logging in.[m
+             </p>[m
+           </div>[m
+ [m
+[36m@@ -115,17 +115,7 @@[m [mconst Login = () => {[m
+             </button>[m
+           </form>[m
+ [m
+[31m-          <div className="mt-6 text-center">[m
+[31m-            <p className="text-sm text-gray-600">[m
+[31m-              Don't have an account?{' '}[m
+[31m-              <Link [m
+[31m-                to="/register" [m
+[31m-                className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"[m
+[31m-              >[m
+[31m-                Register here[m
+[31m-              </Link>[m
+[31m-            </p>[m
+[31m-          </div>[m
+[32m+[m[32m          {/* No registration link here: accounts are only for admins and managed manually. */}[m
+         </div>[m
+       </div>[m
+     </div>[m
+[1mdiff --git a/frontend/src/pages/Register.jsx b/frontend/src/pages/Register.jsx[m
+[1mindex e0a82d7..2d2b496 100644[m
+[1m--- a/frontend/src/pages/Register.jsx[m
+[1m+++ b/frontend/src/pages/Register.jsx[m
+[36m@@ -12,7 +12,7 @@[m [mconst Register = () => {[m
+   });[m
+   const [showPassword, setShowPassword] = useState(false);[m
+   const [showConfirmPassword, setShowConfirmPassword] = useState(false);[m
+[31m-  const [error, setError] = useState('');[m
+[32m+[m[32m  const [error, setError] = useState('Registration is disabled. You can use Lipika OCR without an account.');[m
+   const [loading, setLoading] = useState(false);[m
+   const { register } = useAuth();[m
+   const navigate = useNavigate();[m
+[36m@@ -22,7 +22,7 @@[m [mconst Register = () => {[m
+       ...formData,[m
+       [e.target.name]: e.target.value,[m
+     });[m
+[31m-    setError('');[m
+[32m+[m[32m    // Registration is disabled; keep the original message.[m
+   };[m
+ [m
+   const handleSubmit = async (e) => {[m
+[36m@@ -30,29 +30,8 @@[m [mconst Register = () => {[m
+     setError('');[m
+ [m
+     // Validation[m
+[31m-    if (formData.password !== formData.confirmPassword) {[m
+[31m-      setError('Passwords do not match');[m
+[31m-      return;[m
+[31m-    }[m
+[31m-[m
+[31m-    if (formData.password.length < 6) {[m
+[31m-      setError('Password must be at least 6 characters');[m
+[31m-      return;[m
+[31m-    }[m
+[31m-[m
+[31m-    setLoading(true);[m
+[31m-[m
+[31m-    const result = await register(formData.username, formData.email, formData.password);[m
+[31m-[m
+[31m-    if (result.success) {[m
+[31m-      // Small delay to ensure state is updated[m
+[31m-      setTimeout(() => {[m
+[31m-        navigate('/');[m
+[31m-      }, 100);[m
+[31m-    } else {[m
+[31m-      setError(result.error || 'Registration failed');[m
+[31m-    }[m
+[31m-    setLoading(false);[m
+[32m+[m[32m    // Prevent any actual registration attempt[m
+[32m+[m[32m    setError('Registration is disabled. This application is free to use without creating an account.');[m
+   };[m
+ [m
+   return ([m
+[36m@@ -64,10 +43,10 @@[m [mconst Register = () => {[m
+               <FaUser className="text-3xl text-purple-600" />[m
+             </div>[m
+             <h1 className="text-2xl font-bold text-gray-900 mb-2">[m
+[31m-              Create Account[m
+[32m+[m[32m              Registration Disabled[m
+             </h1>[m
+             <p className="text-gray-600 text-sm">[m
+[31m-              Join Lipika OCR to get unlimited access[m
+[32m+[m[32m              You can use Lipika OCR freely without creating an account.[m
+             </p>[m
+           </div>[m
+ [m

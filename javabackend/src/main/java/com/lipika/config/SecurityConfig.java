@@ -34,12 +34,18 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // We keep the application stateless and use JWT for session management,
+            // while exposing a dedicated admin-auth endpoint.
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                // Admin authentication entry point (used only for admin login / potential admin-only registration)
+                .requestMatchers("/api/admin/auth/**").permitAll()
+                // Public health and application APIs (free usage, no login)
                 .requestMatchers("/api/health").permitAll()
+                // All other admin endpoints require ADMIN role
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().permitAll() // Allow OCR for trial tracking
+                // All user-facing OCR/translation/etc. endpoints stay completely open (free, no login)
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         

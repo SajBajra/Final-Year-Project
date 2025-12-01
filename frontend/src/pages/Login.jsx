@@ -49,10 +49,10 @@ const Login = () => {
               <FaUser className="text-3xl text-primary-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Welcome Back
+              Admin Login
             </h1>
             <p className="text-gray-600 text-sm">
-              Login to continue using Lipika OCR
+              Admins sign in here. Normal users can use Lipika OCR without logging in.
             </p>
           </div>
 
@@ -115,17 +115,7 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link 
-                to="/register" 
-                className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"
-              >
-                Register here
-              </Link>
-            </p>
-          </div>
+          {/* No registration link here: accounts are only for admins and managed manually. */}
         </div>
       </div>
     </div>

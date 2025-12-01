@@ -7,7 +7,6 @@ import Home from './pages/Home'
 import Features from './pages/Features'
 import About from './pages/About'
 import Login from './pages/Login'
-import Register from './pages/Register'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
@@ -61,15 +60,6 @@ function App() {
             exit={{ opacity: 0 }}
           >
             <Login />
-          </motion.div>
-        } />
-        <Route path="/register" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <Register />
           </motion.div>
         } />
         

@@ -12,7 +12,7 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState('Registration is disabled. You can use Lipika OCR without an account.');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
+    // Registration is disabled; keep the original message.
   };
 
   const handleSubmit = async (e) => {
@@ -30,29 +30,8 @@ const Register = () => {
     setError('');
 
     // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
-    setLoading(true);
-
-    const result = await register(formData.username, formData.email, formData.password);
-
-    if (result.success) {
-      // Small delay to ensure state is updated
-      setTimeout(() => {
-        navigate('/');
-      }, 100);
-    } else {
-      setError(result.error || 'Registration failed');
-    }
-    setLoading(false);
+    // Prevent any actual registration attempt
+    setError('Registration is disabled. This application is free to use without creating an account.');
   };
 
   return (
@@ -64,10 +43,10 @@ const Register = () => {
               <FaUser className="text-3xl text-purple-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Create Account
+              Registration Disabled
             </h1>
             <p className="text-gray-600 text-sm">
-              Join Lipika OCR to get unlimited access
+              You can use Lipika OCR freely without creating an account.
             </p>
           </div>
 

@@ -147,15 +147,9 @@ const Header = () => {
               <div className="ml-4 flex items-center gap-2">
                 <Link 
                   to="/login" 
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-                >
-                  Login
-                </Link>
-                <Link 
-                  to="/register" 
                   className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
                 >
-                  Register
+                  Admin Login
                 </Link>
               </div>
             )}
@@ -304,16 +298,9 @@ const Header = () => {
                       <Link
                         to="/login"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block w-full px-4 py-3 rounded-lg border-2 border-gray-300 text-center font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                      >
-                        Login
-                      </Link>
-                      <Link
-                        to="/register"
-                        onClick={() => setMobileMenuOpen(false)}
                         className="block w-full px-4 py-3 rounded-lg bg-primary-600 text-white text-center font-medium hover:bg-primary-700 transition-colors shadow-md"
                       >
-                        Register
+                        Admin Login
                       </Link>
                     </div>
                   )}
