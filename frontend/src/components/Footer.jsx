@@ -127,7 +127,7 @@ const Footer = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-400 text-center md:text-left">
-              © 2024 <span className="text-white font-semibold">Lipika Project</span>. 
+              © 2025 <span className="text-white font-semibold">Lipika Project</span>. 
               Built for Ranjana script preservation and digitization.
             </p>
             <div className="flex items-center space-x-2 text-xs text-gray-400">
