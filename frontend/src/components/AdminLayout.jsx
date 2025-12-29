@@ -98,17 +98,8 @@ const AdminLayout = () => {
           <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden transition-all duration-300`}>
             {/* Navigation - Scrollable if content is long */}
             <nav className={`flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar ${sidebarOpen ? 'w-full' : 'w-0'} overflow-hidden`}>
-              {menuItems.map((item, index) => {
+              {menuItems.map((item) => {
                 const IconComponent = item.icon
-                // Alternate colors for better visualization
-                const colors = [
-                  { active: 'bg-primary-600 text-white', hover: 'hover:bg-primary-100 hover:text-primary-700' },
-                  { active: 'bg-secondary-500 text-white', hover: 'hover:bg-secondary-100 hover:text-secondary-700' },
-                  { active: 'bg-primary-600 text-white', hover: 'hover:bg-primary-100 hover:text-primary-700' },
-                  { active: 'bg-secondary-500 text-white', hover: 'hover:bg-secondary-100 hover:text-secondary-700' },
-                  { active: 'bg-primary-600 text-white', hover: 'hover:bg-primary-100 hover:text-primary-700' },
-                ]
-                const colorScheme = colors[index % colors.length]
                 return (
                   <Link
                     key={item.path}
@@ -116,8 +107,8 @@ const AdminLayout = () => {
                     onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 whitespace-nowrap ${
                       isActive(item.path)
-                        ? `${colorScheme.active} shadow-md`
-                        : `text-gray-700 ${colorScheme.hover}`
+                        ? 'bg-primary-600 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-primary-100 hover:text-primary-700'
                     }`}
                     title={item.label}
                   >
