@@ -7,31 +7,31 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary: Deep Indigo - Main brand color
+        // Primary: Deep Blue - Professional and trustworthy
         primary: {
-          50: '#e8eaf6',
-          100: '#c5cae9',
-          200: '#9fa8da',
-          300: '#7986cb',
-          400: '#5c6bc0',
-          500: '#3f51b5',
-          600: '#3949ab', // Primary
-          700: '#303f9f',
-          800: '#283593',
-          900: '#1a237e',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb', // Primary - Deep Blue
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
-        // Secondary: Teal - Accent color
+        // Secondary: Warm Orange - Complementary accent
         secondary: {
-          50: '#e0f2f1',
-          100: '#b2dfdb',
-          200: '#80cbc4',
-          300: '#4db6ac',
-          400: '#26a69a',
-          500: '#009688', // Secondary
-          600: '#00897b',
-          700: '#00796b',
-          800: '#00695c',
-          900: '#004d40',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // Secondary - Warm Orange
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
         },
       },
       fontFamily: {

@@ -16,8 +16,8 @@
 }
 
 :root {
-  --primary-color: #3949ab;      /* Deep Indigo - Primary */
-  --secondary-color: #009688;     /* Teal - Secondary */
+  --primary-color: #2563eb;      /* Deep Blue - Primary */
+  --secondary-color: #f97316;     /* Warm Orange - Secondary */
 }
 
 @layer base {

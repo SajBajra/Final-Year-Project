@@ -13,7 +13,7 @@ const AdminDashboard = () => {
   const [analytics, setAnalytics] = useState(null)
   const [chartLoading, setChartLoading] = useState(false)
 
-  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1']
+  const COLORS = ['#2563eb', '#f97316', '#3b82f6', '#ea580c', '#1d4ed8', '#c2410c', '#1e40af']
 
   useEffect(() => {
     loadDashboardData()
@@ -140,7 +140,7 @@ const AdminDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between"
       >
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <h2 className="text-2xl sm:text-3xl font-bold text-black flex items-center gap-3">
           <FaTachometerAlt className="text-primary-600" />
           Dashboard
         </h2>
@@ -164,11 +164,11 @@ const AdminDashboard = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs sm:text-sm text-gray-500 font-semibold">Total Records</p>
+              <p className="text-xs sm:text-sm text-black font-semibold">Total Records</p>
               {loading ? (
                 <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+                <p className="text-2xl sm:text-3xl font-bold text-black mt-2">
                   {stats?.totalRecords ?? 0}
                 </p>
               )}
@@ -182,17 +182,17 @@ const AdminDashboard = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs sm:text-sm text-gray-500 font-semibold">Registered Users</p>
+              <p className="text-xs sm:text-sm text-black font-semibold">Registered Users</p>
               {loading ? (
                 <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+                <p className="text-2xl sm:text-3xl font-bold text-black mt-2">
                   {stats?.registeredCount ?? 0}
                 </p>
               )}
             </div>
-            <div className="p-3 rounded-xl bg-green-100">
-              <FaUser className="text-2xl sm:text-3xl md:text-4xl text-green-600" />
+            <div className="p-3 rounded-xl bg-secondary-100">
+              <FaUser className="text-2xl sm:text-3xl md:text-4xl text-secondary-600" />
             </div>
           </div>
         </motion.div>
@@ -200,11 +200,11 @@ const AdminDashboard = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs sm:text-sm text-gray-500 font-semibold">Total Characters</p>
+              <p className="text-xs sm:text-sm text-black font-semibold">Total Characters</p>
               {loading ? (
                 <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+                <p className="text-2xl sm:text-3xl font-bold text-black mt-2">
                   {stats?.totalCharacters ?? 0}
                 </p>
               )}
@@ -218,11 +218,11 @@ const AdminDashboard = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs sm:text-sm text-gray-500 font-semibold">Recent Activity (24h)</p>
+              <p className="text-xs sm:text-sm text-black font-semibold">Recent Activity (24h)</p>
               {loading ? (
                 <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+                <p className="text-2xl sm:text-3xl font-bold text-black mt-2">
                   {stats?.recentActivity ?? 0}
                 </p>
               )}
@@ -253,8 +253,8 @@ const AdminDashboard = () => {
               <FaChartLine className="text-xl sm:text-2xl text-primary-600" />
             </div>
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Recent Activity (7 Days)</h3>
-              <p className="text-xs sm:text-sm text-gray-500">OCR requests over time</p>
+              <h3 className="text-lg sm:text-xl font-bold text-black">Recent Activity (7 Days)</h3>
+              <p className="text-xs sm:text-sm text-black">OCR requests over time</p>
             </div>
           </div>
           {chartLoading ? (
@@ -309,8 +309,8 @@ const AdminDashboard = () => {
               <FaChartPie className="text-xl sm:text-2xl text-green-600" />
             </div>
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Text Length Distribution</h3>
-              <p className="text-xs sm:text-sm text-gray-500">OCR records by character count ranges</p>
+              <h3 className="text-lg sm:text-xl font-bold text-black">Text Length Distribution</h3>
+              <p className="text-xs sm:text-sm text-black">OCR records by character count ranges</p>
             </div>
           </div>
           {chartLoading ? (
@@ -359,7 +359,7 @@ const AdminDashboard = () => {
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
               <div className="text-center">
                   <FaChartPie className="text-4xl text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">No data available</p>
+                <p className="text-sm text-black">No data available</p>
               </div>
             </div>
           )}
@@ -379,8 +379,8 @@ const AdminDashboard = () => {
               <FaFont className="text-xl sm:text-2xl text-purple-600" />
             </div>
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Characters Recognized Over Time</h3>
-              <p className="text-xs sm:text-sm text-gray-500">Total characters recognized per day (last 7 days)</p>
+              <h3 className="text-lg sm:text-xl font-bold text-black">Characters Recognized Over Time</h3>
+              <p className="text-xs sm:text-sm text-black">Total characters recognized per day (last 7 days)</p>
             </div>
           </div>
           {chartLoading ? (

@@ -36,11 +36,11 @@ const AdminCharacterStats = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <h2 className="text-3xl font-bold text-black flex items-center gap-3">
           <FaFont className="text-primary-600" />
           Character Statistics
         </h2>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-black">
           <FaInfoCircle />
           <span>Analysis of recognized characters across all OCR requests</span>
         </div>
@@ -51,11 +51,11 @@ const AdminCharacterStats = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-semibold">Total Unique Characters</p>
+              <p className="text-sm text-black font-semibold">Total Unique Characters</p>
               {loading ? (
                 <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
-                <p className="text-3xl font-bold text-gray-800 mt-2">
+                <p className="text-3xl font-bold text-black mt-2">
                   {stats?.totalUniqueCharacters ?? 0}
                 </p>
               )}
@@ -67,15 +67,15 @@ const AdminCharacterStats = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-semibold">Top Characters Analyzed</p>
+              <p className="text-sm text-black font-semibold">Top Characters Analyzed</p>
               {loading ? (
                 <div className="h-10 w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-gray-800 mt-2">
+                  <p className="text-3xl font-bold text-black mt-2">
                     {topCharacters.length}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">Displaying top 20</p>
+                  <p className="text-xs text-black mt-1">Displaying top 20</p>
                 </>
               )}
             </div>
@@ -86,15 +86,15 @@ const AdminCharacterStats = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-semibold">Most Frequent Character</p>
+              <p className="text-sm text-black font-semibold">Most Frequent Character</p>
               {loading ? (
                 <div className="h-10 w-32 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
               ) : (
-                <p className="text-2xl font-bold text-gray-800 mt-2">
+                <p className="text-2xl font-bold text-black mt-2">
                   {topCharacters.length > 0 ? (
                     <>
                       {topCharacters[0].character === ' ' ? 'Space' : topCharacters[0].character}
-                      <span className="text-sm text-gray-500 ml-2">
+                      <span className="text-sm text-black ml-2">
                         ({topCharacters[0].frequency} times)
                       </span>
                     </>
@@ -110,12 +110,12 @@ const AdminCharacterStats = () => {
       {/* Top Characters Chart */}
       {loading ? (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Top 20 Most Recognized Characters</h3>
+          <h3 className="text-xl font-bold text-black mb-4">Top 20 Most Recognized Characters</h3>
           <div className="h-[400px] bg-gray-100 animate-pulse-fast rounded transition-fast"></div>
         </div>
       ) : chartData.length > 0 && (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Top 20 Most Recognized Characters</h3>
+          <h3 className="text-xl font-bold text-black mb-4">Top 20 Most Recognized Characters</h3>
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -160,19 +160,19 @@ const AdminCharacterStats = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Rank
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Character
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Unicode
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Frequency
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Percentage
                   </th>
                 </tr>

@@ -224,8 +224,8 @@ const About = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="relative z-10">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="p-2 rounded-xl bg-green-100">
-                  <FaRobot className="text-2xl text-green-600" />
+                <div className="p-2 rounded-xl bg-primary-100">
+                  <FaRobot className="text-2xl text-primary-600" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">Our Mission</h2>
               </div>
@@ -279,8 +279,8 @@ const About = () => {
                 icon: FaEye,
                 title: 'AR Overlay Visualization',
                 description: 'Interactive augmented reality overlay shows recognized text with individual character bounding boxes, confidence scores, and hover tooltips - similar to Google Lens.',
-                bgColor: 'bg-green-100',
-                iconColor: 'text-green-600',
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600',
                 delay: 0.2
               },
               {
@@ -446,7 +446,7 @@ const About = () => {
             {[
               { value: '500', label: 'Training Epochs', color: 'text-blue-600', bgColor: 'bg-blue-50' },
               { value: '62', label: 'Devanagari Characters', color: 'text-purple-600', bgColor: 'bg-purple-50' },
-              { value: '80%', label: 'Training Split', color: 'text-green-600', bgColor: 'bg-green-50' },
+              { value: '80%', label: 'Training Split', color: 'text-black', bgColor: 'bg-secondary-50' },
               { value: '90%+', label: 'Accuracy', color: 'text-pink-600', bgColor: 'bg-pink-50' }
             ].map((metric, index) => (
               <motion.div

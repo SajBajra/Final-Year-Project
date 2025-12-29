@@ -28,8 +28,8 @@ const Features = () => {
       title: 'Google Lens-Style AR Overlay',
       description: 'Interactive augmented reality visualization with individual character bounding boxes, confidence scores, and hover tooltips for detailed recognition insights.',
       color: 'from-green-500 to-emerald-500',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600'
+      bgColor: 'bg-secondary-50',
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaGlobe,
@@ -60,8 +60,8 @@ const Features = () => {
       title: 'Confidence Scoring',
       description: 'Each recognized character includes a confidence score (0-100%) with color-coded visualization to help identify recognition accuracy.',
       color: 'from-teal-500 to-cyan-500',
-      bgColor: 'bg-teal-50',
-      iconColor: 'text-teal-600'
+      bgColor: 'bg-secondary-50',
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaMobileAlt,
@@ -422,7 +422,7 @@ const Features = () => {
         >
           {[
             { value: '<2s', label: 'Processing Time', color: 'text-primary-600', icon: FaBolt },
-            { value: '62', label: 'Devanagari Characters', color: 'text-green-600', icon: FaFont },
+            { value: '62', label: 'Devanagari Characters', color: 'text-black', icon: FaFont },
             { value: '500', label: 'Training Epochs', color: 'text-purple-600', icon: FaChartBar },
             { value: '90%+', label: 'Model Accuracy', color: 'text-pink-600', icon: FaBullseye }
           ].map((metric, index) => {

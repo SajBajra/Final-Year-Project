@@ -52,7 +52,7 @@ const AdminSettings = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+      <h2 className="text-3xl font-bold text-black flex items-center gap-3">
         <FaCog className="text-primary-600" />
         Settings
       </h2>
@@ -70,11 +70,11 @@ const AdminSettings = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-2xl w-full">
         <div className="flex items-center gap-3 mb-6">
           <FaLock className="text-2xl text-primary-600" />
-          <h3 className="text-xl font-bold text-gray-800">Change Admin Password</h3>
+          <h3 className="text-xl font-bold text-black">Change Admin Password</h3>
         </div>
         <form onSubmit={handlePasswordChange} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Current Password
             </label>
             <div className="relative">
@@ -96,7 +96,7 @@ const AdminSettings = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               New Password
             </label>
             <div className="relative">
@@ -116,11 +116,11 @@ const AdminSettings = () => {
                 {showNewPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Password must be at least 4 characters long</p>
+            <p className="text-xs text-black mt-1">Password must be at least 4 characters long</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Confirm New Password
             </label>
             <div className="relative">
