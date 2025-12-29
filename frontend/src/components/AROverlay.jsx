@@ -143,8 +143,8 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
               <div
                 className={`absolute inset-0 rounded transition-all duration-300 ${
                   isHovered 
-                    ? 'border-3 border-blue-500 bg-blue-500 bg-opacity-30 shadow-lg shadow-blue-500/50' 
-                    : 'border-2 border-blue-400 bg-blue-400 bg-opacity-20'
+                    ? 'border-3 border-primary-600 bg-primary-600 bg-opacity-30 shadow-lg shadow-primary-600/50' 
+                    : 'border-2 border-primary-400 bg-primary-400 bg-opacity-20'
                 }`}
                 style={{
                   boxShadow: isHovered ? '0 0 20px rgba(41, 82, 255, 0.6)' : 'none'
