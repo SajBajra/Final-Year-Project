@@ -16,8 +16,8 @@
 }
 
 :root {
-  --primary-color: #334155;      /* Deep Navy Blue - Primary */
-  --secondary-color: #f59e0b;     /* Warm Amber - Secondary */
+  --primary-color: #4f46e5;      /* Vibrant Indigo - Primary */
+  --secondary-color: #ec4899;     /* Coral Pink - Secondary */
 }
 
 @layer base {
