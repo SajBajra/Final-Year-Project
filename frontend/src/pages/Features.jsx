@@ -105,7 +105,7 @@ const Features = () => {
 
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-primary-50">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-primary-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
         {/* Animated Background Elements */}
