@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { FaScroll, FaHeart } from 'react-icons/fa'
+import logoImage from '../images/Logo.png'
 
 const Footer = () => {
   return (
@@ -20,7 +21,11 @@ const Footer = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center space-x-3 mb-4">
-              <FaScroll className="text-4xl text-secondary-400" />
+              <img 
+                src={logoImage} 
+                alt="Lipika Logo" 
+                className="h-10 w-auto"
+              />
               <h3 className="text-3xl font-black text-white">
                 Lipika
               </h3>
