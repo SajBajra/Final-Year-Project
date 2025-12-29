@@ -147,7 +147,7 @@ const AdminLayout = () => {
 
         {/* Main Content Area - Scrollable */}
         <main 
-          className={`flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar ${
+          className={`flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar bg-gradient-to-br from-white via-primary-50/20 to-secondary-50/20 ${
             // Add margin on desktop when sidebar is open
             sidebarOpen ? 'md:ml-0' : 'md:ml-0'
           }`}
