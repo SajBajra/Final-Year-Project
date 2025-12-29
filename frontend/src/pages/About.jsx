@@ -514,13 +514,13 @@ const About = () => {
           >
             <div className="flex items-center justify-center space-x-3 mb-4">
               <div className="p-2 rounded-xl bg-primary-100">
-                <FaCheckCircle className="text-3xl text-green-600" />
+                <FaCheckCircle className="text-3xl text-primary-600" />
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-primary-600">
                 Key Features
               </h2>
             </div>
-            <p className="text-gray-600 text-center max-w-2xl mx-auto">
+            <p className="text-black text-center max-w-2xl mx-auto">
               Discover the powerful capabilities that make Lipika the premier OCR solution for Ranjana script
             </p>
           </motion.div>
@@ -537,65 +537,57 @@ const About = () => {
                 icon: FaSearch,
                 title: 'Character Recognition',
                 description: 'Individual bounding boxes with precise character-level recognition',
-                color: 'from-blue-500 to-cyan-500',
-                bgColor: 'bg-blue-50',
-                iconColor: 'text-blue-600'
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600'
               },
               {
                 icon: FaGlobe,
                 title: 'Script Conversion',
                 description: 'Ranjana to Devanagari output conversion seamlessly',
-                color: 'from-purple-500 to-pink-500',
-                bgColor: 'bg-purple-50',
-                iconColor: 'text-purple-600'
+                bgColor: 'bg-secondary-100',
+                iconColor: 'text-secondary-600'
               },
               {
                 icon: FaChartLine,
                 title: 'Confidence Scoring',
                 description: 'Real-time confidence scores for each recognized character',
-                color: 'from-green-500 to-emerald-500',
-                bgColor: 'bg-green-50',
-                iconColor: 'text-green-600'
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600'
               },
               {
                 icon: FaEye,
                 title: 'AR Visualization',
                 description: 'Google Lens-style AR overlay with interactive bounding boxes',
-                color: 'from-orange-500 to-red-500',
-                bgColor: 'bg-orange-50',
-                iconColor: 'text-orange-600'
+                bgColor: 'bg-secondary-100',
+                iconColor: 'text-secondary-600'
               },
               {
                 icon: FaMobileAlt,
                 title: 'Multi-Input Support',
                 description: 'Camera capture and image upload for flexible usage',
-                color: 'from-indigo-500 to-purple-500',
-                bgColor: 'bg-indigo-50',
-                iconColor: 'text-indigo-600'
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600'
               },
               {
                 icon: FaGlobe,
                 title: 'Translation Support',
                 description: 'Optional English translation to bridge language barriers',
-                color: 'from-teal-500 to-cyan-500',
-                bgColor: 'bg-teal-50',
-                iconColor: 'text-teal-600'
+                bgColor: 'bg-secondary-100',
+                iconColor: 'text-secondary-600'
               },
               {
                 icon: FaDatabase,
                 title: 'Word Grouping',
                 description: 'Intelligent word grouping based on character spacing',
-                color: 'from-pink-500 to-rose-500',
-                bgColor: 'bg-pink-50',
-                iconColor: 'text-pink-600'
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600'
               },
               {
                 icon: FaChartBar,
                 title: 'Admin Dashboard',
                 description: 'Comprehensive analytics and OCR history management',
-                color: 'from-yellow-500 to-orange-500',
-                bgColor: 'bg-yellow-50',
-                iconColor: 'text-yellow-600'
+                bgColor: 'bg-secondary-100',
+                iconColor: 'text-secondary-600'
               }
             ].map((feature, index) => {
               const FeatureIcon = feature.icon

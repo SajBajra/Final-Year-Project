@@ -11,73 +11,64 @@ const Features = () => {
       icon: FaUpload,
       title: 'Multiple Input Methods',
       description: 'Upload images from your device or capture in real-time using your camera. Supports JPG, PNG, WEBP, and BMP formats for maximum flexibility.',
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600'
+      bgColor: 'bg-primary-100',
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaRobot,
       title: 'Advanced AI Recognition',
       description: 'Powered by Character-based CRNN (Convolutional Recurrent Neural Network) deep learning model trained on 500 epochs for accurate character-level recognition of Ranjana script.',
-      color: 'from-purple-500 to-pink-500',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600'
+      bgColor: 'bg-primary-100',
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaEye,
       title: 'Google Lens-Style AR Overlay',
       description: 'Interactive augmented reality visualization with individual character bounding boxes, confidence scores, and hover tooltips for detailed recognition insights.',
-      color: 'from-green-500 to-emerald-500',
-      bgColor: 'bg-secondary-50',
+      bgColor: 'bg-secondary-100',
       iconColor: 'text-secondary-600'
     },
     {
       icon: FaGlobe,
       title: 'Ranjana to Devanagari Output',
       description: 'Automatically converts recognized Ranjana script characters to Devanagari (Nepali) text output, with optional English translation support.',
-      color: 'from-orange-500 to-red-500',
-      bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600'
+      bgColor: 'bg-secondary-100',
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaBolt,
       title: 'Fast Processing',
       description: 'Optimized inference pipeline with GPU acceleration support. Process images with character segmentation and recognition in seconds.',
-      color: 'from-indigo-500 to-purple-500',
-      bgColor: 'bg-indigo-50',
-      iconColor: 'text-indigo-600'
+      bgColor: 'bg-primary-100',
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaBullseye,
       title: 'Character-Level Precision',
       description: 'Individual character detection with precise bounding boxes, confidence scores, and word grouping for perfect AR visualization.',
-      color: 'from-pink-500 to-rose-500',
-      bgColor: 'bg-pink-50',
-      iconColor: 'text-pink-600'
+      bgColor: 'bg-secondary-100',
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaChartBar,
       title: 'Confidence Scoring',
       description: 'Each recognized character includes a confidence score (0-100%) with color-coded visualization to help identify recognition accuracy.',
-      color: 'from-teal-500 to-cyan-500',
-      bgColor: 'bg-secondary-50',
-      iconColor: 'text-secondary-600'
+      bgColor: 'bg-primary-100',
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaMobileAlt,
       title: 'Fully Responsive Design',
       description: 'Beautiful, modern UI that works seamlessly on desktop, tablet, and mobile devices with optimized layouts for every screen size.',
-      color: 'from-yellow-500 to-orange-500',
-      bgColor: 'bg-yellow-50',
-      iconColor: 'text-yellow-600'
+      bgColor: 'bg-secondary-100',
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaLock,
       title: 'Secure & Private',
       description: 'All processing happens on your server. Images are processed in real-time and OCR history is stored securely with admin dashboard access.',
-      color: 'from-gray-600 to-gray-800',
-      bgColor: 'bg-gray-50',
-      iconColor: 'text-gray-700'
+      bgColor: 'bg-primary-100',
+      iconColor: 'text-primary-600'
     }
   ]
 
@@ -316,7 +307,7 @@ const Features = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="card bg-gradient-to-br from-gray-900 to-gray-800 text-white mb-8 sm:mb-12 md:mb-16 relative overflow-hidden"
+          className="card bg-primary-700 text-white mb-8 sm:mb-12 md:mb-16 relative overflow-hidden"
         >
           {/* Animated Background Pattern */}
           <div className="absolute inset-0 opacity-10">
@@ -335,9 +326,9 @@ const Features = () => {
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
               {[
-                { icon: FaPython, title: 'Model Layer', desc: 'Python-based CRNN model with Flask REST API for character recognition from Ranjana script images', color: 'text-yellow-400', delay: 0.1 },
-                { icon: FaCoffee, title: 'Presenter Layer', desc: 'Java Spring Boot microservices for business logic, API orchestration, and admin dashboard', color: 'text-orange-400', delay: 0.2 },
-                { icon: FaReact, title: 'View Layer', desc: 'React frontend with responsive design for intuitive user interface and AR visualization', color: 'text-cyan-400', delay: 0.3 }
+                { icon: FaPython, title: 'Model Layer', desc: 'Python-based CRNN model with Flask REST API for character recognition from Ranjana script images', color: 'text-secondary-400', delay: 0.1 },
+                { icon: FaCoffee, title: 'Presenter Layer', desc: 'Java Spring Boot microservices for business logic, API orchestration, and admin dashboard', color: 'text-secondary-400', delay: 0.2 },
+                { icon: FaReact, title: 'View Layer', desc: 'React frontend with responsive design for intuitive user interface and AR visualization', color: 'text-secondary-400', delay: 0.3 }
               ].map((layer, index) => {
                 const LayerIcon = layer.icon
                 return (
