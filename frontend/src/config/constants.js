@@ -16,18 +16,18 @@ export const API_CONFIG = {
 
 export const UI_CONFIG = {
   // Primary color (used throughout the app) - matches tailwind.config.js primary-600
-  PRIMARY_COLOR: '#4f46e5', // Vibrant Indigo
+  PRIMARY_COLOR: '#0d9488', // Deep Teal
   
   // Secondary color - matches tailwind.config.js secondary-500
-  SECONDARY_COLOR: '#ec4899', // Coral Pink
+  SECONDARY_COLOR: '#f97316', // Warm Orange
   
   // Primary color variations for charts
-  PRIMARY_LIGHT: '#818cf8', // primary-400
-  PRIMARY_DARK: '#4338ca', // primary-700
+  PRIMARY_LIGHT: '#14b8a6', // primary-500
+  PRIMARY_DARK: '#0f766e', // primary-700
   
   // Secondary color variations for charts
-  SECONDARY_LIGHT: '#f472b6', // secondary-400
-  SECONDARY_DARK: '#db2777', // secondary-600
+  SECONDARY_LIGHT: '#fb923c', // secondary-400
+  SECONDARY_DARK: '#ea580c', // secondary-600
   
   // Font family
   FONT_FAMILY: 'Poppins, system-ui, sans-serif',

@@ -7,31 +7,31 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary: Vibrant Indigo - Modern and engaging
+        // Primary: Deep Teal - Fresh and professional
         primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1', // Primary - Vibrant Indigo
-          600: '#4f46e5', // Main - Rich Indigo
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6', // Primary - Fresh Teal
+          600: '#0d9488', // Main - Deep Teal
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
-        // Secondary: Coral Pink - Vibrant and energetic
+        // Secondary: Warm Orange - Vibrant and energetic
         secondary: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899', // Secondary - Coral Pink
-          600: '#db2777', // Main - Vibrant Pink
-          700: '#be185d',
-          800: '#9f1239',
-          900: '#831843',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c', // Secondary - Light Orange
+          500: '#f97316', // Secondary - Warm Orange
+          600: '#ea580c', // Main - Vibrant Orange
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
         },
       },
       fontFamily: {
