@@ -3,7 +3,7 @@ import { FaScroll, FaHeart } from 'react-icons/fa'
 
 const Footer = () => {
   return (
-    <footer className="relative mt-20 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white overflow-hidden">
+    <footer className="relative mt-20 bg-primary-800 text-white overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl"></div>
@@ -20,8 +20,8 @@ const Footer = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center space-x-3 mb-4">
-              <FaScroll className="text-4xl text-purple-400" />
-              <h3 className="text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <FaScroll className="text-4xl text-secondary-400" />
+              <h3 className="text-3xl font-black text-white">
                 Lipika
               </h3>
             </div>
@@ -51,7 +51,7 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <h4 className="font-bold text-lg mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <h4 className="font-bold text-lg mb-4 text-white">
               Technology
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
@@ -71,7 +71,7 @@ const Footer = () => {
                   transition={{ delay: idx * 0.05 }}
                   className="flex items-center space-x-2 hover:text-white transition-colors"
                 >
-                  <span className="text-purple-400">▸</span>
+                  <span className="text-secondary-400">▸</span>
                   <span>{tech}</span>
                 </motion.li>
               ))}
@@ -85,7 +85,7 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h4 className="font-bold text-lg mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <h4 className="font-bold text-lg mb-4 text-white">
               Features
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
@@ -105,7 +105,7 @@ const Footer = () => {
                   transition={{ delay: idx * 0.05 }}
                   className="flex items-center space-x-2 hover:text-white transition-colors"
                 >
-                  <span className="text-purple-400">▸</span>
+                  <span className="text-secondary-400">▸</span>
                   <span>{feature}</span>
                 </motion.li>
               ))}
@@ -122,12 +122,12 @@ const Footer = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-400 text-center md:text-left">
-              © 2024 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">Lipika Project</span>. 
+              © 2024 <span className="text-white font-semibold">Lipika Project</span>. 
               Built for Ranjana script preservation and digitization.
             </p>
             <div className="flex items-center space-x-2 text-xs text-gray-400">
               <span>Made By</span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">Sajesh Bajracharya</span>
+              <span className="text-white font-semibold">Sajesh Bajracharya</span>
             </div>
           </div>
         </motion.div>

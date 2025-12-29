@@ -79,7 +79,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex flex-col items-center justify-center p-6 sm:p-8"
+            className="aspect-video bg-gray-100 rounded-xl flex flex-col items-center justify-center p-6 sm:p-8"
           >
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}

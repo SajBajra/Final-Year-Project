@@ -12,7 +12,7 @@ const TrialCounter = ({ trialInfo, onLoginClick }) => {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-300 rounded-lg"
+        className="mb-4 p-4 bg-secondary-50 border-2 border-secondary-300 rounded-lg"
       >
         <div className="flex items-start gap-3">
           <FaExclamationTriangle className="text-orange-600 text-xl mt-0.5 flex-shrink-0" />
