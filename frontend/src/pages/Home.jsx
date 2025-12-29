@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload } from 'react-icons/fa'
+import heroImage from '../images/HeroSection-FrontPage.png'
 import { useAuth } from '../context/AuthContext'
 import { getOrCreateTrialCookie } from '../utils/cookieUtils'
 import ImageUpload from '../components/ImageUpload'
@@ -125,17 +126,13 @@ function Home() {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="inline-block mb-4 sm:mb-6"
           >
-            <FaScroll className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl float-animation text-primary-600" />
+            <img 
+              src={heroImage} 
+              alt="Lipika Logo" 
+              className="max-w-full h-auto mx-auto"
+              style={{ maxHeight: '200px' }}
+            />
           </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-3 sm:mb-4 md:mb-6 text-primary-600 tracking-tight leading-tight"
-          >
-            Lipika
-          </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0 }}
