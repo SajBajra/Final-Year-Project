@@ -12,72 +12,63 @@ const Features = () => {
       title: 'Multiple Input Methods',
       description: 'Upload images from your device or capture in real-time using your camera. Supports JPG, PNG, WEBP, and BMP formats for maximum flexibility.',
       bgColor: 'bg-primary-100',
-      iconColor: 'text-primary-600',
-      size: 'normal' // normal, wide, tall, large
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaRobot,
       title: 'Advanced AI Recognition',
       description: 'Powered by Character-based CRNN (Convolutional Recurrent Neural Network) deep learning model trained on 500 epochs for accurate character-level recognition of Ranjana script.',
       bgColor: 'bg-primary-100',
-      iconColor: 'text-primary-600',
-      size: 'large' // spans 2x2
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaEye,
       title: 'AR Overlay',
       description: 'Interactive augmented reality visualization with individual character bounding boxes, confidence scores, and hover tooltips for detailed recognition insights.',
       bgColor: 'bg-secondary-100',
-      iconColor: 'text-secondary-600',
-      size: 'tall' // spans 2 rows
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaGlobe,
       title: 'Ranjana to Devanagari Output',
       description: 'Automatically converts recognized Ranjana script characters to Devanagari (Nepali) text output, with optional English translation support.',
       bgColor: 'bg-secondary-100',
-      iconColor: 'text-secondary-600',
-      size: 'wide' // spans 2 columns
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaBolt,
       title: 'Fast Processing',
       description: 'Optimized inference pipeline with GPU acceleration support. Process images with character segmentation and recognition in seconds.',
       bgColor: 'bg-primary-100',
-      iconColor: 'text-primary-600',
-      size: 'normal'
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaBullseye,
       title: 'Character-Level Precision',
       description: 'Individual character detection with precise bounding boxes, confidence scores, and word grouping for perfect AR visualization.',
       bgColor: 'bg-secondary-100',
-      iconColor: 'text-secondary-600',
-      size: 'normal'
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaChartBar,
       title: 'Confidence Scoring',
       description: 'Each recognized character includes a confidence score (0-100%) with color-coded visualization to help identify recognition accuracy.',
       bgColor: 'bg-primary-100',
-      iconColor: 'text-primary-600',
-      size: 'wide' // spans 2 columns
+      iconColor: 'text-primary-600'
     },
     {
       icon: FaMobileAlt,
       title: 'Fully Responsive Design',
       description: 'Beautiful, modern UI that works seamlessly on desktop, tablet, and mobile devices with optimized layouts for every screen size.',
       bgColor: 'bg-secondary-100',
-      iconColor: 'text-secondary-600',
-      size: 'normal'
+      iconColor: 'text-secondary-600'
     },
     {
       icon: FaLock,
       title: 'Secure & Private',
       description: 'All processing happens on your server. Images are processed in real-time and OCR history is stored securely with admin dashboard access.',
       bgColor: 'bg-primary-100',
-      iconColor: 'text-primary-600',
-      size: 'tall' // spans 2 rows
+      iconColor: 'text-primary-600'
     }
   ]
 
@@ -250,38 +241,31 @@ const Features = () => {
 
       <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 max-w-7xl -mt-8 sm:-mt-12 md:-mt-16">
 
-        {/* Bento Grid Layout - Features */}
+        {/* Features Grid - Responsive with Staggered Animation */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="bento-grid mb-8 sm:mb-12 md:mb-16"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12 md:mb-16"
         >
           {features.map((feature, index) => {
             const IconComponent = feature.icon
-            const sizeClasses = {
-              normal: 'col-span-1 row-span-1',
-              wide: 'col-span-1 md:col-span-2 row-span-1',
-              tall: 'col-span-1 row-span-1 md:row-span-2',
-              large: 'col-span-1 md:col-span-2 row-span-1 md:row-span-2'
-            }
-            
             return (
             <motion.div
               key={index}
               variants={itemVariants}
-              className={`card hover:shadow-2xl transition-all duration-300 relative overflow-hidden group ${sizeClasses[feature.size] || 'col-span-1 row-span-1'}`}
+              className="card hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
             >
               {/* Background Effect on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-transparent to-secondary-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
-              <div className="relative z-10 h-full flex flex-col">
+              <div className="relative z-10">
                 {/* Icon with Animated Background */}
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
-                  className={`mb-3 sm:mb-4 inline-block p-3 sm:p-4 rounded-xl ${feature.bgColor} group-hover:scale-110 transition-transform duration-300`}
+                  className={`mb-3 sm:mb-4 inline-block p-3 sm:p-4 rounded-xl ${feature.bgColor}`}
                 >
                   <IconComponent className={`text-3xl sm:text-4xl md:text-5xl ${feature.iconColor}`} />
                 </motion.div>
@@ -290,7 +274,7 @@ const Features = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 + 0.3 }}
-                  className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 text-gray-800 group-hover:text-primary-600 transition-colors duration-300"
+                  className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-gray-800 group-hover:text-primary-600 transition-colors duration-300"
                 >
                   {feature.title}
                 </motion.h3>
@@ -298,39 +282,33 @@ const Features = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.1 + 0.4 }}
-                  className="text-sm sm:text-base text-gray-600 leading-relaxed flex-grow"
+                  className="text-sm sm:text-base text-gray-600 leading-relaxed"
                 >
                   {feature.description}
                 </motion.p>
-                
-                {/* Decorative Arrow on Hover */}
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  whileHover={{ opacity: 1, x: 0 }}
-                  className="absolute top-4 right-4 text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                >
-                  <FaArrowRight className="text-xl" />
-                </motion.div>
               </div>
+              
+              {/* Decorative Arrow on Hover */}
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                whileHover={{ opacity: 1, x: 0 }}
+                className="absolute top-4 right-4 text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              >
+                <FaArrowRight />
+              </motion.div>
             </motion.div>
             )
           })}
         </motion.div>
 
-        {/* Architecture Section - Bento Style */}
+        {/* Architecture Section - Responsive with Animation */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="bento-grid mb-8 sm:mb-12 md:mb-16"
+          className="card bg-primary-700 text-white mb-8 sm:mb-12 md:mb-16 relative overflow-hidden"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="card bg-primary-700 text-white col-span-1 md:col-span-4 row-span-1 relative overflow-hidden"
-          >
           {/* Animated Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full filter blur-3xl"></div>
@@ -374,16 +352,16 @@ const Features = () => {
               })}
             </div>
           </div>
-          </motion.div>
-          
-          {/* Technology Stack - Bento Style */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="card col-span-1 md:col-span-4 row-span-1"
-          >
+        </motion.div>
+
+        {/* Technology Stack - Responsive with Animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="card mb-8 sm:mb-12 md:mb-16"
+        >
           <motion.h2 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -420,16 +398,15 @@ const Features = () => {
               )
             })}
           </motion.div>
-          </motion.div>
         </motion.div>
 
-        {/* Performance Metrics - Bento Style */}
+        {/* Performance Metrics - Responsive with Animation */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="bento-grid"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
         >
           {[
             { value: '<2s', label: 'Processing Time', color: 'text-primary-600', icon: FaBolt },
@@ -446,7 +423,7 @@ const Features = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, type: "spring", stiffness: 200 }}
                 whileHover={{ scale: 1.05, y: -5 }}
-                className="card text-center group cursor-pointer col-span-1 md:col-span-2"
+                className="card text-center group cursor-pointer"
               >
                 <motion.div
                   transition={{ repeat: Infinity, duration: 2, delay: index * 0.3 }}
