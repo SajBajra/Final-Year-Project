@@ -350,8 +350,6 @@ const Features = () => {
                     className="text-center p-4 sm:p-6 bg-white/5 rounded-lg backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
                   >
                     <motion.div
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 3, delay: index * 0.5 }}
                       className="text-3xl sm:text-4xl mb-3 sm:mb-4 flex justify-center"
                     >
                       <LayerIcon className={layer.color} />
@@ -398,7 +396,6 @@ const Features = () => {
                   className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-300 group cursor-pointer"
                 >
                   <motion.div
-                    animate={{ rotate: [0, 5, -5, 0] }}
                     transition={{ repeat: Infinity, duration: 4, delay: index * 0.3 }}
                     className="mb-2 sm:mb-3 flex justify-center"
                   >
@@ -438,7 +435,6 @@ const Features = () => {
                 className="card text-center group cursor-pointer"
               >
                 <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ repeat: Infinity, duration: 2, delay: index * 0.3 }}
                   className="mb-2 flex justify-center"
                 >

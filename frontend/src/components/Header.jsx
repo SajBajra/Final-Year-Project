@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaScroll, FaUser, FaSignOutAlt, FaCog, FaBars, FaTimes, FaChevronDown } from 'react-icons/fa'
+import { FaScroll, FaUser, FaSignOutAlt, FaCog, FaBars, FaTimes, FaChevronDown, FaTachometerAlt } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 
 const Header = () => {
@@ -100,11 +100,25 @@ const Header = () => {
                       {/* User Info */}
                       <div className="px-4 py-3 border-b border-gray-200">
                         <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-black mt-0.5">{user?.email}</p>
+                        <p className="text-xs text-black mt-1">
                           {isAdmin() ? 'Administrator' : 'User'}
                         </p>
                       </div>
+
+                      {/* Admin Dashboard (Admin only) */}
+                      {isAdmin() && (
+                        <button
+                          onClick={() => {
+                            navigate('/admin');
+                            setProfileDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-black hover:bg-gray-50 transition-colors"
+                        >
+                          <FaTachometerAlt className="text-primary-600" />
+                          <span>Admin Dashboard</span>
+                        </button>
+                      )}
 
                       {/* Settings (Admin only) */}
                       {isAdmin() && (
@@ -113,9 +127,9 @@ const Header = () => {
                             navigate('/admin/settings');
                             setProfileDropdownOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-black hover:bg-gray-50 transition-colors"
                         >
-                          <FaCog className="text-gray-500" />
+                          <FaCog className="text-primary-600" />
                           <span>Settings</span>
                         </button>
                       )}
@@ -243,9 +257,9 @@ const Header = () => {
                             <p className="text-sm font-semibold text-gray-900 truncate">
                               {user?.username}
                             </p>
-                            <p className="text-xs text-gray-500">
-                              {isAdmin() ? 'Administrator' : 'User'}
-                            </p>
+                        <p className="text-xs text-black">
+                          {isAdmin() ? 'Administrator' : 'User'}
+                        </p>
                           </div>
                         </div>
                       </div>
@@ -257,9 +271,9 @@ const Header = () => {
                             navigate('/admin');
                             setMobileMenuOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors font-medium"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-black bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors font-medium"
                         >
-                          <FaCog className="text-gray-600" />
+                          <FaTachometerAlt className="text-primary-600" />
                           <span>Admin Dashboard</span>
                         </button>
                       )}

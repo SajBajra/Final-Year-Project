@@ -220,7 +220,7 @@ function Home() {
             >
               Processing your image...
             </motion.p>
-            <p className="text-xs sm:text-sm text-secondary-500">Our AI is analyzing every character</p>
+            <p className="text-xs sm:text-sm text-black">Our AI is analyzing every character</p>
           </motion.div>
         )}
 
@@ -300,7 +300,7 @@ function Home() {
                 <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-black group-hover:text-primary-600 transition-all duration-200">
                   {card.title}
                 </h3>
-                <p className="text-sm sm:text-base text-secondary-500 leading-relaxed">
+                <p className="text-sm sm:text-base text-black leading-relaxed">
                   {card.description}
                 </p>
                 <div className="mt-4 sm:mt-6 h-1 w-0 group-hover:w-full bg-primary-600 rounded-full transition-all duration-300"></div>

@@ -98,7 +98,7 @@ const About = () => {
             {/* Icon with Animation */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
+              animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
               className="flex justify-center items-center mb-6"
             >
@@ -456,7 +456,6 @@ const About = () => {
                 className={`${metric.bgColor} p-3 sm:p-4 rounded-lg text-center group cursor-pointer`}
               >
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
                   transition={{ repeat: Infinity, duration: 2, delay: index * 0.2 }}
                   className={`text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 ${metric.color}`}
                 >

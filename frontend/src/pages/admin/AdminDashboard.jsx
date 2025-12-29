@@ -159,7 +159,7 @@ const AdminDashboard = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
       >
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
@@ -173,29 +173,12 @@ const AdminDashboard = () => {
                 </p>
               )}
             </div>
-            <div className="p-3 rounded-xl bg-blue-100">
+            <div className="p-3 rounded-xl bg-primary-100">
               <FaChartBar className="text-2xl sm:text-3xl md:text-4xl text-primary-600" />
             </div>
           </div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs sm:text-sm text-black font-semibold">Registered Users</p>
-              {loading ? (
-                <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
-              ) : (
-                <p className="text-2xl sm:text-3xl font-bold text-black mt-2">
-                  {stats?.registeredCount ?? 0}
-                </p>
-              )}
-            </div>
-            <div className="p-3 rounded-xl bg-secondary-100">
-              <FaUser className="text-2xl sm:text-3xl md:text-4xl text-secondary-600" />
-            </div>
-          </div>
-        </motion.div>
 
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
@@ -209,7 +192,7 @@ const AdminDashboard = () => {
                 </p>
               )}
             </div>
-            <div className="p-3 rounded-xl bg-purple-100">
+            <div className="p-3 rounded-xl bg-primary-100">
               <FaFont className="text-2xl sm:text-3xl md:text-4xl text-primary-600" />
             </div>
           </div>
