@@ -287,7 +287,7 @@ const About = () => {
                 icon: FaGlobe,
                 title: 'Devanagari Output & Translation',
                 description: 'Automatically converts recognized Ranjana text to Devanagari (Nepali) characters. Optionally translate to English and other languages.',
-                bgColor: 'bg-orange-100',
+                bgColor: 'bg-secondary-100',
                 iconColor: 'text-secondary-600',
                 delay: 0.3
               },
@@ -295,7 +295,7 @@ const About = () => {
                 icon: FaMobileAlt,
                 title: 'Modern Web Interface',
                 description: 'Beautiful, fully responsive web application that works seamlessly on desktop, tablet, and mobile devices. Upload images or use your camera for real-time recognition.',
-                bgColor: 'bg-purple-100',
+                bgColor: 'bg-primary-100',
                 iconColor: 'text-primary-600',
                 delay: 0.4
               }
