@@ -7,6 +7,7 @@ Returns bounding boxes for each recognized character
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+import sys
 import torch
 import torch.nn.functional as F
 from PIL import Image
@@ -16,13 +17,21 @@ import cv2
 import numpy as np
 
 # Optional: EasyOCR for improved character detection
-try:
-    import easyocr
-    EASYOCR_AVAILABLE = True
-    print("[INFO] EasyOCR available for enhanced character detection")
-except ImportError:
-    EASYOCR_AVAILABLE = False
-    print("[INFO] EasyOCR not available, using standard segmentation")
+# Note: EasyOCR may not work with Python 3.13+ due to scipy compatibility issues
+# The service will work fine without it, using standard OpenCV segmentation
+EASYOCR_AVAILABLE = False
+if sys.version_info < (3, 13):
+    try:
+        import easyocr
+        EASYOCR_AVAILABLE = True
+        print("[INFO] EasyOCR available for enhanced character detection")
+    except (ImportError, ModuleNotFoundError, Exception) as e:
+        EASYOCR_AVAILABLE = False
+        print(f"[INFO] EasyOCR not available: {type(e).__name__}")
+        print("[INFO] Using standard OpenCV segmentation instead")
+else:
+    print("[INFO] Python 3.13+ detected - skipping EasyOCR due to scipy compatibility issues")
+    print("[INFO] Using standard OpenCV segmentation (fully functional)")
 
 app = Flask(__name__)
 CORS(app)
