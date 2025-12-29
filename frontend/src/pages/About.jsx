@@ -288,7 +288,7 @@ const About = () => {
                 title: 'Devanagari Output & Translation',
                 description: 'Automatically converts recognized Ranjana text to Devanagari (Nepali) characters. Optionally translate to English and other languages.',
                 bgColor: 'bg-orange-100',
-                iconColor: 'text-orange-600',
+                iconColor: 'text-secondary-600',
                 delay: 0.3
               },
               {
@@ -368,7 +368,7 @@ const About = () => {
                 subtitle: 'Java',
                 description: 'Spring Boot microservices handle business logic, API orchestration, data validation, and admin dashboard. Manages OCR history, analytics, character statistics, and settings with MySQL database for persistent storage.',
                 bgColor: 'bg-orange-50',
-                iconColor: 'text-orange-600',
+                iconColor: 'text-secondary-600',
                 borderColor: 'border-orange-200',
                 delay: 0.2
               },
