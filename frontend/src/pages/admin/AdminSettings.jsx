@@ -59,7 +59,7 @@ const AdminSettings = () => {
 
       {message && (
         <div className={`p-4 rounded-lg ${
-          message.includes('success') || message.includes('Success') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+          message.includes('success') || message.includes('Success') ? 'bg-secondary-50 text-black' : 'bg-red-50 text-black'
         }`}>
           {message}
         </div>

@@ -210,7 +210,7 @@ const AdminDashboard = () => {
               )}
             </div>
             <div className="p-3 rounded-xl bg-purple-100">
-              <FaFont className="text-2xl sm:text-3xl md:text-4xl text-purple-600" />
+              <FaFont className="text-2xl sm:text-3xl md:text-4xl text-primary-600" />
             </div>
           </div>
         </motion.div>
@@ -228,7 +228,7 @@ const AdminDashboard = () => {
               )}
             </div>
             <div className="p-3 rounded-xl bg-orange-100">
-              <FaChartLine className="text-2xl sm:text-3xl md:text-4xl text-orange-600" />
+              <FaChartLine className="text-2xl sm:text-3xl md:text-4xl text-secondary-600" />
             </div>
           </div>
         </motion.div>
@@ -306,7 +306,7 @@ const AdminDashboard = () => {
         >
           <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
             <div className="p-2 sm:p-3 rounded-xl bg-green-100">
-              <FaChartPie className="text-xl sm:text-2xl text-green-600" />
+              <FaChartPie className="text-xl sm:text-2xl text-secondary-600" />
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-black">Text Length Distribution</h3>
@@ -376,7 +376,7 @@ const AdminDashboard = () => {
         >
           <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
             <div className="p-2 sm:p-3 rounded-xl bg-purple-100">
-              <FaFont className="text-xl sm:text-2xl text-purple-600" />
+              <FaFont className="text-xl sm:text-2xl text-primary-600" />
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-black">Characters Recognized Over Time</h3>

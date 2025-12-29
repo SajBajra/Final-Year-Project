@@ -16,8 +16,8 @@
 }
 
 :root {
-  --primary-color: #2563eb;      /* Deep Blue - Primary */
-  --secondary-color: #f97316;     /* Warm Orange - Secondary */
+  --primary-color: #334155;      /* Deep Navy Blue - Primary */
+  --secondary-color: #f59e0b;     /* Warm Amber - Secondary */
 }
 
 @layer base {

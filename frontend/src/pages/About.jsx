@@ -115,7 +115,7 @@ const About = () => {
               transition={{ delay: 0.3 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-6 border border-white/30"
             >
-              <FaHeart className="text-pink-300 text-sm" />
+              <FaHeart className="text-secondary-500 text-sm" />
               <span className="text-white text-sm font-semibold">Preserving Cultural Heritage</span>
             </motion.div>
 
@@ -259,7 +259,7 @@ const About = () => {
           <div className="text-center mb-6">
             <div className="flex items-center justify-center space-x-3 mb-3">
               <div className="p-2 rounded-xl bg-green-100">
-                <FaRobot className="text-2xl text-green-600" />
+                <FaRobot className="text-2xl text-primary-600" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">What We Do</h2>
             </div>
@@ -296,7 +296,7 @@ const About = () => {
                 title: 'Modern Web Interface',
                 description: 'Beautiful, fully responsive web application that works seamlessly on desktop, tablet, and mobile devices. Upload images or use your camera for real-time recognition.',
                 bgColor: 'bg-purple-100',
-                iconColor: 'text-purple-600',
+                iconColor: 'text-primary-600',
                 delay: 0.4
               }
             ].map((item, index) => {

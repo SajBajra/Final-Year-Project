@@ -141,7 +141,7 @@ function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-800 max-w-4xl mx-auto font-semibold mb-2 sm:mb-3 md:mb-4 px-4"
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-black max-w-4xl mx-auto font-semibold mb-2 sm:mb-3 md:mb-4 px-4"
           >
             Advanced Ranjana Script OCR
           </motion.p>
@@ -150,7 +150,7 @@ function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-sm sm:text-base md:text-lg text-secondary-500 max-w-3xl mx-auto px-4 leading-relaxed"
+            className="text-sm sm:text-base md:text-lg text-black max-w-3xl mx-auto px-4 leading-relaxed"
           >
             Experience Google Lens-style AR overlay and real-time translation powered by cutting-edge AI
           </motion.p>
@@ -165,7 +165,7 @@ function Home() {
             {['AI-Powered', 'Real-Time', 'AR Overlay', 'Translation'].map((feature, idx) => (
               <span
                 key={idx}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white border border-gray-300 rounded-full text-xs sm:text-sm font-semibold text-secondary-500 shadow-sm hover:shadow-md transition-all duration-200"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white border border-gray-300 rounded-full text-xs sm:text-sm font-semibold text-black shadow-sm hover:shadow-md transition-all duration-200"
               >
                 {feature}
               </span>
@@ -216,7 +216,7 @@ function Home() {
             <motion.p 
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
-              className="text-base sm:text-lg md:text-xl text-gray-800 font-semibold mb-2"
+              className="text-base sm:text-lg md:text-xl text-black font-semibold mb-2"
             >
               Processing your image...
             </motion.p>
@@ -297,7 +297,7 @@ function Home() {
                 <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 inline-block p-3 sm:p-4 rounded-xl bg-gray-100 group-hover:bg-gray-200 transition-all duration-200 flex items-center justify-center">
                   <IconComponent className="text-primary-600" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800 group-hover:text-primary-600 transition-all duration-200">
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-black group-hover:text-primary-600 transition-all duration-200">
                   {card.title}
                 </h3>
                 <p className="text-sm sm:text-base text-secondary-500 leading-relaxed">
