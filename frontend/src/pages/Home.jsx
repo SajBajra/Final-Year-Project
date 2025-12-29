@@ -110,7 +110,7 @@ function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen bg-primary-50">
       <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 max-w-7xl">
         {/* Enhanced Hero Section - Responsive */}
         <motion.div 
@@ -291,19 +291,17 @@ function Home() {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                whileHover={{ y: -5 }}
-                className="card group cursor-pointer"
+                className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-all duration-200"
               >
-                <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 inline-block p-3 sm:p-4 rounded-xl bg-gray-100 group-hover:bg-gray-200 transition-all duration-200 flex items-center justify-center">
-                  <IconComponent className="text-primary-600" />
+                <div className="mb-4 inline-block p-4 rounded-xl bg-primary-100 flex items-center justify-center">
+                  <IconComponent className="text-4xl text-primary-600" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-black group-hover:text-primary-600 transition-all duration-200">
+                <h3 className="text-xl font-bold mb-3 text-black">
                   {card.title}
                 </h3>
-                <p className="text-sm sm:text-base text-black leading-relaxed">
+                <p className="text-sm text-black leading-relaxed">
                   {card.description}
                 </p>
-                <div className="mt-4 sm:mt-6 h-1 w-0 group-hover:w-full bg-primary-600 rounded-full transition-all duration-300"></div>
               </motion.div>
               )
             })}
