@@ -23,7 +23,7 @@ const Features = () => {
     },
     {
       icon: FaEye,
-      title: 'Google Lens-Style AR Overlay',
+      title: 'AR Overlay',
       description: 'Interactive augmented reality visualization with individual character bounding boxes, confidence scores, and hover tooltips for detailed recognition insights.',
       bgColor: 'bg-secondary-100',
       iconColor: 'text-secondary-600'

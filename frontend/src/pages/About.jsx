@@ -278,7 +278,7 @@ const About = () => {
               {
                 icon: FaEye,
                 title: 'AR Overlay Visualization',
-                description: 'Interactive augmented reality overlay shows recognized text with individual character bounding boxes, confidence scores, and hover tooltips - similar to Google Lens.',
+                description: 'Interactive augmented reality overlay shows recognized text with individual character bounding boxes, confidence scores, and hover tooltips.',
                 bgColor: 'bg-primary-100',
                 iconColor: 'text-primary-600',
                 delay: 0.2
@@ -557,7 +557,7 @@ const About = () => {
               {
                 icon: FaEye,
                 title: 'AR Visualization',
-                description: 'Google Lens-style AR overlay with interactive bounding boxes',
+                description: 'AR overlay with interactive bounding boxes',
                 bgColor: 'bg-secondary-100',
                 iconColor: 'text-secondary-600'
               },

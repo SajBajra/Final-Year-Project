@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload } from 'react-icons/fa'
-import heroImage from '../images/Logo.png'
+import heroImage from '../images/HeroSection-FrontPage.png'
 import { useAuth } from '../context/AuthContext'
 import { getOrCreateTrialCookie } from '../utils/cookieUtils'
 import ImageUpload from '../components/ImageUpload'
@@ -149,7 +149,7 @@ function Home() {
             transition={{ delay: 0.6 }}
             className="text-sm sm:text-base md:text-lg text-black max-w-3xl mx-auto px-4 leading-relaxed"
           >
-            Experience Google Lens-style AR overlay and real-time translation powered by cutting-edge AI
+            Experience AR overlay and real-time translation powered by cutting-edge AI
           </motion.p>
 
           {/* Feature Pills - Responsive */}
@@ -279,7 +279,7 @@ function Home() {
               {
                 icon: FaEye,
                 title: 'AR Overlay',
-                description: 'See recognized text highlighted in Google Lens style with interactive bounding boxes and confidence scores.',
+                description: 'See recognized text highlighted with interactive bounding boxes and confidence scores.',
                 delay: 0.3
               }
             ].map((card, index) => {

@@ -96,7 +96,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-gray-300">
               {[
                 'Character Recognition',
-                'Google Lens Style AR',
+                'AR Overlay',
                 'Real-time Processing',
                 'Camera Capture',
                 'Multi-language Support',
