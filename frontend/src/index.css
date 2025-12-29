@@ -16,8 +16,8 @@
 }
 
 :root {
-  --primary-color: #2563eb;      /* Blue - Primary */
-  --secondary-color: #64748b;    /* Slate - Secondary */
+  --primary-color: #3949ab;      /* Deep Indigo - Primary */
+  --secondary-color: #009688;     /* Teal - Secondary */
 }
 
 @layer base {
@@ -34,11 +34,11 @@
 @layer components {
   /* Clean Button Styles - No Gradients */
   .btn-primary {
-    @apply bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-primary-700 hover:shadow-lg transition-all duration-200 active:scale-95;
+    @apply bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-primary-700 transition-all duration-200;
   }
   
   .btn-secondary {
-    @apply bg-secondary-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-secondary-600 hover:shadow-lg transition-all duration-200 active:scale-95;
+    @apply bg-secondary-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-secondary-600 hover:shadow-lg transition-all duration-200;
   }
   
   .btn-outline {

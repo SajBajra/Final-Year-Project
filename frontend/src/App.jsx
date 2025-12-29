@@ -12,7 +12,6 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminCharacterStats from './pages/admin/AdminCharacterStats'
-import AdminUserManagement from './pages/admin/AdminUserManagement'
 import AdminSettings from './pages/admin/AdminSettings'
 import ProtectedRoute from './components/ProtectedRoute'
 import { ROUTES } from './config/constants'
@@ -25,7 +24,7 @@ function App() {
         <Routes>
         {/* Public Routes */}
         <Route path="/" element={
-          <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className="min-h-screen bg-primary-50 flex flex-col">
             <Header />
             <div className="flex-grow">
               <Home />
@@ -34,7 +33,7 @@ function App() {
           </div>
         } />
         <Route path="/features" element={
-          <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className="min-h-screen bg-primary-50 flex flex-col">
             <Header />
             <div className="flex-grow">
               <Features />
@@ -43,7 +42,7 @@ function App() {
           </div>
         } />
         <Route path="/about" element={
-          <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className="min-h-screen bg-primary-50 flex flex-col">
             <Header />
             <div className="flex-grow">
               <About />
@@ -52,8 +51,8 @@ function App() {
           </div>
         } />
         
-        {/* Auth Routes with AnimatePresence for page transitions */}
-        <Route path="/login" element={
+        {/* Admin Login Route */}
+        <Route path="/ocr_admin" element={
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -74,7 +73,6 @@ function App() {
           <Route path="ocr-history" element={<AdminOCRHistory />} />
           <Route path="analytics" element={<AdminAnalytics />} />
           <Route path="characters" element={<AdminCharacterStats />} />
-          <Route path="users" element={<AdminUserManagement />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
         </Routes>

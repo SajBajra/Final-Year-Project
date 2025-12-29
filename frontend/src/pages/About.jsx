@@ -604,33 +604,21 @@ const About = () => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  whileHover={{ scale: 1.05, y: -8 }}
                   className="card group relative overflow-hidden cursor-pointer"
                 >
                   {/* Gradient border effect */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
                   
                   <div className="relative z-10">
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className={`w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:shadow-lg transition-shadow duration-300`}
-                    >
+                    <div className={`w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-4`}>
                       <FeatureIcon className={`text-2xl ${feature.iconColor}`} />
-                    </motion.div>
+                    </div>
                     <h3 className="font-bold text-lg mb-2 text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
                       {feature.title}
                     </h3>
                     <p className="text-sm text-gray-600 leading-relaxed">
                       {feature.description}
                     </p>
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      whileHover={{ opacity: 1, x: 0 }}
-                      className="mt-4 flex items-center text-primary-600 font-semibold text-sm"
-                    >
-                      <span>Learn more</span>
-                      <FaArrowRight className="ml-2" />
-                    </motion.div>
                   </div>
                 </motion.div>
               )
@@ -675,13 +663,12 @@ const About = () => {
               <motion.li
                 key={index}
                 variants={itemVariants}
-                whileHover={{ scale: 1.02, x: 5 }}
                 className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-300 group"
               >
                 <motion.span
                   animate={{ x: [0, 5, 0] }}
                   transition={{ repeat: Infinity, duration: 2, delay: index * 0.3 }}
-                  className="text-primary-600 text-lg sm:text-xl font-bold flex-shrink-0 group-hover:scale-110 transition-transform duration-300"
+                  className="text-primary-600 text-lg sm:text-xl font-bold flex-shrink-0"
                 >
                   →
                 </motion.span>
@@ -693,56 +680,6 @@ const About = () => {
           </motion.ul>
         </motion.div>
 
-        {/* Contact - Responsive with Animation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center card"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="mb-4 sm:mb-6"
-          >
-            <FaShieldAlt className="text-4xl sm:text-5xl text-primary-600 mx-auto mb-3 sm:mb-4" />
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Get Involved</h2>
-            <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 px-4">
-              Lipika is an open-source project focused on preserving and digitizing Ranjana script. 
-              Contributions, feedback, and suggestions are always welcome!
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4"
-          >
-            <motion.a 
-              href="https://github.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-primary text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-center space-x-2"
-            >
-              <FaCode />
-              <span>View on GitHub</span>
-            </motion.a>
-            <motion.a 
-              href="mailto:contact@lipika.com" 
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-secondary text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-center space-x-2"
-            >
-              <FaMobileAlt />
-              <span>Contact Us</span>
-            </motion.a>
-          </motion.div>
-        </motion.div>
       </main>
     </div>
   )

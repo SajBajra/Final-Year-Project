@@ -43,20 +43,13 @@ const Header = () => {
         <div className="container mx-auto px-4 py-4 max-w-7xl">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 group">
-              <motion.div
-                whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-                transition={{ duration: 0.5 }}
-                className="text-4xl text-primary-600"
-              >
+              <div className="text-4xl text-primary-600">
                 <FaScroll />
-              </motion.div>
+              </div>
               <div>
-                <motion.h1
-                  whileHover={{ scale: 1.05 }}
-                  className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
-                >
+                <h1 className="text-2xl font-black text-primary-600">
                   Lipika
-                </motion.h1>
+                </h1>
                 <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
                   Ranjana OCR System
                 </p>
@@ -143,16 +136,7 @@ const Header = () => {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
-              <div className="ml-4 flex items-center gap-2">
-                <Link 
-                  to="/login" 
-                  className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
-                >
-                  Admin Login
-                </Link>
-              </div>
-            )}
+            ) : null}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -293,17 +277,7 @@ const Header = () => {
                         <span>Logout</span>
                       </button>
                     </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <Link
-                        to="/login"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block w-full px-4 py-3 rounded-lg bg-primary-600 text-white text-center font-medium hover:bg-primary-700 transition-colors shadow-md"
-                      >
-                        Admin Login
-                      </Link>
-                    </div>
-                  )}
+                  ) : null}
                 </nav>
               </div>
             </motion.aside>

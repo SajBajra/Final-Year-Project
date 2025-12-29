@@ -112,17 +112,6 @@ const Features = () => {
     }
   }
 
-  const cardHoverVariants = {
-    rest: { scale: 1, y: 0 },
-    hover: { 
-      scale: 1.02, 
-      y: -8,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    }
-  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -237,7 +226,6 @@ const Features = () => {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.7 + index * 0.1, type: "spring" }}
-                    whileHover={{ scale: 1.1, y: -5 }}
                     className="text-center"
                   >
                     <div className="flex items-center justify-center gap-2 mb-2">
@@ -275,9 +263,6 @@ const Features = () => {
             <motion.div
               key={index}
               variants={itemVariants}
-              initial="rest"
-              whileHover="hover"
-              variants={cardHoverVariants}
               className="card hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
             >
               {/* Background Gradient Effect on Hover */}
@@ -289,7 +274,7 @@ const Features = () => {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
-                  className={`mb-3 sm:mb-4 inline-block p-3 sm:p-4 rounded-xl ${feature.bgColor} group-hover:scale-110 transition-transform duration-300`}
+                  className={`mb-3 sm:mb-4 inline-block p-3 sm:p-4 rounded-xl ${feature.bgColor}`}
                 >
                   <IconComponent className={`text-3xl sm:text-4xl md:text-5xl ${feature.iconColor}`} />
                 </motion.div>
@@ -362,7 +347,6 @@ const Features = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: layer.delay }}
-                    whileHover={{ scale: 1.05, y: -5 }}
                     className="text-center p-4 sm:p-6 bg-white/5 rounded-lg backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
                   >
                     <motion.div
@@ -418,7 +402,7 @@ const Features = () => {
                     transition={{ repeat: Infinity, duration: 4, delay: index * 0.3 }}
                     className="mb-2 sm:mb-3 flex justify-center"
                   >
-                    <TechIcon className="text-2xl sm:text-3xl text-primary-600 group-hover:scale-110 transition-transform duration-300" />
+                    <TechIcon className="text-2xl sm:text-3xl text-primary-600" />
                   </motion.div>
                   <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-800 mb-1">{tech.name}</h3>
                   <p className="text-xs sm:text-sm text-gray-600">{tech.description}</p>
@@ -458,7 +442,7 @@ const Features = () => {
                   transition={{ repeat: Infinity, duration: 2, delay: index * 0.3 }}
                   className="mb-2 flex justify-center"
                 >
-                  <MetricIcon className={`text-2xl sm:text-3xl ${metric.color} group-hover:scale-110 transition-transform duration-300`} />
+                  <MetricIcon className={`text-2xl sm:text-3xl ${metric.color}`} />
                 </motion.div>
                 <div className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 ${metric.color}`}>
                   {metric.value}
