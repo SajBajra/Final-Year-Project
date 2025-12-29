@@ -2,12 +2,23 @@ import { useState, useEffect } from 'react'
 import { FaFont, FaChartBar, FaPercent, FaInfoCircle } from 'react-icons/fa'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
 import { getCharacterStatistics } from '../../services/adminService'
+import { UI_CONFIG } from '../../config/constants'
 
 const AdminCharacterStats = () => {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1']
+  // Use primary and secondary colors with variations
+  const COLORS = [
+    UI_CONFIG.PRIMARY_COLOR, 
+    UI_CONFIG.SECONDARY_COLOR, 
+    UI_CONFIG.PRIMARY_LIGHT, 
+    UI_CONFIG.SECONDARY_LIGHT, 
+    UI_CONFIG.PRIMARY_DARK, 
+    UI_CONFIG.SECONDARY_DARK,
+    '#6366f1', // Additional shade for variety
+    '#14b8a6' // Additional shade for variety
+  ]
 
   useEffect(() => {
     loadStats()
@@ -129,7 +140,7 @@ const AdminCharacterStats = () => {
               <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="frequency" fill="#2563eb" name="Recognition Frequency">
+              <Bar dataKey="frequency" fill={UI_CONFIG.PRIMARY_COLOR} name="Recognition Frequency">
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}

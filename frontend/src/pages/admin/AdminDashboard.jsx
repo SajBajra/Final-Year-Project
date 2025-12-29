@@ -6,6 +6,7 @@ import {
   Tooltip, Legend, ResponsiveContainer, BarChart, Bar 
 } from 'recharts'
 import { getDashboardStats, getAnalytics } from '../../services/adminService'
+import { UI_CONFIG } from '../../config/constants'
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null)
@@ -13,7 +14,16 @@ const AdminDashboard = () => {
   const [analytics, setAnalytics] = useState(null)
   const [chartLoading, setChartLoading] = useState(false)
 
-  const COLORS = ['#2563eb', '#f97316', '#3b82f6', '#ea580c', '#1d4ed8', '#c2410c', '#1e40af']
+  // Use primary and secondary colors with variations
+  const COLORS = [
+    UI_CONFIG.PRIMARY_COLOR, 
+    UI_CONFIG.SECONDARY_COLOR, 
+    UI_CONFIG.PRIMARY_LIGHT, 
+    UI_CONFIG.SECONDARY_LIGHT, 
+    UI_CONFIG.PRIMARY_DARK, 
+    UI_CONFIG.SECONDARY_DARK,
+    '#1e40af' // Additional shade for variety
+  ]
 
   useEffect(() => {
     loadDashboardData()
@@ -80,10 +90,10 @@ const AdminDashboard = () => {
     console.log('Text length distribution data:', dist)
     
     const result = [
-      { name: 'Short (1-10 chars)', value: dist['Short (1-10 chars)'] || 0, color: '#10b981' },
-      { name: 'Medium (11-50 chars)', value: dist['Medium (11-50 chars)'] || 0, color: '#3b82f6' },
-      { name: 'Long (51-100 chars)', value: dist['Long (51-100 chars)'] || 0, color: '#f59e0b' },
-      { name: 'Very Long (100+ chars)', value: dist['Very Long (100+ chars)'] || 0, color: '#ef4444' }
+      { name: 'Short (1-10 chars)', value: dist['Short (1-10 chars)'] || 0, color: UI_CONFIG.PRIMARY_LIGHT },
+      { name: 'Medium (11-50 chars)', value: dist['Medium (11-50 chars)'] || 0, color: UI_CONFIG.PRIMARY_COLOR },
+      { name: 'Long (51-100 chars)', value: dist['Long (51-100 chars)'] || 0, color: UI_CONFIG.SECONDARY_COLOR },
+      { name: 'Very Long (100+ chars)', value: dist['Very Long (100+ chars)'] || 0, color: UI_CONFIG.SECONDARY_DARK }
     ].filter(item => item.value > 0)
     
     console.log('Formatted pie chart data:', result)
@@ -269,9 +279,9 @@ const AdminDashboard = () => {
                 <Line 
                   type="monotone" 
                   dataKey="requests" 
-                  stroke="#2563eb" 
+                  stroke={UI_CONFIG.PRIMARY_COLOR} 
                   strokeWidth={3}
-                  dot={{ fill: '#2563eb', r: 5 }}
+                  dot={{ fill: UI_CONFIG.PRIMARY_COLOR, r: 5 }}
                   activeDot={{ r: 7 }}
                   name="OCR Requests"
                 />
@@ -310,7 +320,7 @@ const AdminDashboard = () => {
                   labelLine={false}
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   outerRadius={80}
-                  fill="#8884d8"
+                  fill={UI_CONFIG.PRIMARY_COLOR}
                   dataKey="value"
                 >
                   {textLengthPieData.map((entry, index) => (
@@ -394,7 +404,7 @@ const AdminDashboard = () => {
                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <Bar 
                   dataKey="characters" 
-                  fill="#8b5cf6" 
+                  fill={UI_CONFIG.SECONDARY_COLOR} 
                   radius={[8, 8, 0, 0]}
                   name="Characters Recognized"
                 />

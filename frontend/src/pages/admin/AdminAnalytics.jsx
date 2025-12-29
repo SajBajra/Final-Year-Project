@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { FaChartLine, FaChartBar, FaChartPie, FaDownload } from 'react-icons/fa'
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { getAnalytics } from '../../services/adminService'
+import { UI_CONFIG } from '../../config/constants'
 
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null)
@@ -9,7 +10,14 @@ const AdminAnalytics = () => {
   const [period, setPeriod] = useState('daily')
   const [days, setDays] = useState(30)
 
-  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+  // Use primary and secondary colors with variations
+  const COLORS = [
+    UI_CONFIG.PRIMARY_COLOR, 
+    UI_CONFIG.SECONDARY_COLOR, 
+    UI_CONFIG.PRIMARY_LIGHT, 
+    UI_CONFIG.SECONDARY_LIGHT, 
+    UI_CONFIG.PRIMARY_DARK
+  ]
 
   useEffect(() => {
     loadAnalytics()
@@ -163,7 +171,7 @@ const AdminAnalytics = () => {
               <Line 
                 type="monotone" 
                 dataKey="requests" 
-                stroke="#2563eb" 
+                stroke={UI_CONFIG.PRIMARY_COLOR} 
                 strokeWidth={2}
                 name="OCR Requests"
               />
@@ -194,7 +202,7 @@ const AdminAnalytics = () => {
               <Legend />
               <Bar 
                 dataKey="characters" 
-                fill="#8b5cf6"
+                fill={UI_CONFIG.SECONDARY_COLOR}
                 name="Characters Recognized"
               />
             </BarChart>
@@ -231,7 +239,7 @@ const AdminAnalytics = () => {
                   labelLine={false}
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   outerRadius={100}
-                  fill="#8884d8"
+                  fill={UI_CONFIG.PRIMARY_COLOR}
                   dataKey="value"
                 >
                   {distributionData.map((entry, index) => (

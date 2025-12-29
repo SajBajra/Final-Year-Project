@@ -133,7 +133,7 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
               animate={{ 
                 opacity: 1, 
                 scale: 1,
-                borderColor: isHovered ? '#3b82f6' : '#60a5fa'
+                borderColor: isHovered ? 'var(--primary-color)' : 'var(--primary-color)'
               }}
               transition={{ delay: idx * 0.05, duration: 0.3 }}
               onMouseEnter={() => setHoveredChar(idx)}
@@ -147,7 +147,7 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
                     : 'border-2 border-blue-400 bg-blue-400 bg-opacity-20'
                 }`}
                 style={{
-                  boxShadow: isHovered ? '0 0 20px rgba(59, 130, 246, 0.6)' : 'none'
+                  boxShadow: isHovered ? '0 0 20px rgba(41, 82, 255, 0.6)' : 'none'
                 }}
               />
               

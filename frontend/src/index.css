@@ -83,7 +83,7 @@
   /* Smooth scrolling */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgb(100 116 139) rgb(241 245 249);
+    scrollbar-color: var(--primary-color) rgb(241 245 249);
   }
 }
 
