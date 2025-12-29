@@ -116,7 +116,7 @@ const Features = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
+      <section className="relative overflow-hidden bg-primary-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -187,7 +187,7 @@ const Features = () => {
             >
               Powerful Features for
               <br />
-              <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300 bg-clip-text text-transparent">
+              <span className="text-white">
                 Modern OCR
               </span>
             </motion.h1>
@@ -265,8 +265,8 @@ const Features = () => {
               variants={itemVariants}
               className="card hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
             >
-              {/* Background Gradient Effect on Hover */}
-              <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+              {/* Background Effect on Hover */}
+              <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
               <div className="relative z-10">
                 {/* Icon with Animated Background */}

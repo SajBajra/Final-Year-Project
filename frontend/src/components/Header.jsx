@@ -248,7 +248,7 @@ const Header = () => {
                   {isAuthenticated() ? (
                     <div className="space-y-3">
                       {/* User Info Card */}
-                      <div className="bg-gradient-to-r from-primary-50 to-purple-50 rounded-lg p-4 border border-primary-100">
+                      <div className="bg-primary-50 rounded-lg p-4 border border-primary-100">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
                             <FaUser className="text-white text-sm" />

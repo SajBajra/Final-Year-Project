@@ -43,7 +43,7 @@ const About = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
+      <section className="relative overflow-hidden bg-primary-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -128,7 +128,7 @@ const About = () => {
             >
               About
               <br />
-              <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300 bg-clip-text text-transparent">
+              <span className="text-white">
                 Lipika
               </span>
             </motion.h1>
@@ -198,7 +198,7 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="card relative overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="relative z-10">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="p-2 rounded-xl bg-primary-100">
@@ -221,7 +221,7 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card relative overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="relative z-10">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="p-2 rounded-xl bg-primary-100">
@@ -513,10 +513,10 @@ const About = () => {
             className="text-center mb-6 sm:mb-8"
           >
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100">
+              <div className="p-2 rounded-xl bg-primary-100">
                 <FaCheckCircle className="text-3xl text-green-600" />
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <h2 className="text-3xl sm:text-4xl font-bold text-primary-600">
                 Key Features
               </h2>
             </div>
@@ -606,7 +606,7 @@ const About = () => {
                   className="card group relative overflow-hidden cursor-pointer"
                 >
                   {/* Gradient border effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                  <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
                   <div className="relative z-10">
                     <div className={`w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-4`}>
