@@ -7,18 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary: Deep Navy Blue - Professional and trustworthy for OCR app
+        // Primary: Vibrant Blue - Matching brand color
         primary: {
-          50: '#f1f5f9',
-          100: '#e2e8f0',
-          200: '#cbd5e1',
-          300: '#94a3b8',
-          400: '#64748b',
-          500: '#475569',
-          600: '#334155', // Primary - Deep Navy Blue
-          700: '#1e293b',
-          800: '#0f172a',
-          900: '#020617',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2952FF', // Primary - Vibrant Blue (matching brand)
+          700: '#1e40af',
+          800: '#1e3a8a',
+          900: '#1e3a8a',
         },
         // Secondary: Warm Amber - Inviting accent color
         secondary: {
