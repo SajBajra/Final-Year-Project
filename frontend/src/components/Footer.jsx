@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { FaScroll, FaHeart } from 'react-icons/fa'
-import logoImage from '../images/Logo.png'
+import whiteLogoImage from '../images/White_Logo.png'
 
 const Footer = () => {
   return (
@@ -22,7 +22,7 @@ const Footer = () => {
           >
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src={logoImage} 
+                src={whiteLogoImage} 
                 alt="Lipika Logo" 
                 className="h-10 w-auto"
               />
