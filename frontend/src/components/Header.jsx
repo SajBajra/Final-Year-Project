@@ -43,9 +43,11 @@ const Header = () => {
         <div className="container mx-auto px-4 py-4 max-w-7xl">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 group">
-              <div className="text-4xl text-primary-600">
-                <FaScroll />
-              </div>
+              <img 
+                src={logoImage} 
+                alt="Lipika Logo" 
+                className="h-10 w-auto"
+              />
               <div>
                 <h1 className="text-2xl font-black text-primary-600">
                   Lipika

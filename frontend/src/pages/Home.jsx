@@ -130,7 +130,7 @@ function Home() {
               src={heroImage} 
               alt="Lipika Logo" 
               className="max-w-full h-auto mx-auto"
-              style={{ maxHeight: '200px' }}
+              style={{ maxHeight: '400px' }}
             />
           </motion.div>
           
