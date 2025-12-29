@@ -288,17 +288,30 @@ function Home() {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-all duration-200"
+                className="group bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100 hover:shadow-2xl hover:border-primary-200 transition-all duration-300 relative overflow-hidden"
               >
-                <div className="mb-4 inline-block p-4 rounded-xl bg-primary-100 flex items-center justify-center">
-                  <IconComponent className="text-4xl text-primary-600" />
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-transparent to-secondary-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative z-10">
+                  {/* Icon with enhanced styling */}
+                  <div className="mb-5 inline-block p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
+                    <IconComponent className="text-4xl sm:text-5xl text-primary-600" />
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 group-hover:text-primary-700 transition-colors duration-300">
+                    {card.title}
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {card.description}
+                  </p>
+                  
+                  {/* Decorative accent line */}
+                  <div className="mt-4 h-1 w-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-black">
-                  {card.title}
-                </h3>
-                <p className="text-sm text-black leading-relaxed">
-                  {card.description}
-                </p>
               </motion.div>
               )
             })}
