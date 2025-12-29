@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload } from 'react-icons/fa'
-import heroImage from '../images/HeroSection-FrontPage.png'
+import heroImage from '../images/Logo.png'
 import { useAuth } from '../context/AuthContext'
 import { getOrCreateTrialCookie } from '../utils/cookieUtils'
 import ImageUpload from '../components/ImageUpload'

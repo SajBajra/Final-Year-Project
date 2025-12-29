@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaScroll, FaUser, FaSignOutAlt, FaCog, FaBars, FaTimes, FaChevronDown, FaTachometerAlt } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
-import logoImage from '../images/HeroSection-FrontPage.png'
+import logoImage from '../images/Logo.png'
 
 const Header = () => {
   const location = useLocation()
