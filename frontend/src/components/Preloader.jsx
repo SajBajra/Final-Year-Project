@@ -60,7 +60,6 @@ const Preloader = () => {
                   alt="Logo"
                   className="w-full h-full object-contain drop-shadow-xl"
                   style={{
-                    imageRendering: 'crisp-edges',
                     imageRendering: '-webkit-optimize-contrast',
                     transform: 'translateZ(0)',
                     backfaceVisibility: 'hidden',
