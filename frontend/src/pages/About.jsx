@@ -146,7 +146,6 @@ const About = () => {
               {[
                 { icon: FaRobot, text: 'AI-Powered' },
                 { icon: FaGlobe, text: 'Cultural Preservation' },
-                { icon: FaCode, text: 'Open Source' },
                 { icon: FaStar, text: 'Cutting-Edge Tech' }
               ].map((point, index) => {
                 const PointIcon = point.icon
