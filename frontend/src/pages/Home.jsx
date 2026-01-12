@@ -10,6 +10,7 @@ import CameraCapture from '../components/CameraCapture'
 import OCRResult from '../components/OCRResult'
 import AROverlay from '../components/AROverlay'
 import TrialCounter from '../components/TrialCounter'
+import UserUsageCounter from '../components/UserUsageCounter'
 import { recognizeText, translateText } from '../services/ocrService'
 
 function Home() {
@@ -278,6 +279,11 @@ function Home() {
           <TrialCounter trialInfo={trialInfo} />
         )}
 
+        {/* User Usage Counter - Show for authenticated users */}
+        {isAuthenticated() && (
+          <UserUsageCounter ocrResult={ocrResult} />
+        )}
+
         {/* Mobile Camera Interface - Google Lens Style */}
         {isMobile && cameraActive && !ocrResult && !loading && (
           <motion.div
@@ -311,8 +317,8 @@ function Home() {
                 </div>
               </div>
               
-              {/* Instructions */}
-              <div className="absolute top-4 left-0 right-0 text-center px-4">
+              {/* Instructions & Usage Counter */}
+              <div className="absolute top-4 left-0 right-0 text-center px-4 space-y-3">
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -320,6 +326,26 @@ function Home() {
                 >
                   <p className="text-sm font-medium">Position Ranjana text in frame</p>
                 </motion.div>
+                
+                {/* Mobile Usage Counter for Authenticated Users */}
+                {isAuthenticated() && ocrResult?.trialInfo && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className={`bg-black/70 backdrop-blur-md px-4 py-2 rounded-full inline-block ${
+                      ocrResult.trialInfo.remainingTrials <= 3 ? 'border-2 border-orange-400' : 'border-2 border-primary-400'
+                    }`}
+                  >
+                    <p className="text-xs font-bold text-white">
+                      Scans: <span className={`text-base ${
+                        ocrResult.trialInfo.remainingTrials <= 3 ? 'text-orange-400' : 'text-primary-400'
+                      }`}>
+                        {ocrResult.trialInfo.remainingTrials}/{ocrResult.trialInfo.maxTrials}
+                      </span>
+                    </p>
+                  </motion.div>
+                )}
               </div>
               
               {/* Bottom Action Buttons */}
