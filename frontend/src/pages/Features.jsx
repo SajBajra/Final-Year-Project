@@ -4,6 +4,7 @@ import {
   FaChartBar, FaMobileAlt, FaLock, FaPython, FaCoffee, FaReact, FaUpload,
   FaShieldAlt, FaFont, FaArrowRight, FaStar, FaCheckCircle
 } from 'react-icons/fa'
+import featureSectionImage from '../images/FeatureSection.png'
 
 const Features = () => {
   const features = [
@@ -145,16 +146,20 @@ const Features = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center"
           >
-            {/* Icon with Animation */}
+            {/* Hero Image with Animation */}
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
+              initial={{ scale: 0, rotate: -10 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
               className="flex justify-center items-center mb-6"
             >
               <div className="relative flex items-center justify-center">
-                <div className="absolute inset-0 bg-white/20 rounded-full blur-xl"></div>
-                <FaRobot className="relative text-6xl sm:text-7xl md:text-8xl text-white drop-shadow-2xl mx-auto" />
+                <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl"></div>
+                <img 
+                  src={featureSectionImage} 
+                  alt="Lipika OCR Features" 
+                  className="relative h-32 sm:h-40 md:h-48 lg:h-56 w-auto drop-shadow-2xl mx-auto"
+                />
               </div>
             </motion.div>
 
