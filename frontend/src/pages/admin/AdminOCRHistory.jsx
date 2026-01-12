@@ -368,7 +368,7 @@ const AdminOCRHistory = () => {
         >
           <div
             className="bg-white rounded-xl shadow-2xl w-full max-w-5xl"
-            style={{ maxHeight: '90vh', marginTop: '-50px' }}
+            style={{ maxHeight: '90vh', marginTop: '0' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
