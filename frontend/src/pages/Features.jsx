@@ -108,7 +108,7 @@ const Features = () => {
   return (
     <div className="min-h-screen bg-primary-50">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary-600 min-h-screen flex items-center">
+      <section className="relative overflow-hidden bg-primary-600 flex items-center" style={{ minHeight: '90vh' }}>
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
