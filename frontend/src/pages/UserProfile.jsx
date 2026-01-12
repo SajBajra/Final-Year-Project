@@ -98,7 +98,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex flex-col" style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <div className="min-h-screen bg-primary-50 flex flex-col" style={{ fontFamily: 'Poppins, sans-serif' }}>
       <Header />
       
       <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
@@ -119,7 +119,7 @@ const UserProfile = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="md:col-span-2 lg:row-span-2 card bg-gradient-to-br from-primary-600 to-primary-700 text-white relative overflow-hidden"
+            className="md:col-span-2 lg:row-span-2 card bg-primary-600 text-white relative overflow-hidden"
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
             <div className="relative z-10">
@@ -151,7 +151,7 @@ const UserProfile = () => {
 
               <div className="space-y-3 mb-6">
                 {profile.isPremium && (
-                  <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-xl font-semibold">
+                  <div className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl font-semibold">
                     <FaCrown className="text-lg" />
                     <span>Premium Member</span>
                   </div>
@@ -175,7 +175,7 @@ const UserProfile = () => {
                 )}
 
                 {profile.isPremium && profile.premiumUntil && (
-                  <div className="flex items-center gap-2 text-sm text-white/80 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 backdrop-blur-sm px-4 py-2 rounded-xl border border-yellow-400/30">
+                  <div className="flex items-center gap-2 text-sm text-white/80 bg-yellow-500/20 backdrop-blur-sm px-4 py-2 rounded-xl border border-yellow-400/30">
                     <FaCrown />
                     <span>Premium Until: {new Date(profile.premiumUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
@@ -199,7 +199,7 @@ const UserProfile = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="card bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+            className="card bg-blue-600 text-white"
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
             <div className="flex items-center gap-3 mb-4">
@@ -219,10 +219,10 @@ const UserProfile = () => {
             transition={{ delay: 0.3 }}
             className={`card ${
               profile.isPremium 
-                ? 'bg-gradient-to-br from-yellow-400 to-orange-500' 
+                ? 'bg-orange-500' 
                 : getRemainingScans() <= 3 
-                  ? 'bg-gradient-to-br from-red-500 to-red-600'
-                  : 'bg-gradient-to-br from-green-500 to-green-600'
+                  ? 'bg-red-600'
+                  : 'bg-green-600'
             } text-white`}
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
@@ -266,13 +266,13 @@ const UserProfile = () => {
                       initial={{ width: 0 }}
                       animate={{ width: `${calculateUsagePercentage()}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
-                      className={`h-full rounded-full ${
-                        calculateUsagePercentage() >= 100
-                          ? 'bg-gradient-to-r from-red-500 to-red-600'
-                          : calculateUsagePercentage() >= 80
-                          ? 'bg-gradient-to-r from-orange-500 to-orange-600'
-                          : 'bg-gradient-to-r from-primary-500 to-primary-600'
-                      }`}
+                    className={`h-full rounded-full ${
+                      calculateUsagePercentage() >= 100
+                        ? 'bg-red-600'
+                        : calculateUsagePercentage() >= 80
+                        ? 'bg-orange-600'
+                        : 'bg-primary-600'
+                    }`}
                     />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -296,7 +296,7 @@ const UserProfile = () => {
                     </p>
                     <button
                       onClick={handleUpgradeToPremium}
-                      className="w-full btn-primary bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                      className="w-full btn-primary bg-orange-500 hover:bg-orange-600"
                     >
                       <FaCrown className="inline mr-2" />
                       Upgrade to Premium
@@ -312,11 +312,11 @@ const UserProfile = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="md:col-span-2 lg:col-span-4 card bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200"
+              className="md:col-span-2 lg:col-span-4 card bg-yellow-50 border-2 border-yellow-200"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex-shrink-0">
+                <div className="p-3 bg-orange-500 rounded-2xl flex-shrink-0">
                   <FaCrown className="text-3xl text-white" />
                 </div>
                 <div className="flex-1">
@@ -328,7 +328,7 @@ const UserProfile = () => {
                   </p>
                   <button
                     onClick={handleUpgradeToPremium}
-                    className="btn-primary bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                    className="btn-primary bg-orange-500 hover:bg-orange-600"
                   >
                     Learn More
                   </button>
