@@ -60,40 +60,43 @@ const Header = () => {
             </Link>
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center flex-1 justify-center space-x-8">
-              {navItems.map((item) => (
-                <Link 
-                  key={item.path}
-                  to={item.path}
-                  className="relative group"
-                >
-                  <span className={`font-semibold text-base transition-colors duration-300 ${
-                    isActive(item.path)
-                      ? 'text-primary-600'
-                      : 'text-gray-700 group-hover:text-primary-600'
-                  }`}>
-                    {item.label}
-                  </span>
-                  
-                  {/* Active Underline */}
-                  {isActive(item.path) && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  
-                  {/* Hover Underline */}
-                  {!isActive(item.path) && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                  )}
-                </Link>
-              ))}
-            </nav>
+            <div className="hidden md:flex items-center flex-1 justify-center">
+              <nav className="flex items-center space-x-8">
+                {navItems.map((item) => (
+                  <Link 
+                    key={item.path}
+                    to={item.path}
+                    className="relative group"
+                  >
+                    <span className={`font-semibold text-base transition-colors duration-300 ${
+                      isActive(item.path)
+                        ? 'text-primary-600'
+                        : 'text-gray-700 group-hover:text-primary-600'
+                    }`}>
+                      {item.label}
+                    </span>
+                    
+                    {/* Active Underline */}
+                    {isActive(item.path) && (
+                      <motion.div
+                        layoutId="activeNav"
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    
+                    {/* Hover Underline */}
+                    {!isActive(item.path) && (
+                      <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                    )}
+                  </Link>
+                ))}
+              </nav>
+            </div>
             
-            {isAuthenticated() ? (
-              <div className="ml-4 relative" ref={profileDropdownRef}>
+            <div className="hidden md:block">
+              {isAuthenticated() ? (
+                <div className="relative" ref={profileDropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
@@ -184,18 +187,18 @@ const Header = () => {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
-              <Link
-                to="/login"
-                className="px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md transition-all duration-200 flex items-center gap-2"
-              >
-                <FaUser className="text-sm" />
-                Get Started
-              </Link>
-            )}
-          </nav>
+              ) : (
+                <Link
+                  to="/login"
+                  className="px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md transition-all duration-200 flex items-center gap-2"
+                >
+                  <FaUser className="text-sm" />
+                  Get Started
+                </Link>
+              )}
+            </div>
 
-          {/* Mobile Menu Button */}
+            {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2.5 rounded-lg text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
