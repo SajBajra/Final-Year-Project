@@ -1,5 +1,6 @@
 package com.lipika.service.impl;
 
+import com.lipika.dto.OCRHistoryDTO;
 import com.lipika.model.OCRHistory;
 import com.lipika.repository.OCRHistoryRepository;
 import com.lipika.service.AdminService;
@@ -99,7 +100,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Map<String, Object> getOCRHistory(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
-        Page<OCRHistory> historyPage = ocrHistoryRepository.findAll(pageable);
+        Page<OCRHistoryDTO> historyPage = ocrHistoryRepository.findAllWithUserInfo(pageable);
         
         log.info("getOCRHistory: page={}, size={}, totalElements={}, totalPages={}, contentSize={}", 
             page, size, historyPage.getTotalElements(), historyPage.getTotalPages(), historyPage.getContent().size());
@@ -161,42 +162,26 @@ public class AdminServiceImpl implements AdminService {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
         
-        Page<OCRHistory> historyPage;
+        Page<OCRHistoryDTO> historyPage;
         
-        // Build query based on provided filters
-        if (search != null && !search.trim().isEmpty() && 
-            minConfidence != null && maxConfidence != null &&
-            startDate != null && endDate != null) {
-            // All filters
-            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCaseAndConfidenceBetweenAndTimestampBetween(
-                    search, minConfidence, maxConfidence, startDate, endDate, pageable);
-        } else if (search != null && !search.trim().isEmpty() && 
-                   minConfidence != null && maxConfidence != null) {
-            // Text + confidence
-            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCaseAndConfidenceBetween(
-                    search, minConfidence, maxConfidence, pageable);
-        } else if (search != null && !search.trim().isEmpty() && 
-                   startDate != null && endDate != null) {
-            // Text + date
-            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCaseAndTimestampBetween(
+        // Build query based on provided filters (with user info)
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+        boolean hasDateRange = startDate != null && endDate != null;
+        
+        if (hasSearch && hasDateRange) {
+            // Search + Date range
+            historyPage = ocrHistoryRepository.findAllWithUserInfoSearchAndDateRange(
                     search, startDate, endDate, pageable);
-        } else if (minConfidence != null && maxConfidence != null && 
-                   startDate != null && endDate != null) {
-            // Confidence + date
-            historyPage = ocrHistoryRepository.findByConfidenceBetweenAndTimestampBetween(
-                    minConfidence, maxConfidence, startDate, endDate, pageable);
-        } else if (search != null && !search.trim().isEmpty()) {
-            // Text only
-            historyPage = ocrHistoryRepository.findByRecognizedTextContainingIgnoreCase(search, pageable);
-        } else if (minConfidence != null && maxConfidence != null) {
-            // Confidence only
-            historyPage = ocrHistoryRepository.findByConfidenceBetween(minConfidence, maxConfidence, pageable);
-        } else if (startDate != null && endDate != null) {
-            // Date only
-            historyPage = ocrHistoryRepository.findByTimestampBetween(startDate, endDate, pageable);
+        } else if (hasSearch) {
+            // Search only
+            historyPage = ocrHistoryRepository.findAllWithUserInfoAndSearch(search, pageable);
+        } else if (hasDateRange) {
+            // Date range only
+            historyPage = ocrHistoryRepository.findAllWithUserInfoAndDateRange(
+                    startDate, endDate, pageable);
         } else {
             // No filters
-            historyPage = ocrHistoryRepository.findAll(pageable);
+            historyPage = ocrHistoryRepository.findAllWithUserInfo(pageable);
         }
         
         Map<String, Object> result = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.lipika.repository;
 
+import com.lipika.dto.OCRHistoryDTO;
 import com.lipika.model.OCRHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +64,53 @@ public interface OCRHistoryRepository extends JpaRepository<OCRHistory, Long> {
     
     // Find by registered status
     Page<OCRHistory> findByIsRegistered(Boolean isRegistered, Pageable pageable);
+    
+    // Get OCR History with User information
+    @Query("SELECT new com.lipika.dto.OCRHistoryDTO(" +
+           "h.id, h.userId, u.username, u.email, u.role, " +
+           "h.isRegistered, h.ipAddress, h.cookieId, " +
+           "h.imageFilename, h.imagePath, h.recognizedText, " +
+           "h.characterCount, h.confidence, h.timestamp, h.language) " +
+           "FROM OCRHistory h LEFT JOIN h.user u")
+    Page<OCRHistoryDTO> findAllWithUserInfo(Pageable pageable);
+    
+    // Get OCR History with User information and search filter
+    @Query("SELECT new com.lipika.dto.OCRHistoryDTO(" +
+           "h.id, h.userId, u.username, u.email, u.role, " +
+           "h.isRegistered, h.ipAddress, h.cookieId, " +
+           "h.imageFilename, h.imagePath, h.recognizedText, " +
+           "h.characterCount, h.confidence, h.timestamp, h.language) " +
+           "FROM OCRHistory h LEFT JOIN h.user u " +
+           "WHERE LOWER(h.recognizedText) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<OCRHistoryDTO> findAllWithUserInfoAndSearch(@Param("search") String search, Pageable pageable);
+    
+    // Get OCR History with User information and date range
+    @Query("SELECT new com.lipika.dto.OCRHistoryDTO(" +
+           "h.id, h.userId, u.username, u.email, u.role, " +
+           "h.isRegistered, h.ipAddress, h.cookieId, " +
+           "h.imageFilename, h.imagePath, h.recognizedText, " +
+           "h.characterCount, h.confidence, h.timestamp, h.language) " +
+           "FROM OCRHistory h LEFT JOIN h.user u " +
+           "WHERE h.timestamp BETWEEN :startDate AND :endDate")
+    Page<OCRHistoryDTO> findAllWithUserInfoAndDateRange(
+        @Param("startDate") LocalDateTime startDate, 
+        @Param("endDate") LocalDateTime endDate, 
+        Pageable pageable);
+    
+    // Get OCR History with User information, search and date range
+    @Query("SELECT new com.lipika.dto.OCRHistoryDTO(" +
+           "h.id, h.userId, u.username, u.email, u.role, " +
+           "h.isRegistered, h.ipAddress, h.cookieId, " +
+           "h.imageFilename, h.imagePath, h.recognizedText, " +
+           "h.characterCount, h.confidence, h.timestamp, h.language) " +
+           "FROM OCRHistory h LEFT JOIN h.user u " +
+           "WHERE LOWER(h.recognizedText) LIKE LOWER(CONCAT('%', :search, '%')) " +
+           "AND h.timestamp BETWEEN :startDate AND :endDate")
+    Page<OCRHistoryDTO> findAllWithUserInfoSearchAndDateRange(
+        @Param("search") String search,
+        @Param("startDate") LocalDateTime startDate, 
+        @Param("endDate") LocalDateTime endDate, 
+        Pageable pageable);
 }
 
 

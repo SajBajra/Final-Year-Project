@@ -302,6 +302,9 @@ const AdminOCRHistory = () => {
                 Filename
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                User
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Recognized Text
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -318,7 +321,7 @@ const AdminOCRHistory = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {history.length === 0 ? (
               <tr>
-                <td colSpan="8" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
                   {hasActiveFilters ? 'No records found matching filters' : 'No OCR history found'}
                 </td>
               </tr>
@@ -364,6 +367,37 @@ const AdminOCRHistory = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.imageFilename}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.isRegistered ? (
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-gray-900 flex items-center gap-1">
+                          {item.username || 'Unknown'}
+                          {item.userRole === 'ADMIN' && (
+                            <span className="inline-block px-2 py-0.5 bg-red-100 text-red-800 text-xs font-bold rounded">
+                              ADMIN
+                            </span>
+                          )}
+                          {item.userRole === 'USER' && (
+                            <span className="inline-block px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded">
+                              USER
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-xs text-gray-500">{item.userEmail || 'N/A'}</span>
+                        <span className="text-xs text-gray-400">ID: {item.userId || 'N/A'}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-gray-500">Guest User</span>
+                        <span className="text-xs text-gray-400">
+                          IP: {item.ipAddress || 'N/A'}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          Cookie: {item.cookieId ? item.cookieId.substring(0, 12) + '...' : 'N/A'}
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title={item.recognizedText}>
                     {item.recognizedText}
