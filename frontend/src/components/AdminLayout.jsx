@@ -24,7 +24,13 @@ const AdminLayout = () => {
     { path: ROUTES.ADMIN_SETTINGS, label: 'Settings', icon: FaCog },
   ]
 
-  const isActive = (path) => location.pathname === path
+  const isActive = (path) => {
+    // Special case for dashboard: both /admin and /admin/dashboard should be active
+    if (path === ROUTES.ADMIN_DASHBOARD) {
+      return location.pathname === ROUTES.ADMIN || location.pathname === ROUTES.ADMIN_DASHBOARD
+    }
+    return location.pathname === path
+  }
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
