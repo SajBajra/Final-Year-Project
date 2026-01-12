@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload } from 'react-icons/fa'
+import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload, FaArrowRight } from 'react-icons/fa'
 import heroImage from '../images/HeroSection-FrontPage.png'
 import { useAuth } from '../context/AuthContext'
 import { getOrCreateTrialCookie } from '../utils/cookieUtils'
@@ -268,18 +268,24 @@ function Home() {
                 icon: FaUpload,
                 title: 'Capture or Upload',
                 description: 'Take a photo with your camera or upload an image containing Ranjana script text. Supports all major image formats.',
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600',
                 delay: 0.1
               },
               {
                 icon: FaSearch,
                 title: 'AI Recognition',
                 description: 'Our advanced CRNN model identifies individual characters with high accuracy using state-of-the-art deep learning.',
+                bgColor: 'bg-secondary-100',
+                iconColor: 'text-secondary-600',
                 delay: 0.2
               },
               {
                 icon: FaEye,
                 title: 'AR Overlay',
                 description: 'See recognized text highlighted with interactive bounding boxes and confidence scores.',
+                bgColor: 'bg-primary-100',
+                iconColor: 'text-primary-600',
                 delay: 0.3
               }
             ].map((card, index) => {
@@ -288,30 +294,51 @@ function Home() {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="group bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100 hover:shadow-2xl hover:border-primary-200 transition-all duration-300 relative overflow-hidden"
+                className="card hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
               >
-                {/* Subtle gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-transparent to-secondary-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {/* Background Effect on Hover */}
+                <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
                 <div className="relative z-10">
-                  {/* Icon with enhanced styling */}
-                  <div className="mb-5 inline-block p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                    <IconComponent className="text-4xl sm:text-5xl text-primary-600" />
-                  </div>
+                  {/* Icon with Animated Background */}
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
+                    className={`mb-3 sm:mb-4 inline-block p-3 sm:p-4 rounded-xl ${card.bgColor}`}
+                  >
+                    <IconComponent className={`text-3xl sm:text-4xl md:text-5xl ${card.iconColor}`} />
+                  </motion.div>
                   
                   {/* Title */}
-                  <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 group-hover:text-primary-700 transition-colors duration-300">
+                  <motion.h3 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 + 0.3 }}
+                    className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-gray-800 group-hover:text-primary-600 transition-colors duration-300"
+                  >
                     {card.title}
-                  </h3>
+                  </motion.h3>
                   
                   {/* Description */}
-                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.4 }}
+                    className="text-sm sm:text-base text-gray-600 leading-relaxed"
+                  >
                     {card.description}
-                  </p>
-                  
-                  {/* Decorative accent line */}
-                  <div className="mt-4 h-1 w-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </motion.p>
                 </div>
+                
+                {/* Decorative Arrow on Hover */}
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  whileHover={{ opacity: 1, x: 0 }}
+                  className="absolute top-4 right-4 text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
+                  <FaArrowRight />
+                </motion.div>
               </motion.div>
               )
             })}
