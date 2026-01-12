@@ -7,6 +7,10 @@ import Home from './pages/Home'
 import Features from './pages/Features'
 import About from './pages/About'
 import Login from './pages/Login'
+import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import UserProfile from './pages/UserProfile'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
@@ -51,6 +55,57 @@ function App() {
             </div>
             <Footer />
           </div>
+        } />
+        
+        {/* Auth Routes */}
+        <Route path="/register" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Register />
+          </motion.div>
+        } />
+        
+        <Route path="/login" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Login />
+          </motion.div>
+        } />
+        
+        <Route path="/forgot-password" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ForgotPassword />
+          </motion.div>
+        } />
+        
+        <Route path="/reset-password" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ResetPassword />
+          </motion.div>
+        } />
+        
+        <Route path="/profile" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <UserProfile />
+          </motion.div>
         } />
         
         {/* Admin Login Route */}

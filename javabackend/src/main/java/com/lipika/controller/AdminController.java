@@ -3,8 +3,8 @@ package com.lipika.controller;
 import com.lipika.model.ApiResponse;
 import com.lipika.model.OCRHistory;
 import com.lipika.service.AdminService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,13 +17,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/admin")
-@RequiredArgsConstructor
 public class AdminController {
     
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
+    
     private final AdminService adminService;
+    
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
+    }
     
     /**
      * Get dashboard statistics

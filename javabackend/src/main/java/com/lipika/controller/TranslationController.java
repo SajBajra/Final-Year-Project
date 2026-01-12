@@ -5,18 +5,22 @@ import com.lipika.model.TranslationRequest;
 import com.lipika.model.TranslationResponse;
 import com.lipika.service.TranslationService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/translate")
-@RequiredArgsConstructor
 public class TranslationController {
     
+    private static final Logger log = LoggerFactory.getLogger(TranslationController.class);
+    
     private final TranslationService translationService;
+    
+    public TranslationController(TranslationService translationService) {
+        this.translationService = translationService;
+    }
     
     @PostMapping
     public ResponseEntity<ApiResponse<TranslationResponse>> translate(

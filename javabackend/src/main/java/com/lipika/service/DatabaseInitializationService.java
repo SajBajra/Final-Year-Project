@@ -1,7 +1,7 @@
 package com.lipika.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,11 +19,15 @@ import java.util.stream.Collectors;
  * Replaces the need for manual schema.sql execution
  */
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class DatabaseInitializationService {
     
+    private static final Logger log = LoggerFactory.getLogger(DatabaseInitializationService.class);
+    
     private final JdbcTemplate jdbcTemplate;
+    
+    public DatabaseInitializationService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
     
     @Value("${spring.jpa.hibernate.ddl-auto:validate}")
     private String ddlAuto;

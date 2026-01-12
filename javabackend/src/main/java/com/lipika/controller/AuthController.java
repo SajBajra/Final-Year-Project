@@ -5,21 +5,25 @@ import com.lipika.dto.LoginRequest;
 import com.lipika.model.ApiResponse;
 import com.lipika.service.AuthService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 // This controller is now dedicated to admin authentication only.
 // Frontend can point a "secret" admin login page to these URLs (e.g. /api/admin/auth/login).
 @RequestMapping("/api/admin/auth")
-@RequiredArgsConstructor
 public class AuthController {
     
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    
     private final AuthService authService;
+    
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
     
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(

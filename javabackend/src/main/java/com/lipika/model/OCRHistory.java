@@ -63,4 +63,101 @@ public class OCRHistory {
             language = "devanagari";
         }
     }
+    
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public Long getUserId() {
+        return userId;
+    }
+    
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    
+    public Boolean getIsRegistered() {
+        return isRegistered;
+    }
+    
+    public void setIsRegistered(Boolean isRegistered) {
+        this.isRegistered = isRegistered;
+    }
+    
+    public String getIpAddress() {
+        return ipAddress;
+    }
+    
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+    
+    public String getCookieId() {
+        return cookieId;
+    }
+    
+    public void setCookieId(String cookieId) {
+        this.cookieId = cookieId;
+    }
+    
+    public String getImageFilename() {
+        return imageFilename;
+    }
+    
+    public void setImageFilename(String imageFilename) {
+        this.imageFilename = imageFilename;
+    }
+    
+    public String getRecognizedText() {
+        return recognizedText;
+    }
+    
+    public void setRecognizedText(String recognizedText) {
+        this.recognizedText = recognizedText;
+    }
+    
+    public Integer getCharacterCount() {
+        return characterCount;
+    }
+    
+    public void setCharacterCount(Integer characterCount) {
+        this.characterCount = characterCount;
+    }
+    
+    public Double getConfidence() {
+        return confidence;
+    }
+    
+    public void setConfidence(Double confidence) {
+        this.confidence = confidence;
+    }
+    
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+    
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+    
+    public String getLanguage() {
+        return language;
+    }
+    
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+    
+    public User getUser() {
+        return user;
+    }
+    
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

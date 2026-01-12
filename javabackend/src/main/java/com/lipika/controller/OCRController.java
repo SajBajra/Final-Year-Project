@@ -7,8 +7,8 @@ import com.lipika.service.OCRService;
 import com.lipika.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +17,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/ocr")
-@RequiredArgsConstructor
 public class OCRController {
+    
+    private static final Logger log = LoggerFactory.getLogger(OCRController.class);
     
     private final OCRService ocrService;
     private final JwtUtil jwtUtil;
+    
+    public OCRController(OCRService ocrService, JwtUtil jwtUtil) {
+        this.ocrService = ocrService;
+        this.jwtUtil = jwtUtil;
+    }
     
     @PostMapping(value = "/recognize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<OCRResponse>> recognizeText(

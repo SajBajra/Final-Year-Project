@@ -49,10 +49,10 @@ const Login = () => {
               <FaUser className="text-3xl text-primary-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Admin Login
+              Welcome Back
             </h1>
             <p className="text-gray-600 text-sm">
-              Admins sign in here. Normal users can use Lipika OCR without logging in.
+              Login to your Lipika OCR account
             </p>
           </div>
 
@@ -106,16 +106,35 @@ const Login = () => {
               </div>
             </div>
 
+            <div className="flex items-center justify-end mb-4">
+              <Link 
+                to="/forgot-password"
+                className="text-sm text-primary-600 hover:text-primary-700 font-semibold transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-                  className="w-full bg-primary-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-primary-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
 
-          {/* No registration link here: accounts are only for admins and managed manually. */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link 
+                to="/register" 
+                className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

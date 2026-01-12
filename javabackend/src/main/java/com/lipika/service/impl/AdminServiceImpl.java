@@ -3,8 +3,8 @@ package com.lipika.service.impl;
 import com.lipika.model.OCRHistory;
 import com.lipika.repository.OCRHistoryRepository;
 import com.lipika.service.AdminService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +17,16 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
     
+    private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
+    
     private final OCRHistoryRepository ocrHistoryRepository;
+    
+    public AdminServiceImpl(OCRHistoryRepository ocrHistoryRepository) {
+        this.ocrHistoryRepository = ocrHistoryRepository;
+    }
     
     // System settings (still in-memory - can be moved to DB later)
     private final Map<String, Object> settings = new ConcurrentHashMap<>();

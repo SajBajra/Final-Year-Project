@@ -5,8 +5,8 @@ import com.lipika.dto.LoginRequest;
 import com.lipika.model.User;
 import com.lipika.repository.UserRepository;
 import com.lipika.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +15,22 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class AuthService {
+    
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TrialTrackingService trialTrackingService;
+    
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, 
+                      JwtUtil jwtUtil, TrialTrackingService trialTrackingService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.trialTrackingService = trialTrackingService;
+    }
     
     public AuthResponse login(LoginRequest request) {
         // Find user by username or email

@@ -125,6 +125,20 @@ const Header = () => {
                         </p>
                       </div>
 
+                      {/* Profile (Regular Users) */}
+                      {!isAdmin() && (
+                        <button
+                          onClick={() => {
+                            navigate('/profile');
+                            setProfileDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-black hover:bg-gray-50 transition-colors"
+                        >
+                          <FaUser className="text-primary-600" />
+                          <span>My Profile</span>
+                        </button>
+                      )}
+
                       {/* Admin Dashboard (Admin only) */}
                       {isAdmin() && (
                         <button
@@ -286,6 +300,20 @@ const Header = () => {
                         </div>
                       </div>
 
+                      {/* Profile Button (Regular Users) */}
+                      {!isAdmin() && (
+                        <button
+                          onClick={() => {
+                            navigate('/profile');
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-black bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors font-medium"
+                        >
+                          <FaUser className="text-primary-600" />
+                          <span>My Profile</span>
+                        </button>
+                      )}
+                      
                       {/* Admin Dashboard Button */}
                       {isAdmin() && (
                         <button

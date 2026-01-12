@@ -7,8 +7,8 @@ import com.lipika.service.TrialTrackingService;
 import com.lipika.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -24,15 +24,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class OCRServiceImpl implements OCRService {
+    
+    private static final Logger log = LoggerFactory.getLogger(OCRServiceImpl.class);
     
     private final RestTemplate restTemplate;
     private final AdminService adminService;
     private final TrialTrackingService trialTrackingService;
     private final JwtUtil jwtUtil;
+    
+    public OCRServiceImpl(RestTemplate restTemplate, AdminService adminService, 
+                         TrialTrackingService trialTrackingService, JwtUtil jwtUtil) {
+        this.restTemplate = restTemplate;
+        this.adminService = adminService;
+        this.trialTrackingService = trialTrackingService;
+        this.jwtUtil = jwtUtil;
+    }
     
     @Value("${lipika.ocr.service.url:http://localhost:5000}")
     private String ocrServiceUrl;

@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
-import { register as registerUser } from '../services/authService';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle } from 'react-icons/fa';
+import { FaLock, FaEye, FaEyeSlash, FaCheckCircle } from 'react-icons/fa';
+import { resetPassword } from '../services/authService';
 
-const Register = () => {
+const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
     password: '',
     confirmPassword: '',
   });
@@ -17,8 +16,16 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login: authLogin } = useAuth();
-  const navigate = useNavigate();
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get('token');
+    if (!tokenFromUrl) {
+      setError('Invalid reset link');
+    } else {
+      setToken(tokenFromUrl);
+    }
+  }, [searchParams]);
 
   const handleChange = (e) => {
     setFormData({
@@ -32,12 +39,6 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    // Validation
-    if (formData.username.length < 3) {
-      setError('Username must be at least 3 characters');
-      return;
-    }
-
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -48,33 +49,25 @@ const Register = () => {
       return;
     }
 
+    if (!token) {
+      setError('Invalid reset link');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await registerUser(formData.username, formData.email, formData.password);
-      
-      if (response.success && response.data) {
-        // Store auth data
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify({
-          id: response.data.userId,
-          username: response.data.username,
-          email: response.data.email,
-          role: response.data.role
-        }));
-
+      const response = await resetPassword(token, formData.password);
+      if (response.success) {
         setSuccess(true);
-        
-        // Navigate to home after brief delay
         setTimeout(() => {
-          navigate('/');
-          window.location.reload(); // Reload to update auth context
-        }, 2000);
+          navigate('/login');
+        }, 3000);
       } else {
-        setError(response.message || 'Registration failed');
+        setError(response.message || 'Password reset failed');
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Registration failed. Please try again.');
+      setError(err.response?.data?.message || 'Password reset failed. The link may be expired.');
     } finally {
       setLoading(false);
     }
@@ -98,13 +91,13 @@ const Register = () => {
               <FaCheckCircle className="text-5xl text-green-600" />
             </motion.div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Registration Successful!
+              Password Reset Successful!
             </h2>
             <p className="text-gray-600 mb-6">
-              Welcome to Lipika OCR! You get 10 free scans to start with.
+              Your password has been reset successfully. You can now login with your new password.
             </p>
             <div className="animate-pulse text-primary-600 font-semibold">
-              Redirecting to home...
+              Redirecting to login...
             </div>
           </div>
         </motion.div>
@@ -122,13 +115,13 @@ const Register = () => {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <div className="inline-block p-3 bg-primary-100 rounded-full mb-4">
-              <FaUser className="text-3xl text-primary-600" />
+              <FaLock className="text-3xl text-primary-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Create Your Account
+              Reset Your Password
             </h1>
             <p className="text-gray-600 text-sm">
-              Get 10 free OCR scans to start with!
+              Enter your new password below
             </p>
           </div>
 
@@ -145,44 +138,7 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Username
-              </label>
-              <div className="relative">
-                <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  minLength={3}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
-                  placeholder="Choose a username"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
-                  placeholder="Enter your email"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                New Password
               </label>
               <div className="relative">
                 <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -193,8 +149,8 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   minLength={6}
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                  placeholder="Create a password (min 6 characters)"
+                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                  placeholder="Enter new password (min 6 characters)"
                 />
                 <button
                   type="button"
@@ -218,8 +174,8 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                  placeholder="Confirm your password"
+                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                  placeholder="Confirm new password"
                 />
                 <button
                   type="button"
@@ -233,23 +189,20 @@ const Register = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !token}
               className="w-full bg-primary-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link 
-                to="/login" 
-                className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"
-              >
-                Login here
-              </Link>
-            </p>
+            <Link 
+              to="/login"
+              className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+            >
+              Back to Login
+            </Link>
           </div>
         </div>
       </motion.div>
@@ -257,5 +210,5 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ResetPassword;
 

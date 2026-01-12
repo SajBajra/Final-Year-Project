@@ -48,5 +48,70 @@ public class TrialTracking {
     protected void onUpdate() {
         lastAttempt = LocalDateTime.now();
     }
+    
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public String getIpAddress() {
+        return ipAddress;
+    }
+    
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+    
+    public String getCookieId() {
+        return cookieId;
+    }
+    
+    public void setCookieId(String cookieId) {
+        this.cookieId = cookieId;
+    }
+    
+    public String getFingerprint() {
+        return fingerprint;
+    }
+    
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
+    }
+    
+    public Integer getTrialCount() {
+        return trialCount;
+    }
+    
+    public void setTrialCount(Integer trialCount) {
+        this.trialCount = trialCount;
+    }
+    
+    public LocalDateTime getFirstAttempt() {
+        return firstAttempt;
+    }
+    
+    public void setFirstAttempt(LocalDateTime firstAttempt) {
+        this.firstAttempt = firstAttempt;
+    }
+    
+    public LocalDateTime getLastAttempt() {
+        return lastAttempt;
+    }
+    
+    public void setLastAttempt(LocalDateTime lastAttempt) {
+        this.lastAttempt = lastAttempt;
+    }
+    
+    public Boolean getIsBlocked() {
+        return isBlocked;
+    }
+    
+    public void setIsBlocked(Boolean isBlocked) {
+        this.isBlocked = isBlocked;
+    }
 }
 
