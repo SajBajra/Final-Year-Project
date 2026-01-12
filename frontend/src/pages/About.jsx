@@ -108,7 +108,7 @@ const About = () => {
                 <img 
                   src={aboutSectionImage} 
                   alt="About Lipika OCR" 
-                  className="relative h-32 sm:h-40 md:h-48 lg:h-56 w-auto drop-shadow-2xl mx-auto"
+                  className="relative h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72 w-auto drop-shadow-2xl mx-auto"
                 />
               </div>
             </motion.div>
