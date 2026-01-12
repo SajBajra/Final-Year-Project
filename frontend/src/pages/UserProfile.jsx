@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaUser, FaEnvelope, FaClock, FaChartLine, FaCrown, FaSignOutAlt, FaCheckCircle, FaFire, FaCalendar, FaStar, FaRocket, FaBolt, FaInfinity, FaShieldAlt, FaHeadset, FaZap } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaClock, FaChartLine, FaCrown, FaSignOutAlt, FaCheckCircle, FaFire, FaCalendar, FaStar, FaRocket, FaBolt, FaInfinity, FaShieldAlt, FaHeadset } from 'react-icons/fa';
 import { getUserProfile } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
@@ -226,7 +226,7 @@ const UserProfile = () => {
                 </motion.p>
               </div>
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-xl w-fit">
-                <FaZap className="text-yellow-300" />
+                <FaBolt className="text-yellow-300" />
                 <p className="text-white/90 text-xs font-semibold">Operations Performed</p>
               </div>
             </div>
