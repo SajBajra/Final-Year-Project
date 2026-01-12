@@ -191,13 +191,13 @@ const Header = () => {
                 <div className="flex items-center gap-3">
                   <Link
                     to="/login"
-                    className="px-4 py-2 rounded-lg font-semibold text-sm text-primary-600 border-2 border-primary-600 hover:bg-primary-50 transition-all duration-200"
+                    className="btn-outline btn-md"
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="px-5 py-2 rounded-lg font-semibold text-sm bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md transition-all duration-200"
+                    className="btn-primary btn-md"
                   >
                     Sign Up
                   </Link>
@@ -366,7 +366,7 @@ const Header = () => {
                       <Link
                         to="/login"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-primary-600 border-2 border-primary-600 hover:bg-primary-50 transition-all font-semibold"
+                        className="btn-outline btn-lg w-full"
                       >
                         <FaUser />
                         <span>Login</span>
@@ -376,7 +376,7 @@ const Header = () => {
                       <Link
                         to="/register"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700 hover:shadow-lg transition-all font-semibold"
+                        className="btn-primary btn-lg w-full"
                       >
                         <FaUser />
                         <span>Sign Up</span>

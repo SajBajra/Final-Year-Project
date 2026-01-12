@@ -32,17 +32,69 @@
 }
 
 @layer components {
-  /* Clean Button Styles - No Gradients */
+  /* Base Button Styles */
+  .btn-base {
+    @apply font-semibold rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-2;
+  }
+
+  /* Button Variants */
   .btn-primary {
-    @apply bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-primary-700 transition-all duration-200;
+    @apply btn-base bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md;
   }
   
   .btn-secondary {
-    @apply bg-secondary-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-secondary-600 hover:shadow-lg transition-all duration-200;
+    @apply btn-base bg-secondary-500 text-white hover:bg-secondary-600 hover:shadow-md;
   }
   
   .btn-outline {
-    @apply bg-white text-primary-600 font-semibold py-3 px-6 rounded-lg border-2 border-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-200;
+    @apply btn-base bg-transparent text-primary-600 border-2 border-primary-600 hover:bg-primary-50;
+  }
+
+  .btn-outline-filled {
+    @apply btn-base bg-white text-primary-600 border-2 border-primary-600 hover:bg-primary-600 hover:text-white;
+  }
+  
+  .btn-ghost {
+    @apply btn-base bg-transparent text-gray-700 hover:text-primary-600 hover:bg-gray-100;
+  }
+
+  .btn-danger {
+    @apply btn-base bg-red-600 text-white hover:bg-red-700 hover:shadow-md;
+  }
+
+  .btn-success {
+    @apply btn-base bg-green-600 text-white hover:bg-green-700 hover:shadow-md;
+  }
+
+  /* Button Sizes */
+  .btn-sm {
+    @apply text-sm py-2 px-4;
+  }
+
+  .btn-md {
+    @apply text-sm py-2.5 px-5;
+  }
+
+  .btn-lg {
+    @apply text-base py-3 px-6;
+  }
+
+  /* Button States */
+  .btn-disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+
+  /* Icon Button Variants */
+  .btn-icon {
+    @apply btn-base p-2.5;
+  }
+
+  .btn-icon-sm {
+    @apply btn-base p-2;
+  }
+
+  .btn-icon-lg {
+    @apply btn-base p-3;
   }
   
   /* Clean Card Styles - No Gradients - Responsive */
