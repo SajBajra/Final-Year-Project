@@ -171,7 +171,7 @@ const Features = () => {
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Advanced Features for
+              Advanced Features of
               <br />
               <span className="text-white">
                 Ranjana Script OCR
