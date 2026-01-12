@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { register as registerUser } from '../services/authService';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaTimes, FaCheck } from 'react-icons/fa';
 import logoImage from '../images/Logo.png';
 
 const Register = () => {
@@ -18,8 +18,46 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const { login: authLogin } = useAuth();
   const navigate = useNavigate();
+
+  // Password validation rules
+  const passwordValidation = useMemo(() => {
+    const password = formData.password;
+    return {
+      minLength: password.length >= 8,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumber: /[0-9]/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      passwordsMatch: formData.password && formData.password === formData.confirmPassword,
+    };
+  }, [formData.password, formData.confirmPassword]);
+
+  // Calculate password strength
+  const passwordStrength = useMemo(() => {
+    const checks = Object.values(passwordValidation);
+    const passed = checks.filter(Boolean).length;
+    const total = checks.length - 1; // Exclude passwordsMatch from strength calculation
+    const percentage = (passed / total) * 100;
+    
+    if (percentage === 0) return { label: '', color: 'bg-gray-200', percentage: 0 };
+    if (percentage <= 40) return { label: 'Weak', color: 'bg-red-500', percentage };
+    if (percentage <= 60) return { label: 'Fair', color: 'bg-orange-500', percentage };
+    if (percentage <= 80) return { label: 'Good', color: 'bg-yellow-500', percentage };
+    return { label: 'Strong', color: 'bg-green-500', percentage };
+  }, [passwordValidation]);
+
+  const isPasswordValid = useMemo(() => {
+    return (
+      passwordValidation.minLength &&
+      passwordValidation.hasUppercase &&
+      passwordValidation.hasLowercase &&
+      passwordValidation.hasNumber &&
+      passwordValidation.hasSpecialChar
+    );
+  }, [passwordValidation]);
 
   const handleChange = (e) => {
     setFormData({
@@ -39,12 +77,12 @@ const Register = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (!isPasswordValid) {
+      setError('Please ensure your password meets all requirements');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!passwordValidation.passwordsMatch) {
       setError('Passwords do not match');
       return;
     }
@@ -194,10 +232,10 @@ const Register = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  onFocus={() => setPasswordFocused(true)}
                   required
-                  minLength={6}
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                  placeholder="Create a password (min 6 characters)"
+                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                  placeholder="Create a strong password"
                 />
                 <button
                   type="button"
@@ -207,6 +245,74 @@ const Register = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+
+              {/* Password Strength Bar */}
+              <AnimatePresence>
+                {formData.password && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium text-gray-600">Password Strength</span>
+                      <span className={`text-xs font-semibold ${
+                        passwordStrength.label === 'Weak' ? 'text-red-600' :
+                        passwordStrength.label === 'Fair' ? 'text-orange-600' :
+                        passwordStrength.label === 'Good' ? 'text-yellow-600' :
+                        'text-green-600'
+                      }`}>
+                        {passwordStrength.label}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${passwordStrength.percentage}%` }}
+                        transition={{ duration: 0.3 }}
+                        className={`h-full ${passwordStrength.color} transition-colors duration-300`}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Password Requirements */}
+              <AnimatePresence>
+                {(passwordFocused || formData.password) && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
+                    <p className="text-xs font-semibold text-gray-700 mb-2">Password must contain:</p>
+                    <div className="space-y-1.5">
+                      <ValidationItem 
+                        isValid={passwordValidation.minLength}
+                        text="At least 8 characters"
+                      />
+                      <ValidationItem 
+                        isValid={passwordValidation.hasUppercase}
+                        text="One uppercase letter (A-Z)"
+                      />
+                      <ValidationItem 
+                        isValid={passwordValidation.hasLowercase}
+                        text="One lowercase letter (a-z)"
+                      />
+                      <ValidationItem 
+                        isValid={passwordValidation.hasNumber}
+                        text="One number (0-9)"
+                      />
+                      <ValidationItem 
+                        isValid={passwordValidation.hasSpecialChar}
+                        text="One special character (!@#$%^&*)"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div>
@@ -221,7 +327,9 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
+                  className={`w-full pl-10 pr-10 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors ${
+                    formData.confirmPassword && (passwordValidation.passwordsMatch ? 'border-green-500' : 'border-red-500')
+                  }`}
                   placeholder="Confirm your password"
                 />
                 <button
@@ -232,12 +340,38 @@ const Register = () => {
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              
+              {/* Password Match Indicator */}
+              <AnimatePresence>
+                {formData.confirmPassword && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-2"
+                  >
+                    {passwordValidation.passwordsMatch ? (
+                      <div className="flex items-center gap-2 text-sm text-green-600">
+                        <FaCheck className="text-xs" />
+                        <span>Passwords match</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-red-600">
+                        <FaTimes className="text-xs" />
+                        <span>Passwords do not match</span>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <button
               type="submit"
-              disabled={loading}
-              className={`btn-primary btn-lg w-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${loading ? 'btn-disabled' : ''}`}
+              disabled={loading || !isPasswordValid || !passwordValidation.passwordsMatch || formData.username.length < 3}
+              className={`btn-primary btn-lg w-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
+                (loading || !isPasswordValid || !passwordValidation.passwordsMatch || formData.username.length < 3) ? 'btn-disabled' : ''
+              }`}
             >
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
@@ -259,6 +393,28 @@ const Register = () => {
     </div>
   );
 };
+
+// Validation Item Component
+const ValidationItem = ({ isValid, text }) => (
+  <motion.div
+    initial={{ opacity: 0, x: -10 }}
+    animate={{ opacity: 1, x: 0 }}
+    className="flex items-center gap-2"
+  >
+    <div className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${
+      isValid ? 'bg-green-500' : 'bg-gray-300'
+    } transition-colors duration-300`}>
+      {isValid ? (
+        <FaCheck className="text-white text-xs" />
+      ) : (
+        <FaTimes className="text-gray-500 text-xs" />
+      )}
+    </div>
+    <span className={`text-xs ${isValid ? 'text-green-700 font-medium' : 'text-gray-600'} transition-colors duration-300`}>
+      {text}
+    </span>
+  </motion.div>
+);
 
 export default Register;
 
