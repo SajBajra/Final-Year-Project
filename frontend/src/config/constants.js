@@ -86,7 +86,6 @@ export const ADMIN_CONFIG = {
 
 export const ROUTES = {
   HOME: '/',
-  ADMIN_LOGIN: '/ocr_admin',
   ADMIN: '/admin',
   ADMIN_DASHBOARD: '/admin/dashboard',
   ADMIN_OCR_HISTORY: '/admin/ocr-history',

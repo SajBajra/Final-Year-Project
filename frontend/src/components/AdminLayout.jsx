@@ -13,7 +13,7 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     logout()
-    navigate(ROUTES.ADMIN_LOGIN)
+    navigate('/login')
   }
 
   const menuItems = [
