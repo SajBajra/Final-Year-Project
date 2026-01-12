@@ -626,11 +626,9 @@ const About = () => {
           >
             {[
               'Improve model accuracy through additional training data and fine-tuning techniques',
-              'Expand translation support to more languages including Hindi, Sanskrit, and regional languages',
               'Add text-to-speech functionality for accessibility and language learning',
               'Develop native mobile applications for iOS and Android platforms',
-              'Support batch processing for large document archives and historical texts',
-              'Integrate database storage for persistent OCR history and user management'
+              'Support batch processing for large document archives and historical texts'
             ].map((goal, index) => (
               <motion.li
                 key={index}
