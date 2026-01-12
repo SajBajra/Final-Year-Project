@@ -31,7 +31,7 @@ const AdminLayout = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Top Bar - Sticky */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 flex-shrink-0 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
@@ -79,7 +79,7 @@ const AdminLayout = () => {
       <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar - Sticky, 100vh height, scrollable navigation */}
         <aside
-          className={`bg-gradient-to-b from-white via-primary-50/30 to-secondary-50/30 border-r border-gray-200 transition-all duration-300 flex-shrink-0 flex flex-col ${
+          className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 flex flex-col ${
             sidebarOpen ? 'w-64' : 'w-0'
           } ${
             // Desktop: sticky sidebar, Mobile: fixed overlay
@@ -138,7 +138,7 @@ const AdminLayout = () => {
 
         {/* Main Content Area - Scrollable */}
         <main 
-          className={`flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar bg-gradient-to-br from-white via-primary-50/20 to-secondary-50/20 ${
+          className={`flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar bg-gray-50 ${
             // Add margin on desktop when sidebar is open
             sidebarOpen ? 'md:ml-0' : 'md:ml-0'
           }`}
