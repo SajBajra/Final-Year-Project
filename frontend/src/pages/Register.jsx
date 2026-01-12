@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { register as registerUser } from '../services/authService';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle } from 'react-icons/fa';
+import logoImage from '../images/Logo.png';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -121,9 +122,11 @@ const Register = () => {
       >
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <div className="inline-block p-3 bg-primary-100 rounded-full mb-4">
-              <FaUser className="text-3xl text-primary-600" />
-            </div>
+            <img 
+              src={logoImage} 
+              alt="Lipika Logo" 
+              className="h-20 w-auto mx-auto mb-4"
+            />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Create Your Account
             </h1>
