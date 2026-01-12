@@ -362,33 +362,39 @@ const AdminOCRHistory = () => {
       {/* Image Viewing Modal */}
       {imageModal.isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
         >
           <div
-            className="relative bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col"
+            className="relative bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white rounded-t-lg flex-shrink-0">
-              <div className="min-w-0 flex-1 mr-4">
-                <h3 className="text-lg font-semibold text-gray-900 truncate">OCR Image</h3>
-                <p className="text-sm text-gray-600 mt-1 truncate">{imageModal.filename || 'Image'}</p>
+            {/* Modal Header - Fixed */}
+            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 flex-shrink-0 z-10">
+              <div className="flex-1 min-w-0 mr-4">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">OCR Image</h3>
+                <p className="text-sm text-gray-600 truncate" title={imageModal.filename}>
+                  {imageModal.filename || 'Image'}
+                </p>
               </div>
               <button
                 onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Close modal"
               >
-                <FaTimes className="text-xl text-gray-600" />
+                <FaTimes className="text-xl text-gray-600 hover:text-gray-800" />
               </button>
             </div>
-            <div className="p-6 overflow-auto flex-1">
+            
+            {/* Modal Content - Scrollable */}
+            <div className="flex-1 overflow-auto bg-gray-50 p-6">
               <img
                 src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
                 alt={imageModal.filename || 'OCR Image'}
-                className="w-full h-auto rounded-lg shadow-lg"
+                className="w-full h-auto rounded-lg shadow-lg mx-auto bg-white"
                 onError={(e) => {
                   e.target.style.display = 'none'
-                  e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-8"><p>Failed to load image</p><p class="text-sm text-gray-500 mt-2">' + imageModal.imagePath + '</p></div>'
+                  e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-8 bg-white rounded-lg"><p class="font-semibold">Failed to load image</p><p class="text-sm text-gray-500 mt-2">' + imageModal.imagePath + '</p></div>'
                 }}
               />
             </div>
