@@ -392,20 +392,18 @@ const AdminOCRHistory = () => {
             
             {/* Modal Body */}
             <div 
-              className="overflow-auto bg-gray-100 p-4"
+              className="overflow-auto p-4"
               style={{ maxHeight: 'calc(90vh - 90px)' }}
             >
-              <div className="bg-white rounded-lg p-3 inline-block min-w-full">
-                <img
-                  src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
-                  alt={imageModal.filename || 'OCR Image'}
-                  className="max-w-full h-auto rounded-lg shadow-lg"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                    e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-12"><p class="text-lg font-semibold mb-2">Failed to load image</p><p class="text-sm text-gray-500">' + imageModal.imagePath + '</p></div>'
-                  }}
-                />
-              </div>
+              <img
+                src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
+                alt={imageModal.filename || 'OCR Image'}
+                className="max-w-full h-auto rounded-lg shadow-lg mx-auto block"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-12"><p class="text-lg font-semibold mb-2">Failed to load image</p><p class="text-sm text-gray-500">' + imageModal.imagePath + '</p></div>'
+                }}
+              />
             </div>
           </div>
         </div>
