@@ -120,11 +120,7 @@ const About = () => {
               transition={{ delay: 0.4 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight"
             >
-              About
-              <br />
-              <span className="text-white">
-                Lipika
-              </span>
+              About Lipika
             </motion.h1>
 
             {/* Subtitle */}
