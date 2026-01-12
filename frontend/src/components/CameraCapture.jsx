@@ -115,7 +115,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
                 screenshotFormat="image/jpeg"
                 videoConstraints={videoConstraints}
                 className="w-full h-full object-cover"
-                mirrored={false}
+                mirrored={true}
               />
               <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
             </div>

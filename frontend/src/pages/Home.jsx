@@ -295,13 +295,10 @@ function Home() {
                 videoConstraints={{
                   width: { ideal: 1280 },
                   height: { ideal: 720 },
-                  facingMode: { exact: "environment" }
+                  facingMode: "environment"
                 }}
                 className="w-full h-full object-cover"
-                mirrored={false}
-                style={{
-                  transform: 'scaleX(-1)'
-                }}
+                mirrored={true}
               />
               
               {/* Overlay Guide */}
