@@ -3,6 +3,8 @@ package com.lipika.controller;
 import com.lipika.dto.*;
 import com.lipika.model.ApiResponse;
 import com.lipika.service.UserService;
+import com.lipika.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +20,11 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     
     private final UserService userService;
+    private final JwtUtil jwtUtil;
     
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
     
     @PostMapping("/register")
@@ -87,9 +91,14 @@ public class UserController {
     }
     
     @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(Authentication authentication) {
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(HttpServletRequest request) {
         try {
-            Long userId = Long.parseLong(authentication.getName());
+            String token = extractTokenFromRequest(request);
+            if (token == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("No authentication token found"));
+            }
+            Long userId = jwtUtil.extractUserId(token);
             UserProfileResponse profile = userService.getUserProfile(userId);
             return ResponseEntity.ok(ApiResponse.success("Profile retrieved successfully", profile));
         } catch (Exception e) {
@@ -100,9 +109,14 @@ public class UserController {
     }
     
     @GetMapping("/usage-status")
-    public ResponseEntity<ApiResponse<Boolean>> checkUsageStatus(Authentication authentication) {
+    public ResponseEntity<ApiResponse<Boolean>> checkUsageStatus(HttpServletRequest request) {
         try {
-            Long userId = Long.parseLong(authentication.getName());
+            String token = extractTokenFromRequest(request);
+            if (token == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("No authentication token found"));
+            }
+            Long userId = jwtUtil.extractUserId(token);
             boolean hasReachedLimit = userService.hasReachedLimit(userId);
             return ResponseEntity.ok(ApiResponse.success(
                 hasReachedLimit ? "Usage limit reached" : "Within usage limit",
@@ -113,6 +127,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to check usage status"));
         }
+    }
+    
+    private String extractTokenFromRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
     }
 }
 
