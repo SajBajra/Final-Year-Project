@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaUser, FaEnvelope, FaClock, FaChartLine, FaCrown, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaClock, FaChartLine, FaCrown, FaSignOutAlt, FaCheckCircle, FaFire, FaCalendar, FaStar } from 'react-icons/fa';
 import { getUserProfile } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
@@ -98,201 +98,287 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-primary-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex flex-col">
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
+      <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
+          className="mb-6"
         >
-          {/* Profile Header */}
-          <div className="card">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-primary-600 rounded-full flex items-center justify-center">
-                  <FaUser className="text-3xl text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{profile.username}</h1>
-                  <p className="text-gray-600 flex items-center gap-2 mt-1">
-                    <FaEnvelope className="text-sm" />
-                    {profile.email}
-                  </p>
-                  {profile.isPremium && (
-                    <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm font-semibold rounded-full">
-                      <FaCrown />
-                      Premium Member
-                    </span>
-                  )}
-                </div>
-              </div>
-              
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <FaSignOutAlt />
-                Logout
-              </button>
-            </div>
-          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">My Profile</h1>
+          <p className="text-gray-600">Manage your account and track your OCR usage</p>
+        </motion.div>
 
-          {/* Usage Stats */}
-          <div className="card">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FaChartLine className="text-primary-600" />
-              Usage Statistics
-            </h2>
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-fr">
+          
+          {/* Profile Card - Large */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="md:col-span-2 lg:row-span-2 card bg-gradient-to-br from-primary-600 to-primary-700 text-white relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-primary-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600 mb-1">Total Scans</p>
-                <p className="text-3xl font-bold text-primary-600">{profile.usageCount}</p>
-              </div>
-              
-              <div className="bg-secondary-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600 mb-1">Remaining Scans</p>
-                <p className="text-3xl font-bold text-secondary-600">{getRemainingScans()}</p>
-              </div>
-              
-              <div className={`rounded-lg p-4 ${profile.isPremium ? 'bg-gradient-to-r from-yellow-100 to-orange-100' : 'bg-gray-50'}`}>
-                <p className="text-sm text-gray-600 mb-1">Status</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {profile.isPremium ? 'Premium' : 'Free'}
-                </p>
-              </div>
-            </div>
-
-            {/* Usage Progress Bar */}
-            {!profile.isPremium && (
-              <div>
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Usage Limit</span>
-                  <span>{profile.usageCount} / {profile.usageLimit}</span>
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30"
+                  >
+                    <FaUser className="text-4xl" />
+                  </motion.div>
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-1">{profile.username}</h2>
+                    <p className="text-white/80 flex items-center gap-2 text-sm">
+                      <FaEnvelope />
+                      {profile.email}
+                    </p>
+                  </div>
                 </div>
-                <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${calculateUsagePercentage()}%` }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    className={`h-full rounded-full ${
-                      calculateUsagePercentage() >= 100
-                        ? 'bg-red-500'
-                        : calculateUsagePercentage() >= 80
-                        ? 'bg-orange-500'
-                        : 'bg-primary-600'
-                    }`}
-                  />
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl transition-colors border border-white/20"
+                >
+                  <FaSignOutAlt className="text-xl" />
+                </motion.button>
+              </div>
+
+              <div className="space-y-3">
+                {profile.isPremium && (
+                  <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-xl font-semibold">
+                    <FaCrown className="text-lg" />
+                    <span>Premium Member</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-2 text-sm text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/20">
+                  <FaCheckCircle />
+                  <span>Role: {profile.role}</span>
                 </div>
                 
-                {profile.usageCount >= profile.usageLimit && (
+                <div className="flex items-center gap-2 text-sm text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/20">
+                  <FaCalendar />
+                  <span>Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Total Scans Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="card bg-gradient-to-br from-blue-500 to-blue-600 text-white relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 text-white/10 text-8xl font-bold -mr-4 -mt-6">
+              <FaFire />
+            </div>
+            <div className="relative z-10">
+              <p className="text-white/80 text-sm font-medium mb-2">Total Scans</p>
+              <p className="text-5xl font-black mb-2">{profile.usageCount}</p>
+              <p className="text-white/70 text-xs">OCR operations performed</p>
+            </div>
+          </motion.div>
+
+          {/* Remaining Scans Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className={`card relative overflow-hidden ${
+              profile.isPremium 
+                ? 'bg-gradient-to-br from-yellow-400 to-orange-500' 
+                : getRemainingScans() <= 3 
+                  ? 'bg-gradient-to-br from-red-500 to-red-600'
+                  : 'bg-gradient-to-br from-green-500 to-green-600'
+            } text-white`}
+          >
+            <div className="absolute top-0 right-0 text-white/10 text-8xl font-bold -mr-4 -mt-6">
+              <FaStar />
+            </div>
+            <div className="relative z-10">
+              <p className="text-white/80 text-sm font-medium mb-2">Remaining</p>
+              <p className="text-5xl font-black mb-2">{getRemainingScans()}</p>
+              <p className="text-white/70 text-xs">{profile.isPremium ? 'Unlimited access' : 'scans left'}</p>
+            </div>
+          </motion.div>
+
+          {/* Usage Chart Card */}
+          {!profile.isPremium && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              className="md:col-span-2 lg:col-span-2 card"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <FaChartLine className="text-primary-600 text-xl" />
+                <h3 className="text-lg font-bold text-gray-900">Usage Progress</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Current Usage</span>
+                  <span className="text-2xl font-bold text-primary-600">
+                    {profile.usageCount} / {profile.usageLimit}
+                  </span>
+                </div>
+                
+                <div className="relative">
+                  <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${calculateUsagePercentage()}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className={`h-full rounded-full ${
+                        calculateUsagePercentage() >= 100
+                          ? 'bg-gradient-to-r from-red-500 to-red-600'
+                          : calculateUsagePercentage() >= 80
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                          : 'bg-gradient-to-r from-primary-500 to-primary-600'
+                      }`}
+                    />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white drop-shadow-md">
+                      {Math.round(calculateUsagePercentage())}%
+                    </span>
+                  </div>
+                </div>
+
+                {calculateUsagePercentage() >= 80 && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg"
+                    className={`p-3 rounded-lg ${
+                      calculateUsagePercentage() >= 100 
+                        ? 'bg-red-50 border border-red-200' 
+                        : 'bg-orange-50 border border-orange-200'
+                    }`}
                   >
-                    <p className="text-red-700 font-semibold mb-2">
-                      ⚠️ You've reached your free scan limit!
+                    <p className={`text-sm font-semibold ${
+                      calculateUsagePercentage() >= 100 ? 'text-red-700' : 'text-orange-700'
+                    }`}>
+                      {calculateUsagePercentage() >= 100 
+                        ? '⚠️ Limit Reached!' 
+                        : '⚠️ Running Low!'
+                      }
                     </p>
-                    <p className="text-sm text-red-600 mb-3">
-                      Upgrade to Premium for unlimited scans and additional features.
-                    </p>
-                    <button
-                      onClick={handleUpgradeToPremium}
-                      className="w-full btn-primary bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                    >
-                      <FaCrown className="inline mr-2" />
-                      Upgrade to Premium
-                    </button>
                   </motion.div>
                 )}
               </div>
-            )}
-          </div>
+            </motion.div>
+          )}
 
-          {/* Account Details */}
-          <div className="card">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FaClock className="text-primary-600" />
-              Account Details
-            </h2>
+          {/* Account Info Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            className={`${profile.isPremium ? 'md:col-span-2 lg:col-span-2' : 'md:col-span-2 lg:col-span-2'} card`}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <FaClock className="text-primary-600 text-xl" />
+              <h3 className="text-lg font-bold text-gray-900">Account Activity</h3>
+            </div>
             
-            <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b border-gray-200">
-                <span className="text-gray-600">Role</span>
-                <span className="font-semibold text-gray-900">{profile.role}</span>
-              </div>
-              
-              <div className="flex justify-between py-2 border-b border-gray-200">
-                <span className="text-gray-600">Member Since</span>
-                <span className="font-semibold text-gray-900">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <p className="text-xs text-gray-500 mb-1">Member Since</p>
+                <p className="font-semibold text-gray-900">
                   {new Date(profile.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
                   })}
-                </span>
+                </p>
               </div>
               
               {profile.lastLogin && (
-                <div className="flex justify-between py-2 border-b border-gray-200">
-                  <span className="text-gray-600">Last Login</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-xs text-gray-500 mb-1">Last Login</p>
+                  <p className="font-semibold text-gray-900">
                     {new Date(profile.lastLogin).toLocaleDateString('en-US', {
-                      year: 'numeric',
                       month: 'short',
                       day: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
-                  </span>
+                  </p>
                 </div>
               )}
               
               {profile.isPremium && profile.premiumUntil && (
-                <div className="flex justify-between py-2">
-                  <span className="text-gray-600">Premium Until</span>
-                  <span className="font-semibold text-yellow-600">
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200">
+                  <p className="text-xs text-gray-600 mb-1">Premium Until</p>
+                  <p className="font-semibold text-yellow-600">
                     {new Date(profile.premiumUntil).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
                     })}
-                  </span>
+                  </p>
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Upgrade Section for Free Users */}
-          {!profile.isPremium && profile.usageCount < profile.usageLimit && (
+          {/* Upgrade Card */}
+          {!profile.isPremium && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="card bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200"
+              transition={{ delay: 0.6 }}
+              className="md:col-span-2 lg:col-span-4 card bg-gradient-to-r from-yellow-50 via-orange-50 to-yellow-50 border-2 border-yellow-200 relative overflow-hidden"
             >
-              <div className="flex items-start gap-4">
-                <FaCrown className="text-4xl text-yellow-500 flex-shrink-0" />
+              <div className="absolute top-0 right-0 text-yellow-200 text-9xl font-bold -mr-8 -mt-8">
+                <FaCrown />
+              </div>
+              
+              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center">
+                    <FaCrown className="text-3xl text-white" />
+                  </div>
+                </div>
+                
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
                     Upgrade to Premium
                   </h3>
                   <p className="text-gray-700 mb-4">
-                    Get unlimited OCR scans, priority support, and access to premium features!
+                    Unlock unlimited OCR scans, priority support, advanced features, and more!
                   </p>
-                  <button
-                    onClick={handleUpgradeToPremium}
-                    className="btn-primary bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                  >
-                    Learn More
-                  </button>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {['Unlimited Scans', 'Priority Support', 'Advanced Features', 'No Ads'].map((feature, idx) => (
+                      <span key={idx} className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                        ✨ {feature}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleUpgradeToPremium}
+                  className="btn-primary bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 px-8 py-4 text-lg font-bold shadow-lg"
+                >
+                  Upgrade Now
+                </motion.button>
               </div>
             </motion.div>
           )}
-        </motion.div>
+        </div>
       </main>
       
       <Footer />
