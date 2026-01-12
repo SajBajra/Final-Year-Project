@@ -27,7 +27,8 @@ const Login = () => {
     setError('');
     setLoading(true);
 
-    const result = await login(formData.usernameOrEmail, formData.password);
+    // Use user login endpoint (isAdmin = false by default)
+    const result = await login(formData.usernameOrEmail, formData.password, false);
 
     if (result.success) {
       // Small delay to ensure state is updated

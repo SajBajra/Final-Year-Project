@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Features from './pages/Features'
 import About from './pages/About'
 import Login from './pages/Login'
+import AdminLogin from './pages/AdminLogin'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
@@ -108,14 +109,14 @@ function App() {
           </motion.div>
         } />
         
-        {/* Admin Login Route */}
+        {/* Admin Login Route - Only accessible via URL */}
         <Route path="/ocr_admin" element={
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <Login />
+            <AdminLogin />
           </motion.div>
         } />
         

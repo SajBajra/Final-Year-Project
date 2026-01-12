@@ -27,10 +27,14 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (usernameOrEmail, password) => {
+  const login = async (usernameOrEmail, password, isAdmin = false) => {
     try {
-      // Admin-only login endpoint (backend is now mounted at /api/admin/auth/login)
-      const response = await fetch('http://localhost:8080/api/admin/auth/login', {
+      // Use different endpoints for admin and regular user login
+      const endpoint = isAdmin 
+        ? 'http://localhost:8080/api/admin/auth/login'
+        : 'http://localhost:8080/api/users/login';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,16 +58,43 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(userData);
 
-      return { success: true };
+      return { success: true, user: userData };
     } catch (error) {
       return { success: false, error: error.message };
     }
   };
 
-  // Registration is no longer exposed for general users.
-  // If we ever need admin-only registration, we can wire it here against /api/admin/auth/register.
-  const register = async () => {
-    return { success: false, error: 'Registration is disabled. This application is free to use without accounts.' };
+  const register = async (username, email, password) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Auto-login after successful registration
+      const { token: newToken, userId, username: userName, email: userEmail, role } = data.data;
+      
+      const userData = { userId, username: userName, email: userEmail, role };
+      
+      localStorage.setItem('token', newToken);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      setToken(newToken);
+      setUser(userData);
+
+      return { success: true, user: userData };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   };
 
   const logout = () => {
