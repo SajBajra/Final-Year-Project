@@ -43,7 +43,7 @@ const About = () => {
   return (
     <div className="min-h-screen bg-primary-50">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
+      <section className="relative overflow-hidden bg-primary-600 pt-8 pb-16 sm:pt-10 sm:pb-20 md:pt-12 md:pb-24">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
