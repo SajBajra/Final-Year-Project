@@ -108,17 +108,6 @@ const About = () => {
               </div>
             </motion.div>
 
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-6 border border-white/30"
-            >
-              <FaHeart className="text-secondary-500 text-sm" />
-              <span className="text-white text-sm font-semibold">Preserving Cultural Heritage</span>
-            </motion.div>
-
             {/* Main Heading */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
