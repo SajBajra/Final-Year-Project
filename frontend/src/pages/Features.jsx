@@ -108,7 +108,7 @@ const Features = () => {
   return (
     <div className="min-h-screen bg-primary-50">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary-600 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
+      <section className="relative overflow-hidden bg-primary-600 pt-8 pb-16 sm:pt-10 sm:pb-20 md:pt-12 md:pb-24">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -161,17 +161,6 @@ const Features = () => {
                   className="relative h-32 sm:h-40 md:h-48 lg:h-56 w-auto drop-shadow-2xl mx-auto"
                 />
               </div>
-            </motion.div>
-
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-6 border border-white/30"
-            >
-              <FaStar className="text-yellow-300 text-sm" />
-              <span className="text-white text-sm font-semibold">Advanced OCR Technology</span>
             </motion.div>
 
             {/* Main Heading */}
@@ -235,16 +224,9 @@ const Features = () => {
             </motion.div>
           </motion.div>
         </div>
-
-        {/* Wave Divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg className="w-full h-12 sm:h-16 md:h-20" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
-          </svg>
-        </div>
       </section>
 
-      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 max-w-7xl -mt-8 sm:-mt-12 md:-mt-16">
+      <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 max-w-7xl">
 
         {/* Features Grid - Responsive with Staggered Animation */}
         <motion.div
