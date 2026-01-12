@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload, FaArrowRight } from 'react-icons/fa'
+import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload, FaArrowRight, FaImage } from 'react-icons/fa'
+import Webcam from 'react-webcam'
 import heroImage from '../images/HeroSection-FrontPage.png'
 import { useAuth } from '../context/AuthContext'
 import { getOrCreateTrialCookie } from '../utils/cookieUtils'
@@ -22,7 +23,12 @@ function Home() {
   const [devanagariText, setDevanagariText] = useState('')
   const [englishText, setEnglishText] = useState('')
   const [trialInfo, setTrialInfo] = useState(null)
+  const [isMobile, setIsMobile] = useState(false)
+  const [cameraActive, setCameraActive] = useState(false)
+  const [preview, setPreview] = useState(null)
   
+  const webcamRef = useRef(null)
+  const fileInputRef = useRef(null)
   const { isAuthenticated, getAuthHeaders } = useAuth()
   const cookieId = getOrCreateTrialCookie()
   
@@ -31,7 +37,24 @@ function Home() {
     if (!document.cookie.includes('lipika_trial_id')) {
       getOrCreateTrialCookie()
     }
+    
+    // Detect mobile view
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
+  
+  // Auto-start camera on mobile
+  useEffect(() => {
+    if (isMobile && !ocrResult && !loading && !image) {
+      setCameraActive(true)
+    }
+  }, [isMobile, ocrResult, loading, image])
 
   const handleImageUpload = (file) => {
     setImage(file)
@@ -94,6 +117,80 @@ function Home() {
       setTranslationLoading(false)
     }
   }
+  
+  // Mobile camera capture
+  const handleMobileCapture = async () => {
+    const imageSrc = webcamRef.current?.getScreenshot()
+    
+    if (imageSrc) {
+      // Convert base64 to File
+      const response = await fetch(imageSrc)
+      const blob = await response.blob()
+      const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' })
+      
+      setPreview(imageSrc)
+      setImage(file)
+      setCameraActive(false)
+      
+      // Start OCR processing
+      setLoading(true)
+      
+      try {
+        const result = await recognizeText(file, getAuthHeaders(), cookieId)
+        handleOCRComplete(result)
+      } catch (error) {
+        console.error('OCR Error:', error)
+        handleOCRComplete({
+          text: error.message || 'Error processing image',
+          characters: [],
+          confidence: 0,
+          error: error.message
+        })
+      }
+    }
+  }
+  
+  // Mobile gallery upload
+  const handleMobileGalleryUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        setPreview(event.target.result)
+        setImage(file)
+        setCameraActive(false)
+        
+        // Start OCR processing
+        setLoading(true)
+        
+        try {
+          const result = await recognizeText(file, getAuthHeaders(), cookieId)
+          handleOCRComplete(result)
+        } catch (error) {
+          console.error('OCR Error:', error)
+          handleOCRComplete({
+            text: error.message || 'Error processing image',
+            characters: [],
+            confidence: 0,
+            error: error.message
+          })
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+  
+  // Reset to camera
+  const resetToCamera = () => {
+    setImage(null)
+    setPreview(null)
+    setOcrResult(null)
+    setCameraActive(true)
+    setTranslations({})
+    setDevanagariText('')
+    setEnglishText('')
+    setShowTranslation(false)
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -110,15 +207,21 @@ function Home() {
     visible: { opacity: 1, y: 0 }
   }
 
+  const videoConstraints = {
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+    facingMode: 'environment'
+  }
+
   return (
     <div className="min-h-screen bg-primary-50">
       <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 max-w-7xl">
-        {/* Enhanced Hero Section - Responsive */}
+        {/* Enhanced Hero Section - Responsive - Hide on mobile if camera/result active */}
         <motion.div 
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-12 md:mb-16"
+          className={`text-center mb-8 sm:mb-12 md:mb-16 ${isMobile && (cameraActive || ocrResult) ? 'hidden' : ''}`}
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -175,12 +278,98 @@ function Home() {
           <TrialCounter trialInfo={trialInfo} />
         )}
 
-        {/* Upload Section with Enhanced Cards - Responsive Grid */}
+        {/* Mobile Camera Interface - Google Lens Style */}
+        {isMobile && cameraActive && !ocrResult && !loading && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="fixed inset-0 z-40 bg-black"
+            style={{ top: '60px' }}
+          >
+            <div className="relative h-full w-full">
+              {/* Camera View */}
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={videoConstraints}
+                className="w-full h-full object-cover"
+              />
+              
+              {/* Overlay Guide */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-4/5 h-2/3 border-4 border-white/50 rounded-2xl relative">
+                  <div className="absolute -top-2 -left-2 w-8 h-8 border-t-4 border-l-4 border-primary-500 rounded-tl-2xl"></div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 border-t-4 border-r-4 border-primary-500 rounded-tr-2xl"></div>
+                  <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-4 border-l-4 border-primary-500 rounded-bl-2xl"></div>
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-4 border-r-4 border-primary-500 rounded-br-2xl"></div>
+                </div>
+              </div>
+              
+              {/* Instructions */}
+              <div className="absolute top-4 left-0 right-0 text-center px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-full inline-block"
+                >
+                  <p className="text-sm font-medium">Position Ranjana text in frame</p>
+                </motion.div>
+              </div>
+              
+              {/* Bottom Action Buttons */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent pb-8 pt-16">
+                <div className="flex items-center justify-center gap-8 px-8">
+                  {/* Gallery Upload Button */}
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/50 flex items-center justify-center hover:bg-white/30 transition-colors"
+                  >
+                    <FaImage className="text-white text-xl" />
+                  </motion.button>
+                  
+                  {/* Capture Button */}
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleMobileCapture}
+                    className="w-20 h-20 rounded-full bg-white border-4 border-primary-500 flex items-center justify-center shadow-2xl hover:bg-gray-100 transition-colors relative"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-white border-4 border-primary-500"></div>
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="absolute inset-0 rounded-full border-4 border-primary-400 opacity-50"
+                    ></motion.div>
+                  </motion.button>
+                  
+                  {/* Placeholder for symmetry */}
+                  <div className="w-14 h-14"></div>
+                </div>
+                
+                <p className="text-white text-center text-xs mt-4 opacity-80">
+                  Tap to capture • Swipe for gallery
+                </p>
+              </div>
+              
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleMobileGalleryUpload}
+                className="hidden"
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {/* Upload Section with Enhanced Cards - Responsive Grid - Hide on mobile */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12"
+          className={`grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12 ${isMobile ? 'hidden' : ''}`}
         >
           <motion.div variants={itemVariants}>
             <ImageUpload 
@@ -229,6 +418,19 @@ function Home() {
             transition={{ duration: 0.5 }}
             className="space-y-4 sm:space-y-6 md:space-y-8"
           >
+            {/* Mobile: Back to Camera Button */}
+            {isMobile && (
+              <motion.button
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={resetToCamera}
+                className="w-full btn-outline flex items-center justify-center gap-2 mb-4"
+              >
+                <FaCamera className="text-lg" />
+                <span>Scan Another Image</span>
+              </motion.button>
+            )}
+            
             <OCRResult 
               text={ocrResult.text} 
               characters={ocrResult.characters}
@@ -255,13 +457,13 @@ function Home() {
           </motion.div>
         )}
 
-        {/* Enhanced Info Cards - Responsive Grid */}
+        {/* Enhanced Info Cards - Responsive Grid - Hide on mobile */}
         {!ocrResult && !loading && (
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16 md:mt-20"
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16 md:mt-20 ${isMobile ? 'hidden' : ''}`}
           >
             {[
               {
