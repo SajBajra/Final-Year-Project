@@ -30,7 +30,7 @@ function Home() {
   
   const webcamRef = useRef(null)
   const fileInputRef = useRef(null)
-  const { isAuthenticated, getAuthHeaders } = useAuth()
+  const { isAuthenticated, getAuthHeaders, isAdmin } = useAuth()
   const cookieId = getOrCreateTrialCookie()
   
   useEffect(() => {
@@ -76,8 +76,8 @@ function Home() {
       setTrialInfo(result.trialInfo)
     }
     
-    // Check if trial limit exceeded
-    if (result?.error && result?.trialInfo?.requiresLogin) {
+    // Check if trial limit exceeded (but admins bypass this)
+    if (result?.error && result?.trialInfo?.requiresLogin && !isAdmin()) {
       // Don't show OCR result, just show trial limit message
       return
     }
