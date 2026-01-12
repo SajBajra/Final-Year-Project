@@ -55,13 +55,13 @@ const UserProfile = () => {
   };
 
   const calculateUsagePercentage = () => {
-    if (!profile || profile.isPremium) return 0;
+    if (!profile || profile.isPremium || profile.role === 'ADMIN') return 0;
     return (profile.usageCount / profile.usageLimit) * 100;
   };
 
   const getRemainingScans = () => {
     if (!profile) return 0;
-    if (profile.isPremium) return 'Unlimited';
+    if (profile.isPremium || profile.role === 'ADMIN') return 'Unlimited';
     return Math.max(0, profile.usageLimit - profile.usageCount);
   };
 
@@ -219,7 +219,7 @@ const UserProfile = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
             className={`card ${
-              profile.isPremium 
+              profile.isPremium || profile.role === 'ADMIN'
                 ? 'bg-orange-500' 
                 : getRemainingScans() <= 3 
                   ? 'bg-red-600'
@@ -234,11 +234,11 @@ const UserProfile = () => {
               <p className="text-white/90 text-sm font-medium">Remaining</p>
             </div>
             <p className="text-5xl font-black mb-2">{getRemainingScans()}</p>
-            <p className="text-white/70 text-xs">{profile.isPremium ? 'Unlimited access' : 'scans left'}</p>
+            <p className="text-white/70 text-xs">{(profile.isPremium || profile.role === 'ADMIN') ? 'Unlimited access' : 'scans left'}</p>
           </motion.div>
 
           {/* Usage Chart Card */}
-          {!profile.isPremium && (
+          {!profile.isPremium && profile.role !== 'ADMIN' && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -309,7 +309,7 @@ const UserProfile = () => {
           )}
 
           {/* Upgrade Section for Free Users */}
-          {!profile.isPremium && profile.usageCount < profile.usageLimit && (
+          {!profile.isPremium && profile.role !== 'ADMIN' && profile.usageCount < profile.usageLimit && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

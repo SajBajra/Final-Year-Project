@@ -7,7 +7,7 @@ import { checkUsageStatus } from '../services/authService';
 const UserUsageCounter = ({ ocrResult }) => {
   const [usageData, setUsageData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, isAdmin } = useAuth();
 
   const fetchUsageData = async () => {
     if (!isAuthenticated() || !token) {
@@ -47,6 +47,11 @@ const UserUsageCounter = ({ ocrResult }) => {
       });
     }
   }, [ocrResult]);
+
+  // Don't show usage counter for admins
+  if (isAdmin()) {
+    return null;
+  }
 
   if (!isAuthenticated() || loading) {
     return null;

@@ -212,8 +212,8 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // Don't increment if user is premium
-        if (user.getIsPremium()) {
+        // Don't increment if user is premium or admin
+        if (user.getIsPremium() || "ADMIN".equals(user.getRole())) {
             return;
         }
         
@@ -227,8 +227,8 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // Premium users have no limit
-        if (user.getIsPremium()) {
+        // Premium users and admins have no limit
+        if (user.getIsPremium() || "ADMIN".equals(user.getRole())) {
             return false;
         }
         
