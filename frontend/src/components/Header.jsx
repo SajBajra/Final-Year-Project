@@ -191,7 +191,7 @@ const Header = () => {
                 <div className="flex items-center gap-3">
                   <Link
                     to="/login"
-                    className="btn-outline btn-md"
+                    className="btn-secondary btn-md"
                   >
                     Login
                   </Link>
@@ -366,7 +366,7 @@ const Header = () => {
                       <Link
                         to="/login"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="btn-outline btn-lg w-full"
+                        className="btn-secondary btn-lg w-full"
                       >
                         <FaUser />
                         <span>Login</span>

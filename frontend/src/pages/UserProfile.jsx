@@ -187,7 +187,7 @@ const UserProfile = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate('/change-password')}
-                className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 backdrop-blur-sm px-4 py-3 rounded-xl border border-white/20 transition-colors text-sm font-medium"
+                className="btn-secondary btn-md w-full"
               >
                 <FaKey />
                 <span>Change Password</span>
@@ -297,9 +297,9 @@ const UserProfile = () => {
                     </p>
                     <button
                       onClick={handleUpgradeToPremium}
-                      className="w-full btn-primary bg-orange-500 hover:bg-orange-600"
+                      className="w-full btn-primary btn-md"
                     >
-                      <FaCrown className="inline mr-2" />
+                      <FaCrown />
                       Upgrade to Premium
                     </button>
                   </motion.div>
@@ -329,7 +329,7 @@ const UserProfile = () => {
                   </p>
                   <button
                     onClick={handleUpgradeToPremium}
-                    className="btn-primary bg-orange-500 hover:bg-orange-600"
+                    className="btn-primary btn-md"
                   >
                     Learn More
                   </button>
