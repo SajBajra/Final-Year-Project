@@ -169,11 +169,12 @@ const Features = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Powerful Features for
+              Advanced Features for
               <br />
               <span className="text-white">
-                Modern OCR
+                Ranjana Script OCR
               </span>
             </motion.h1>
 
