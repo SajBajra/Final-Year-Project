@@ -111,7 +111,13 @@ const AdminOCRHistory = () => {
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-500">Total: {total} records</p>
           <button
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => {
+              if (showFilters) {
+                // Clear filters when hiding
+                clearFilters()
+              }
+              setShowFilters(!showFilters)
+            }}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-2 text-sm font-semibold"
           >
             <FaFilter /> {showFilters ? 'Hide' : 'Show'} Filters
@@ -360,22 +366,22 @@ const AdminOCRHistory = () => {
           onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
         >
           <div
-            className="relative bg-white rounded-lg shadow-2xl max-w-5xl max-h-[90vh] overflow-auto"
+            className="relative bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">OCR Image</h3>
-                <p className="text-sm text-gray-600 mt-1">{imageModal.filename || 'Image'}</p>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white rounded-t-lg flex-shrink-0">
+              <div className="min-w-0 flex-1 mr-4">
+                <h3 className="text-lg font-semibold text-gray-900 truncate">OCR Image</h3>
+                <p className="text-sm text-gray-600 mt-1 truncate">{imageModal.filename || 'Image'}</p>
               </div>
               <button
                 onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
               >
                 <FaTimes className="text-xl text-gray-600" />
               </button>
             </div>
-            <div className="p-6">
+            <div className="p-6 overflow-auto flex-1">
               <img
                 src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
                 alt={imageModal.filename || 'OCR Image'}

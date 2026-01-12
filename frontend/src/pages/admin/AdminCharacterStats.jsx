@@ -7,6 +7,8 @@ import { UI_CONFIG } from '../../config/constants'
 const AdminCharacterStats = () => {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage] = useState(10) // 10 characters per page
 
   // Use primary and secondary colors with variations
   const COLORS = [
@@ -43,6 +45,12 @@ const AdminCharacterStats = () => {
     character: char.character === ' ' ? 'Space' : char.character,
     frequency: char.frequency
   }))
+
+  // Pagination calculations
+  const totalPages = Math.ceil(topCharacters.length / itemsPerPage)
+  const startIndex = currentPage * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedCharacters = topCharacters.slice(startIndex, endIndex)
 
   return (
     <div className="space-y-6">
@@ -189,16 +197,17 @@ const AdminCharacterStats = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {topCharacters.map((char, index) => {
+                {paginatedCharacters.map((char, index) => {
                   const totalFrequency = topCharacters.reduce((sum, c) => sum + c.frequency, 0)
                   const percentage = totalFrequency > 0 
                     ? ((char.frequency / totalFrequency) * 100).toFixed(2) 
                     : 0
+                  const actualIndex = startIndex + index
                   
                   return (
-                    <tr key={index} className="hover:bg-gray-50">
+                    <tr key={actualIndex} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        #{index + 1}
+                        #{actualIndex + 1}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className="text-2xl font-bold text-gray-900">
@@ -220,6 +229,32 @@ const AdminCharacterStats = () => {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                  disabled={currentPage >= totalPages - 1}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="text-sm text-gray-700">
+                Page <span className="font-semibold">{currentPage + 1}</span> of <span className="font-semibold">{totalPages}</span>
+                {' '}• Showing <span className="font-semibold">{startIndex + 1}</span> to <span className="font-semibold">{Math.min(endIndex, topCharacters.length)}</span> of <span className="font-semibold">{topCharacters.length}</span> characters
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-lg p-12 shadow-sm border border-gray-200 text-center">

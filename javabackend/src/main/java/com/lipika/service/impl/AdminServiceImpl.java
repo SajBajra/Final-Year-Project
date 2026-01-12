@@ -352,14 +352,17 @@ public class AdminServiceImpl implements AdminService {
                 startDate, endDate, "timestamp", "desc");
         
         @SuppressWarnings("unchecked")
-        List<OCRHistory> history = (List<OCRHistory>) filteredResult.get("data");
+        List<OCRHistoryDTO> history = (List<OCRHistoryDTO>) filteredResult.get("data");
         
-        // Build CSV
+        // Build CSV with user information
         StringBuilder csv = new StringBuilder();
-        csv.append("ID,Image Filename,Recognized Text,Character Count,Timestamp,Language\n");
+        csv.append("ID,Username,Email,Role,Image Filename,Recognized Text,Character Count,Timestamp,Language\n");
         
-        for (OCRHistory record : history) {
+        for (OCRHistoryDTO record : history) {
             csv.append(record.getId()).append(",");
+            csv.append("\"").append(escapeCSV(record.getUsername() != null ? record.getUsername() : "Guest")).append("\",");
+            csv.append("\"").append(escapeCSV(record.getUserEmail() != null ? record.getUserEmail() : "N/A")).append("\",");
+            csv.append("\"").append(escapeCSV(record.getUserRole() != null ? record.getUserRole() : "GUEST")).append("\",");
             csv.append("\"").append(escapeCSV(record.getImageFilename())).append("\",");
             csv.append("\"").append(escapeCSV(record.getRecognizedText())).append("\",");
             csv.append(record.getCharacterCount() != null ? record.getCharacterCount() : 0).append(",");
