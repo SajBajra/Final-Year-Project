@@ -5,6 +5,7 @@ import com.lipika.service.OCRService;
 import com.lipika.service.AdminService;
 import com.lipika.service.TrialTrackingService;
 import com.lipika.service.UserService;
+import com.lipika.service.FileStorageService;
 import com.lipika.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,14 +35,17 @@ public class OCRServiceImpl implements OCRService {
     private final AdminService adminService;
     private final TrialTrackingService trialTrackingService;
     private final UserService userService;
+    private final FileStorageService fileStorageService;
     private final JwtUtil jwtUtil;
     
     public OCRServiceImpl(RestTemplate restTemplate, AdminService adminService, 
-                         TrialTrackingService trialTrackingService, UserService userService, JwtUtil jwtUtil) {
+                         TrialTrackingService trialTrackingService, UserService userService, 
+                         FileStorageService fileStorageService, JwtUtil jwtUtil) {
         this.restTemplate = restTemplate;
         this.adminService = adminService;
         this.trialTrackingService = trialTrackingService;
         this.userService = userService;
+        this.fileStorageService = fileStorageService;
         this.jwtUtil = jwtUtil;
     }
     
@@ -245,8 +249,19 @@ public class OCRServiceImpl implements OCRService {
                     try {
                         log.info("Saving OCR history: filename={}, userId={}, isRegistered={}", 
                             image.getOriginalFilename(), userId, isAuthenticated);
+                        
+                        // Save image to local storage
+                        String imagePath = null;
+                        try {
+                            imagePath = fileStorageService.saveImage(image);
+                            log.info("Image saved to: {}", imagePath);
+                        } catch (Exception e) {
+                            log.error("Failed to save image file, continuing without image path", e);
+                        }
+                        
                         adminService.saveOCRHistory(
                             image.getOriginalFilename(),
+                            imagePath,
                             ocrResponse.getText(),
                             ocrResponse.getCount(),
                             ocrResponse.getConfidence(),

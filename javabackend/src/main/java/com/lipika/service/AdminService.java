@@ -64,7 +64,7 @@ public interface AdminService {
     /**
      * Save OCR history (called by OCR service)
      */
-    void saveOCRHistory(String imageFilename, String recognizedText, 
+    void saveOCRHistory(String imageFilename, String imagePath, String recognizedText, 
                        Integer characterCount, Double confidence,
                        Long userId, Boolean isRegistered, String ipAddress, String cookieId);
     

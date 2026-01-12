@@ -34,6 +34,9 @@ public class OCRHistory {
     @Column(name = "image_filename", length = 500)
     private String imageFilename;
     
+    @Column(name = "image_path", length = 1000)
+    private String imagePath;
+    
     @Column(name = "recognized_text", columnDefinition = "TEXT")
     private String recognizedText;
     
@@ -111,6 +114,14 @@ public class OCRHistory {
     
     public void setImageFilename(String imageFilename) {
         this.imageFilename = imageFilename;
+    }
+    
+    public String getImagePath() {
+        return imagePath;
+    }
+    
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
     
     public String getRecognizedText() {

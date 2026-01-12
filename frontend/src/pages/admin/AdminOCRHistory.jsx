@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaSearch, FaFilter, FaDownload, FaTrash, FaSort, FaHistory } from 'react-icons/fa'
+import { FaSearch, FaFilter, FaDownload, FaTrash, FaSort, FaHistory, FaImage, FaTimes } from 'react-icons/fa'
 import { getOCRHistory, deleteOCRHistory, bulkDeleteOCRHistory, exportOCRHistory } from '../../services/adminService'
 import ConfirmModal from '../../components/ConfirmModal'
 
@@ -23,6 +23,7 @@ const AdminOCRHistory = () => {
   // Modal states
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null })
   const [bulkDeleteModal, setBulkDeleteModal] = useState({ isOpen: false })
+  const [imageModal, setImageModal] = useState({ isOpen: false, imagePath: null, filename: null })
 
   useEffect(() => {
     loadHistory()
@@ -149,6 +150,12 @@ const AdminOCRHistory = () => {
     setSortBy('timestamp')
     setSortOrder('desc')
     setPage(0)
+  }
+
+  const handleImageClick = (imagePath, filename) => {
+    if (imagePath) {
+      setImageModal({ isOpen: true, imagePath, filename })
+    }
   }
 
   const hasActiveFilters = search || startDate || endDate
@@ -289,6 +296,9 @@ const AdminOCRHistory = () => {
                 ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Image
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Filename
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -308,7 +318,7 @@ const AdminOCRHistory = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {history.length === 0 ? (
               <tr>
-                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="8" className="px-6 py-4 text-center text-gray-500">
                   {hasActiveFilters ? 'No records found matching filters' : 'No OCR history found'}
                 </td>
               </tr>
@@ -325,6 +335,32 @@ const AdminOCRHistory = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.id}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.imagePath ? (
+                      <button
+                        onClick={() => handleImageClick(item.imagePath, item.imageFilename)}
+                        className="w-16 h-16 border-2 border-gray-300 rounded-lg overflow-hidden hover:border-primary-500 transition-colors flex items-center justify-center bg-gray-50 group relative"
+                        title="Click to view full image"
+                      >
+                        <img
+                          src={`http://localhost:8080/api/images?path=${encodeURIComponent(item.imagePath)}`}
+                          alt="OCR Image"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                            e.target.parentElement.innerHTML = '<span class="text-gray-400 text-xs">No Image</span>'
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                          <FaImage className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </button>
+                    ) : (
+                      <div className="w-16 h-16 border-2 border-gray-200 rounded-lg flex items-center justify-center bg-gray-100">
+                        <span className="text-gray-400 text-xs">No Image</span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.imageFilename}
@@ -399,6 +435,43 @@ const AdminOCRHistory = () => {
         cancelText="Cancel"
         type="danger"
       />
+
+      {/* Image Viewing Modal */}
+      {imageModal.isOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
+        >
+          <div
+            className="relative bg-white rounded-lg shadow-2xl max-w-5xl max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">OCR Image</h3>
+                <p className="text-sm text-gray-600 mt-1">{imageModal.filename || 'Image'}</p>
+              </div>
+              <button
+                onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <FaTimes className="text-xl text-gray-600" />
+              </button>
+            </div>
+            <div className="p-6">
+              <img
+                src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
+                alt={imageModal.filename || 'OCR Image'}
+                className="w-full h-auto rounded-lg shadow-lg"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-8"><p>Failed to load image</p><p class="text-sm text-gray-500 mt-2">' + imageModal.imagePath + '</p></div>'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

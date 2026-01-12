@@ -48,11 +48,12 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     @Transactional
-    public void saveOCRHistory(String imageFilename, String recognizedText, 
+    public void saveOCRHistory(String imageFilename, String imagePath, String recognizedText, 
                                Integer characterCount, Double confidence,
                                Long userId, Boolean isRegistered, String ipAddress, String cookieId) {
         OCRHistory history = new OCRHistory();
         history.setImageFilename(imageFilename);
+        history.setImagePath(imagePath);
         history.setRecognizedText(recognizedText);
         history.setCharacterCount(characterCount);
         history.setConfidence(confidence);
@@ -64,8 +65,8 @@ public class AdminServiceImpl implements AdminService {
         history.setCookieId(cookieId);
         
         OCRHistory saved = ocrHistoryRepository.save(history);
-        log.info("Saved OCR history to database: ID={}, UserId={}, IsRegistered={}, Text={}", 
-                saved.getId(), userId, isRegistered, recognizedText);
+        log.info("Saved OCR history to database: ID={}, UserId={}, IsRegistered={}, ImagePath={}, Text={}", 
+                saved.getId(), userId, isRegistered, imagePath, recognizedText);
     }
     
     @Override
