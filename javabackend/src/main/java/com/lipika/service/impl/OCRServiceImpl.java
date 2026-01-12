@@ -4,6 +4,7 @@ import com.lipika.model.OCRResponse;
 import com.lipika.service.OCRService;
 import com.lipika.service.AdminService;
 import com.lipika.service.TrialTrackingService;
+import com.lipika.service.UserService;
 import com.lipika.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,13 +33,15 @@ public class OCRServiceImpl implements OCRService {
     private final RestTemplate restTemplate;
     private final AdminService adminService;
     private final TrialTrackingService trialTrackingService;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
     
     public OCRServiceImpl(RestTemplate restTemplate, AdminService adminService, 
-                         TrialTrackingService trialTrackingService, JwtUtil jwtUtil) {
+                         TrialTrackingService trialTrackingService, UserService userService, JwtUtil jwtUtil) {
         this.restTemplate = restTemplate;
         this.adminService = adminService;
         this.trialTrackingService = trialTrackingService;
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
     
@@ -55,8 +58,27 @@ public class OCRServiceImpl implements OCRService {
         // Check if user is authenticated
         boolean isAuthenticated = userId != null;
         
-        // If not authenticated, check trial limits
-        if (!isAuthenticated) {
+        // If authenticated, check user's usage limit
+        if (isAuthenticated) {
+            try {
+                if (userService.hasReachedLimit(userId)) {
+                    OCRResponse errorResponse = new OCRResponse();
+                    errorResponse.setSuccess(false);
+                    errorResponse.setMessage("Usage limit reached. Please upgrade to premium to continue.");
+                    errorResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
+                        0,
+                        10,
+                        10,
+                        true
+                    ));
+                    return errorResponse;
+                }
+            } catch (Exception e) {
+                log.error("Error checking user limit for userId: {}", userId, e);
+                // Continue with OCR if we can't check limit
+            }
+        } else {
+            // If not authenticated, check trial limits
             if (!trialTrackingService.canPerformOCR(ipAddress, cookieId, fingerprint)) {
                 OCRResponse errorResponse = new OCRResponse();
                 errorResponse.setSuccess(false);
@@ -175,8 +197,30 @@ public class OCRServiceImpl implements OCRService {
                     }
                 }
                 
-                // Increment trial count if not authenticated
-                if (!isAuthenticated) {
+                // Increment usage count
+                if (isAuthenticated) {
+                    // Increment authenticated user's usage count
+                    try {
+                        userService.incrementUsageCount(userId);
+                        log.info("Incremented usage count for userId: {}", userId);
+                        
+                        // Get updated usage info
+                        com.lipika.dto.UserProfileResponse profile = userService.getUserProfile(userId);
+                        int remaining = profile.getUsageLimit() - profile.getUsageCount();
+                        ocrResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
+                            remaining,
+                            profile.getUsageCount(),
+                            profile.getUsageLimit(),
+                            remaining == 0
+                        ));
+                    } catch (Exception e) {
+                        log.error("Error incrementing usage count for userId: {}", userId, e);
+                        ocrResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
+                            null, null, null, false
+                        ));
+                    }
+                } else {
+                    // Increment trial count for non-authenticated users
                     trialTrackingService.incrementTrialCount(ipAddress, cookieId, fingerprint);
                     int remaining = trialTrackingService.getRemainingTrials(ipAddress, cookieId, fingerprint);
                     ocrResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
@@ -184,10 +228,6 @@ public class OCRServiceImpl implements OCRService {
                         10 - remaining,
                         10,
                         remaining == 0
-                    ));
-                } else {
-                    ocrResponse.setTrialInfo(new com.lipika.dto.TrialInfo(
-                        null, null, null, false
                     ));
                 }
                 
