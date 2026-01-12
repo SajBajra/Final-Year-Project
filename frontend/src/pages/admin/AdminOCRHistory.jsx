@@ -363,16 +363,16 @@ const AdminOCRHistory = () => {
       {imageModal.isOpen && (
         <div
           style={{ zIndex: 99999 }}
-          className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-80 p-4 pt-12"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 p-4"
           onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
         >
           <div
             className="bg-white rounded-xl shadow-2xl w-full max-w-5xl"
-            style={{ maxHeight: '90vh' }}
+            style={{ maxHeight: '90vh', marginTop: '-50px' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-300 rounded-t-xl">
+            <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-300 rounded-t-xl">
               <div className="flex-1 pr-4">
                 <h2 className="text-xl font-bold text-gray-900 mb-1">
                   OCR Image
@@ -392,10 +392,10 @@ const AdminOCRHistory = () => {
             
             {/* Modal Body */}
             <div 
-              className="overflow-auto bg-gray-100 p-6"
-              style={{ maxHeight: 'calc(90vh - 100px)' }}
+              className="overflow-auto bg-gray-100 p-4"
+              style={{ maxHeight: 'calc(90vh - 90px)' }}
             >
-              <div className="bg-white rounded-lg p-4 inline-block min-w-full">
+              <div className="bg-white rounded-lg p-3 inline-block min-w-full">
                 <img
                   src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
                   alt={imageModal.filename || 'OCR Image'}
