@@ -101,7 +101,7 @@ const UserProfile = () => {
     <div className="min-h-screen bg-primary-50 flex flex-col" style={{ fontFamily: 'Poppins, sans-serif' }}>
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
+      <main className="flex-grow container mx-auto px-4 py-4 sm:py-6 md:py-8 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
