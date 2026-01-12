@@ -363,7 +363,7 @@ const AdminOCRHistory = () => {
       {imageModal.isOpen && (
         <div
           style={{ zIndex: 99999 }}
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 p-4"
+          className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-80 p-4 pt-12"
           onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
         >
           <div
