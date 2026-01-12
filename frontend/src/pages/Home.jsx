@@ -292,9 +292,16 @@ function Home() {
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                videoConstraints={videoConstraints}
+                videoConstraints={{
+                  width: { ideal: 1280 },
+                  height: { ideal: 720 },
+                  facingMode: { exact: "environment" }
+                }}
                 className="w-full h-full object-cover"
                 mirrored={false}
+                style={{
+                  transform: 'scaleX(-1)'
+                }}
               />
               
               {/* Overlay Guide */}
