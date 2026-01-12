@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { FaSearch, FaFilter, FaDownload, FaTrash, FaSort, FaHistory, FaImage, FaTimes } from 'react-icons/fa'
-import { getOCRHistory, deleteOCRHistory, bulkDeleteOCRHistory, exportOCRHistory } from '../../services/adminService'
-import ConfirmModal from '../../components/ConfirmModal'
+import { FaSearch, FaFilter, FaDownload, FaSort, FaHistory, FaImage, FaTimes } from 'react-icons/fa'
+import { getOCRHistory, exportOCRHistory } from '../../services/adminService'
 
 const AdminOCRHistory = () => {
   const [history, setHistory] = useState([])
@@ -9,7 +8,6 @@ const AdminOCRHistory = () => {
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [total, setTotal] = useState(0)
-  const [selectedIds, setSelectedIds] = useState([])
   
   // Filter states
   const [search, setSearch] = useState('')
@@ -21,8 +19,6 @@ const AdminOCRHistory = () => {
   const [exporting, setExporting] = useState(false)
   
   // Modal states
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null })
-  const [bulkDeleteModal, setBulkDeleteModal] = useState({ isOpen: false })
   const [imageModal, setImageModal] = useState({ isOpen: false, imagePath: null, filename: null })
 
   useEffect(() => {
@@ -58,7 +54,6 @@ const AdminOCRHistory = () => {
         setTotalPages(0)
         setTotal(0)
       }
-      setSelectedIds([])
     } catch (error) {
       console.error('Error loading history:', error)
       if (error.response) {
@@ -76,44 +71,6 @@ const AdminOCRHistory = () => {
     }
   }
 
-  const handleDeleteClick = (id) => {
-    setDeleteModal({ isOpen: true, id })
-  }
-
-  const handleDelete = async () => {
-    if (!deleteModal.id) return
-    
-    try {
-      await deleteOCRHistory(deleteModal.id)
-      loadHistory()
-      setDeleteModal({ isOpen: false, id: null })
-    } catch (error) {
-      console.error('Error deleting history:', error)
-      alert('Failed to delete record')
-      setDeleteModal({ isOpen: false, id: null })
-    }
-  }
-
-  const handleBulkDeleteClick = () => {
-    if (selectedIds.length === 0) {
-      alert('Please select records to delete')
-      return
-    }
-    setBulkDeleteModal({ isOpen: true })
-  }
-
-  const handleBulkDelete = async () => {
-    try {
-      await bulkDeleteOCRHistory(selectedIds)
-      loadHistory()
-      setBulkDeleteModal({ isOpen: false })
-    } catch (error) {
-      console.error('Error bulk deleting history:', error)
-      alert('Failed to delete records')
-      setBulkDeleteModal({ isOpen: false })
-    }
-  }
-
   const handleExport = async () => {
     try {
       setExporting(true)
@@ -124,22 +81,6 @@ const AdminOCRHistory = () => {
       alert('Failed to export history')
     } finally {
       setExporting(false)
-    }
-  }
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedIds(history.map(item => item.id))
-    } else {
-      setSelectedIds([])
-    }
-  }
-
-  const handleSelectOne = (id) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(i => i !== id))
-    } else {
-      setSelectedIds([...selectedIds, id])
     }
   }
 
@@ -201,14 +142,6 @@ const AdminOCRHistory = () => {
           >
             <FaDownload /> {exporting ? 'Exporting...' : 'Export CSV'}
           </button>
-          {selectedIds.length > 0 && (
-            <button
-              onClick={handleBulkDeleteClick}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
-            >
-              <FaTrash /> Delete Selected ({selectedIds.length})
-            </button>
-          )}
         </div>
 
         {showFilters && (
@@ -284,14 +217,6 @@ const AdminOCRHistory = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.length === history.length && history.length > 0}
-                  onChange={handleSelectAll}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 ID
               </th>
@@ -313,29 +238,18 @@ const AdminOCRHistory = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Timestamp
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {history.length === 0 ? (
               <tr>
-                <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="8" className="px-6 py-4 text-center text-gray-500">
                   {hasActiveFilters ? 'No records found matching filters' : 'No OCR history found'}
                 </td>
               </tr>
             ) : (
               history.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(item.id)}
-                      onChange={() => handleSelectOne(item.id)}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.id}
                   </td>
@@ -408,14 +322,6 @@ const AdminOCRHistory = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.timestamp ? new Date(item.timestamp).toLocaleString() : 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      onClick={() => handleDeleteClick(item.id)}
-                      className="text-red-600 hover:text-red-800 font-semibold"
-                    >
-                      Delete
-                    </button>
-                  </td>
                 </tr>
               ))
             )}
@@ -445,30 +351,6 @@ const AdminOCRHistory = () => {
           </button>
         </div>
       )}
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, id: null })}
-        onConfirm={handleDelete}
-        title="Delete OCR Record"
-        message="Are you sure you want to delete this OCR record? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-      />
-
-      {/* Bulk Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={bulkDeleteModal.isOpen}
-        onClose={() => setBulkDeleteModal({ isOpen: false })}
-        onConfirm={handleBulkDelete}
-        title="Delete Multiple Records"
-        message={`Are you sure you want to delete ${selectedIds.length} record(s)? This action cannot be undone.`}
-        confirmText="Delete All"
-        cancelText="Cancel"
-        type="danger"
-      />
 
       {/* Image Viewing Modal */}
       {imageModal.isOpen && (
