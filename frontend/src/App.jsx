@@ -20,6 +20,7 @@ import AdminCharacterStats from './pages/admin/AdminCharacterStats'
 import AdminSettings from './pages/admin/AdminSettings'
 import ProtectedRoute from './components/ProtectedRoute'
 import Preloader from './components/Preloader'
+import ScrollToTop from './components/ScrollToTop'
 import { ROUTES } from './config/constants'
 import './index.css'
 
@@ -27,6 +28,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <Preloader />
         <Routes>
         {/* Public Routes */}
