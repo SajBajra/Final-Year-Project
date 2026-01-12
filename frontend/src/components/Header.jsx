@@ -188,13 +188,20 @@ const Header = () => {
                 </AnimatePresence>
               </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md transition-all duration-200 flex items-center gap-2"
-                >
-                  <FaUser className="text-sm" />
-                  Get Started
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:text-primary-600 hover:bg-gray-100 transition-all duration-200"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-5 py-2 rounded-lg font-semibold text-sm bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md transition-all duration-200"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
               )}
             </div>
 
@@ -355,14 +362,24 @@ const Header = () => {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {/* Get Started Button */}
+                      {/* Login Button */}
                       <Link
                         to="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-gray-700 bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 transition-all font-semibold"
+                      >
+                        <FaUser />
+                        <span>Login</span>
+                      </Link>
+
+                      {/* Sign Up Button */}
+                      <Link
+                        to="/register"
                         onClick={() => setMobileMenuOpen(false)}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700 hover:shadow-lg transition-all font-semibold"
                       >
                         <FaUser />
-                        <span>Get Started</span>
+                        <span>Sign Up</span>
                       </Link>
                     </div>
                   )}
