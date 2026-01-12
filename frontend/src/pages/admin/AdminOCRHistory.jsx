@@ -286,7 +286,7 @@ const AdminOCRHistory = () => {
                     {item.isRegistered ? (
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold text-gray-900 flex items-center gap-1">
-                          {item.username || 'Unknown'}
+                          {item.username || 'Unknown User'}
                           {item.userRole === 'ADMIN' && (
                             <span className="inline-block px-2 py-0.5 bg-red-100 text-red-800 text-xs font-bold rounded">
                               ADMIN
@@ -298,18 +298,17 @@ const AdminOCRHistory = () => {
                             </span>
                           )}
                         </span>
-                        <span className="text-xs text-gray-500">{item.userEmail || 'N/A'}</span>
-                        <span className="text-xs text-gray-400">ID: {item.userId || 'N/A'}</span>
+                        <span className="text-xs text-gray-500">{item.userEmail || 'No email'}</span>
                       </div>
                     ) : (
                       <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-gray-500">Guest User</span>
-                        <span className="text-xs text-gray-400">
-                          IP: {item.ipAddress || 'N/A'}
+                        <span className="text-sm font-semibold text-gray-500 flex items-center gap-1">
+                          Guest User
+                          <span className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded">
+                            GUEST
+                          </span>
                         </span>
-                        <span className="text-xs text-gray-400">
-                          Cookie: {item.cookieId ? item.cookieId.substring(0, 12) + '...' : 'N/A'}
-                        </span>
+                        <span className="text-xs text-gray-400">Unregistered</span>
                       </div>
                     )}
                   </td>
