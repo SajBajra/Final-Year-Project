@@ -234,5 +234,27 @@ public class UserService {
         
         return user.getUsageCount() >= user.getUsageLimit();
     }
+    
+    @Transactional
+    public void changePassword(Long userId, String currentPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        
+        // Check if new password is same as current
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            throw new RuntimeException("New password must be different from current password");
+        }
+        
+        // Update password
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        
+        log.info("Password changed successfully for user: {}", user.getUsername());
+    }
 }
 

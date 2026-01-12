@@ -129,6 +129,36 @@ public class UserController {
         }
     }
     
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            HttpServletRequest httpRequest) {
+        try {
+            String token = extractTokenFromRequest(httpRequest);
+            if (token == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("No authentication token found"));
+            }
+            
+            Long userId = jwtUtil.extractUserId(token);
+            userService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
+            
+            return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
+        } catch (RuntimeException e) {
+            log.error("Error changing password", e);
+            if (e.getMessage().contains("incorrect")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error(e.getMessage()));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error changing password", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to change password"));
+        }
+    }
+    
     private String extractTokenFromRequest(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {

@@ -12,6 +12,7 @@ import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import UserProfile from './pages/UserProfile'
+import ChangePassword from './pages/ChangePassword'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
@@ -107,6 +108,18 @@ function App() {
           >
             <UserProfile />
           </motion.div>
+        } />
+        
+        <Route path="/change-password" element={
+          <ProtectedRoute>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ChangePassword />
+            </motion.div>
+          </ProtectedRoute>
         } />
         
         {/* Admin Login Route - Only accessible via URL */}

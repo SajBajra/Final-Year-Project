@@ -186,6 +186,7 @@ const UserProfile = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/change-password')}
                 className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 backdrop-blur-sm px-4 py-3 rounded-xl border border-white/20 transition-colors text-sm font-medium"
               >
                 <FaKey />
