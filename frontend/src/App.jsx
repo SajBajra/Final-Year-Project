@@ -14,6 +14,7 @@ import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminCharacterStats from './pages/admin/AdminCharacterStats'
 import AdminSettings from './pages/admin/AdminSettings'
 import ProtectedRoute from './components/ProtectedRoute'
+import Preloader from './components/Preloader'
 import { ROUTES } from './config/constants'
 import './index.css'
 
@@ -21,6 +22,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <Preloader />
         <Routes>
         {/* Public Routes */}
         <Route path="/" element={
