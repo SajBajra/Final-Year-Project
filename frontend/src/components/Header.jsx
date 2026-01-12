@@ -60,18 +60,34 @@ const Header = () => {
             </Link>
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center space-x-8">
               {navItems.map((item) => (
                 <Link 
                   key={item.path}
                   to={item.path}
-                  className={`px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200 ${
-                    isActive(item.path)
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-                  }`}
+                  className="relative group"
                 >
-                  {item.label}
+                  <span className={`font-semibold text-base transition-colors duration-300 ${
+                    isActive(item.path)
+                      ? 'text-primary-600'
+                      : 'text-gray-700 group-hover:text-primary-600'
+                  }`}>
+                    {item.label}
+                  </span>
+                  
+                  {/* Active Underline */}
+                  {isActive(item.path) && (
+                    <motion.div
+                      layoutId="activeNav"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 rounded-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  
+                  {/* Hover Underline */}
+                  {!isActive(item.path) && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  )}
                 </Link>
               ))}
             
@@ -221,7 +237,7 @@ const Header = () => {
               <div className="flex-1 overflow-y-auto">
                 <nav className="p-4">
                   {/* Navigation Links */}
-                  <div className="space-y-1 mb-4">
+                  <div className="space-y-2 mb-4">
                     {navItems.map((item, index) => (
                       <motion.div
                         key={item.path}
@@ -232,13 +248,16 @@ const Header = () => {
                         <Link
                           to={item.path}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`block px-4 py-3 rounded-md font-medium transition-colors ${
+                          className={`relative block px-4 py-3 rounded-lg font-semibold transition-all duration-300 ${
                             isActive(item.path)
-                              ? 'bg-primary-50 text-primary-600'
-                              : 'text-gray-700 hover:bg-gray-100'
+                              ? 'bg-primary-600 text-white shadow-md'
+                              : 'text-gray-700 hover:bg-gray-100 hover:translate-x-1'
                           }`}
                         >
                           {item.label}
+                          {isActive(item.path) && (
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+                          )}
                         </Link>
                       </motion.div>
                     ))}
