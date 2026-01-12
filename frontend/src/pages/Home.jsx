@@ -294,6 +294,7 @@ function Home() {
                 screenshotFormat="image/jpeg"
                 videoConstraints={videoConstraints}
                 className="w-full h-full object-cover"
+                mirrored={false}
               />
               
               {/* Overlay Guide */}
