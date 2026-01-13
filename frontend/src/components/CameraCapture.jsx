@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Webcam from 'react-webcam'
 import { FaCamera, FaCameraRetro, FaTimes } from 'react-icons/fa'
@@ -9,18 +9,6 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
   const [isCapturing, setIsCapturing] = useState(false)
   const [preview, setPreview] = useState(null)
   const [error, setError] = useState(null)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   const videoConstraints = {
     width: { min: 640, ideal: 1280, max: 1920 },
@@ -174,7 +162,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
               screenshotFormat="image/jpeg"
               videoConstraints={videoConstraints}
               className="w-full h-full object-cover"
-              mirrored={isMobile}
+              mirrored={false}
               onUserMediaError={handleUserMediaError}
             />
             <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
