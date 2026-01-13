@@ -23,7 +23,7 @@ const Pricing = () => {
       period: 'Forever',
       description: 'Perfect for trying out Lipika OCR',
       features: [
-        { text: '5 OCR scans per day', icon: FaClock },
+        { text: '10 OCR scans per day', icon: FaClock },
         { text: 'Basic Ranjana script recognition', icon: FaCheckCircle },
         { text: 'Standard processing speed', icon: FaCheckCircle },
         { text: 'Community support', icon: FaCheckCircle }
