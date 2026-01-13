@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaEnvelope, 
-  FaTrash, 
   FaEnvelopeOpen,
   FaUser,
-  FaClock,
-  FaExclamationTriangle
+  FaClock
 } from 'react-icons/fa';
-import { getAllContacts, markContactAsRead, deleteContact } from '../../services/adminService';
+import { getAllContacts, markContactAsRead } from '../../services/adminService';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
 const AdminContacts = () => {
@@ -16,7 +14,6 @@ const AdminContacts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedContact, setSelectedContact] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
 
   useEffect(() => {
@@ -48,19 +45,6 @@ const AdminContacts = () => {
       }
     } catch (err) {
       console.error('Error marking contact as read:', err);
-    }
-  };
-
-  const handleDelete = async (contactId) => {
-    try {
-      const response = await deleteContact(contactId);
-      if (response.success) {
-        setShowDeleteModal(false);
-        setSelectedContact(null);
-        loadContacts();
-      }
-    } catch (err) {
-      console.error('Error deleting contact:', err);
     }
   };
 
@@ -183,23 +167,12 @@ const AdminContacts = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewMessage(contact)}
-                          className="text-primary-600 hover:text-primary-900 transition-colors"
-                        >
-                          View
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedContact(contact);
-                            setShowDeleteModal(true);
-                          }}
-                          className="text-red-600 hover:text-red-900 transition-colors"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => handleViewMessage(contact)}
+                        className="text-primary-600 hover:text-primary-900 transition-colors"
+                      >
+                        View
+                      </button>
                     </td>
                   </motion.tr>
                 ))}
@@ -260,29 +233,6 @@ const AdminContacts = () => {
         </div>
       </ConfirmationModal>
 
-      {/* Delete Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={showDeleteModal && selectedContact !== null}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setSelectedContact(null);
-        }}
-        title="Delete Contact"
-        message={
-          selectedContact && (
-            <>
-              Are you sure you want to delete this contact submission from <strong className="text-gray-900">{selectedContact.name}</strong>? 
-              This action cannot be undone.
-            </>
-          )
-        }
-        icon={<FaExclamationTriangle className="text-3xl text-red-600" />}
-        iconBgColor="bg-red-100"
-        confirmText="Delete"
-        confirmIcon={FaTrash}
-        confirmClassName="bg-red-600 hover:bg-red-700"
-        onConfirm={() => selectedContact && handleDelete(selectedContact.id)}
-      />
     </div>
   );
 };
