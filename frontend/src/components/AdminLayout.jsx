@@ -185,9 +185,12 @@ const AdminLayout = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
             >
-              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+              <div 
+                className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 pointer-events-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {/* Icon */}
                 <div className="flex justify-center mb-4">
                   <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">

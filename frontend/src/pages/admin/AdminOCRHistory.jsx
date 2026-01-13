@@ -379,11 +379,10 @@ const AdminOCRHistory = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[101] flex items-center justify-center p-4"
-              onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
             >
               <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col"
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col pointer-events-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal Header */}
