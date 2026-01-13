@@ -112,7 +112,7 @@ const ForgotPassword = () => {
       >
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img src={logoImage} alt="Lipika Logo" className="h-16 w-16" />
+          <img src={logoImage} alt="Lipika Logo" className="h-16 w-auto object-contain" />
         </div>
 
         {/* Title */}
