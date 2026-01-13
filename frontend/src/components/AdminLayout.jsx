@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaTachometerAlt, FaHistory, FaCog, FaBars, FaChartBar, FaFont, FaSignOutAlt, FaUsers, FaExclamationTriangle, FaEnvelope } from 'react-icons/fa'
@@ -8,11 +8,25 @@ import logoImage from '../images/Logo.png'
 import ConfirmationModal from './ConfirmationModal'
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const { logout } = useAuth()
+
+  // Handle responsive sidebar on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setSidebarOpen(true)
+      } else {
+        setSidebarOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleLogout = () => {
     setShowLogoutModal(true)
@@ -96,27 +110,27 @@ const AdminLayout = () => {
 
       {/* Main Container - Flex with fixed height */}
       <div className="flex flex-1 overflow-hidden relative">
+        {/* Sidebar Overlay for mobile - Outside sidebar */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar - Sticky, 100vh height, scrollable navigation */}
         <aside
-          className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 flex flex-col ${
-            sidebarOpen ? 'w-64' : 'w-0'
-          } ${
-            // Desktop: sticky sidebar, Mobile: fixed overlay
-            'md:sticky md:top-16 md:h-[calc(100vh-64px)] fixed top-16 h-[calc(100vh-64px)] z-40'
-          } overflow-hidden shadow-lg`}
+          className={`bg-white border-r border-gray-200 transition-all duration-300 flex-shrink-0 flex flex-col shadow-lg
+            ${sidebarOpen ? 'w-64' : 'w-0 md:w-0'}
+            md:relative md:h-[calc(100vh-64px)]
+            fixed top-0 left-0 h-screen z-40
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          `}
         >
-          {/* Sidebar Overlay for mobile */}
-          {sidebarOpen && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-              onClick={() => setSidebarOpen(false)}
-            />
-          )}
-          
           {/* Sidebar Content - Fixed container, scrollable navigation */}
-          <div className={`flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-0'} overflow-hidden transition-all duration-300`}>
+          <div className={`flex flex-col h-full w-64 transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 md:opacity-0'}`}>
             {/* Navigation - Scrollable if content is long */}
-            <nav className={`flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar ${sidebarOpen ? 'w-full' : 'w-0'} overflow-hidden`}>
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar mt-16 md:mt-0">
               {menuItems.map((item) => {
                 const IconComponent = item.icon
                 return (
@@ -132,9 +146,7 @@ const AdminLayout = () => {
                     title={item.label}
                   >
                     <IconComponent className="text-xl flex-shrink-0" />
-                    <span className={`font-semibold transition-all duration-300 overflow-hidden ${
-                      sidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'
-                    }`}>
+                    <span className="font-semibold">
                       {item.label}
                     </span>
                   </Link>
@@ -143,10 +155,8 @@ const AdminLayout = () => {
             </nav>
             
             {/* Admin Panel Text at Bottom */}
-            <div className={`p-4 border-t border-gray-200 bg-white/50 ${sidebarOpen ? 'w-full' : 'w-0'} overflow-hidden`}>
-              <div className={`text-center transition-all duration-300 ${
-                sidebarOpen ? 'opacity-100' : 'opacity-0'
-              }`}>
+            <div className="p-4 border-t border-gray-200 bg-white/50">
+              <div className="text-center">
                 <p className="text-xs font-semibold text-primary-600 uppercase tracking-wider">
                   Admin Panel
                 </p>
@@ -156,12 +166,7 @@ const AdminLayout = () => {
         </aside>
 
         {/* Main Content Area - Scrollable */}
-        <main 
-          className={`flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar bg-gray-50 ${
-            // Add margin on desktop when sidebar is open
-            sidebarOpen ? 'md:ml-0' : 'md:ml-0'
-          }`}
-        >
+        <main className="flex-1 overflow-y-auto transition-all duration-300 custom-scrollbar bg-gray-50 w-full">
           <div className="p-4 sm:p-6 max-w-full">
             <Outlet />
           </div>
