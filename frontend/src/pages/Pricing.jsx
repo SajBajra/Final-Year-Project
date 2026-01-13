@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  FaCheckCircle, 
   FaClock,
   FaInfinity,
   FaStar
@@ -21,10 +20,7 @@ const Pricing = () => {
       period: 'Forever',
       description: 'Perfect for trying out Lipika OCR',
       features: [
-        { text: '10 OCR scans per day', icon: FaClock },
-        { text: 'Basic Ranjana script recognition', icon: FaCheckCircle },
-        { text: 'Standard processing speed', icon: FaCheckCircle },
-        { text: 'Community support', icon: FaCheckCircle }
+        { text: '10 OCR scans per day', icon: FaClock }
       ],
       cta: 'Get Started',
       popular: false,
