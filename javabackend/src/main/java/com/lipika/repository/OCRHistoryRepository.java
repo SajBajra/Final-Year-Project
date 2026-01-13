@@ -59,6 +59,9 @@ public interface OCRHistoryRepository extends JpaRepository<OCRHistory, Long> {
     // Find by user ID
     Page<OCRHistory> findByUserId(Long userId, Pageable pageable);
     
+    // Find all by user ID (for deletion)
+    List<OCRHistory> findByUserId(Long userId);
+    
     // Count by registered status
     long countByIsRegistered(Boolean isRegistered);
     

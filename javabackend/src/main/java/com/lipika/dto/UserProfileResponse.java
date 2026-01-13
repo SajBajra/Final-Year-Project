@@ -10,6 +10,7 @@ public class UserProfileResponse {
     private Integer usageCount;
     private Integer usageLimit;
     private Boolean isPremium;
+    private String planType; // "monthly" or "yearly" for premium users
     private LocalDateTime premiumUntil;
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
@@ -87,6 +88,14 @@ public class UserProfileResponse {
     
     public void setIsPremium(Boolean isPremium) {
         this.isPremium = isPremium;
+    }
+    
+    public String getPlanType() {
+        return planType;
+    }
+    
+    public void setPlanType(String planType) {
+        this.planType = planType;
     }
     
     public LocalDateTime getPremiumUntil() {

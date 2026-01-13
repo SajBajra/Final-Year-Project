@@ -152,10 +152,20 @@ public class PaymentController {
             
             // Determine plan type from total amount
             String planType = "monthly";
-            Double amount = Double.parseDouble(totalAmount);
-            if (amount >= 1000) {
+            Double totalAmountValue = Double.parseDouble(totalAmount);
+            if (totalAmountValue >= 1000) {
                 planType = "yearly";
             }
+            
+            // Extract other amount fields from payment data
+            Double amount = paymentData.get("amount") != null ? 
+                Double.parseDouble(String.valueOf(paymentData.get("amount"))) : totalAmountValue;
+            Double taxAmount = paymentData.get("tax_amount") != null ? 
+                Double.parseDouble(String.valueOf(paymentData.get("tax_amount"))) : 0.0;
+            Double serviceCharge = paymentData.get("product_service_charge") != null ? 
+                Double.parseDouble(String.valueOf(paymentData.get("product_service_charge"))) : 0.0;
+            Double deliveryCharge = paymentData.get("product_delivery_charge") != null ? 
+                Double.parseDouble(String.valueOf(paymentData.get("product_delivery_charge"))) : 0.0;
             
             // Create payment record
             Payment payment = new Payment();
@@ -165,6 +175,10 @@ public class PaymentController {
             payment.setUsername(username);
             payment.setPlanType(planType);
             payment.setAmount(amount);
+            payment.setTaxAmount(taxAmount);
+            payment.setServiceCharge(serviceCharge);
+            payment.setDeliveryCharge(deliveryCharge);
+            payment.setTotalAmount(totalAmountValue);
             payment.setStatus("COMPLETED");
             payment.setPaymentMethod("eSewa");
             payment.setVerifiedAt(LocalDateTime.now());
@@ -175,8 +189,8 @@ public class PaymentController {
             user.setIsPremium(true);
             userRepository.save(user);
 
-            logger.info("User {} upgraded to PREMIUM successfully via eSewa transaction: {} with amount: NPR {}", 
-                       username, transactionCode, amount);
+            logger.info("User {} upgraded to PREMIUM successfully via eSewa transaction: {} with total amount: NPR {}", 
+                       username, transactionCode, totalAmountValue);
             return ResponseEntity.ok(new ApiResponse<>(true, "Payment verified and user upgraded to Premium", null));
 
         } catch (Exception e) {

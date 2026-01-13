@@ -36,6 +36,18 @@ public class Payment {
     @Column(name = "amount", nullable = false)
     private Double amount;
     
+    @Column(name = "tax_amount")
+    private Double taxAmount;
+    
+    @Column(name = "service_charge")
+    private Double serviceCharge;
+    
+    @Column(name = "delivery_charge")
+    private Double deliveryCharge;
+    
+    @Column(name = "total_amount", nullable = false)
+    private Double totalAmount;
+    
     @Column(name = "status", nullable = false)
     private String status; // COMPLETED, PENDING, FAILED
     

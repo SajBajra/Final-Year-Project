@@ -604,16 +604,39 @@ public class AdminServiceImpl implements AdminService {
     
     /**
      * Delete user by ID
+     * Handles cascading deletion of related records
      */
     @Override
     @Transactional
     public boolean deleteUser(Long userId) {
-        if (userRepository.existsById(userId)) {
+        try {
+            if (!userRepository.existsById(userId)) {
+                log.warn("User not found for deletion: userId={}", userId);
+                return false;
+            }
+            
+            // Delete related OCR history records first
+            List<OCRHistory> ocrHistories = ocrHistoryRepository.findByUserId(userId);
+            if (!ocrHistories.isEmpty()) {
+                ocrHistoryRepository.deleteAll(ocrHistories);
+                log.info("Deleted {} OCR history records for user: userId={}", ocrHistories.size(), userId);
+            }
+            
+            // Delete related payment records
+            List<com.lipika.model.Payment> payments = paymentRepository.findByUserId(userId);
+            if (!payments.isEmpty()) {
+                paymentRepository.deleteAll(payments);
+                log.info("Deleted {} payment records for user: userId={}", payments.size(), userId);
+            }
+            
+            // Now delete the user
             userRepository.deleteById(userId);
-            log.info("Deleted user: userId={}", userId);
+            log.info("Successfully deleted user: userId={}", userId);
             return true;
+            
+        } catch (Exception e) {
+            log.error("Error deleting user: userId={}, error: {}", userId, e.getMessage(), e);
+            throw new RuntimeException("Failed to delete user: " + e.getMessage());
         }
-        log.warn("User not found for deletion: userId={}", userId);
-        return false;
     }
 }

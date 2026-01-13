@@ -51,10 +51,14 @@ const AdminUserManagement = () => {
         await loadUsers();
         setShowDeleteModal(false);
         setSelectedUser(null);
+        alert('User deleted successfully!');
+      } else {
+        alert(response.message || 'Failed to delete user');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert('Failed to delete user');
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to delete user. Please try again.';
+      alert(errorMessage);
     }
   };
 

@@ -172,7 +172,7 @@ const UserProfile = () => {
                   ) : profile.isPremium ? (
                     <>
                       <span className="text-xl">✨</span>
-                      <span>Paid Account</span>
+                      <span>Paid Account {profile.planType && `(${profile.planType.charAt(0).toUpperCase() + profile.planType.slice(1)})`}</span>
                     </>
                   ) : (
                     <>
@@ -212,6 +212,22 @@ const UserProfile = () => {
                 <FaKey />
                 <span>Change Password</span>
               </motion.button>
+
+              {/* Upgrade to Yearly Button for Monthly Subscribers */}
+              {profile.isPremium && profile.planType === 'monthly' && (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate('/pricing')}
+                  className="btn-primary btn-md w-full mt-3"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <FaCrown />
+                  <span>Upgrade to Yearly & Save 17%</span>
+                </motion.button>
+              )}
             </div>
           </motion.div>
 

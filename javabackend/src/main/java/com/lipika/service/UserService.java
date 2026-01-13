@@ -2,8 +2,10 @@ package com.lipika.service;
 
 import com.lipika.dto.*;
 import com.lipika.model.PasswordResetToken;
+import com.lipika.model.Payment;
 import com.lipika.model.User;
 import com.lipika.repository.PasswordResetTokenRepository;
+import com.lipika.repository.PaymentRepository;
 import com.lipika.repository.UserRepository;
 import com.lipika.util.JwtUtil;
 import org.slf4j.Logger;
@@ -23,17 +25,20 @@ public class UserService {
     
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository resetTokenRepository;
+    private final PaymentRepository paymentRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
     
     public UserService(UserRepository userRepository,
                       PasswordResetTokenRepository resetTokenRepository,
+                      PaymentRepository paymentRepository,
                       PasswordEncoder passwordEncoder,
                       EmailService emailService,
                       JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.resetTokenRepository = resetTokenRepository;
+        this.paymentRepository = paymentRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.jwtUtil = jwtUtil;
@@ -193,7 +198,20 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
         
-        return new UserProfileResponse(
+        // Fetch plan type for premium users
+        String planType = null;
+        if (user.getIsPremium() || "PREMIUM".equals(user.getRole())) {
+            try {
+                java.util.List<Payment> payments = paymentRepository.findLatestPaymentByUserId(userId);
+                if (!payments.isEmpty()) {
+                    planType = payments.get(0).getPlanType();
+                }
+            } catch (Exception e) {
+                log.warn("Could not fetch plan type for user {}: {}", userId, e.getMessage());
+            }
+        }
+        
+        UserProfileResponse response = new UserProfileResponse(
             user.getId(),
             user.getUsername(),
             user.getEmail(),
@@ -205,6 +223,8 @@ public class UserService {
             user.getCreatedAt(),
             user.getLastLogin()
         );
+        response.setPlanType(planType);
+        return response;
     }
     
     @Transactional
