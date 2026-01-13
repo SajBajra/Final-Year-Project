@@ -7,8 +7,20 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 })
   const [hoveredChar, setHoveredChar] = useState(null)
   const [scale, setScale] = useState(1)
+  const [isMobile, setIsMobile] = useState(false)
   const imgRef = useRef(null)
   const containerRef = useRef(null)
+
+  useEffect(() => {
+    // Detect mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     if (image instanceof File) {
@@ -86,14 +98,14 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
 
   return (
     <div className="card bg-white">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold flex items-center text-primary-600">
-          <span className="mr-3 text-4xl">👓</span>
-          AR Visualization
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center text-primary-600">
+          <span className="mr-2 sm:mr-3 text-2xl sm:text-3xl md:text-4xl">👓</span>
+          <span className="whitespace-nowrap">AR Visualization</span>
         </h2>
         {characters && characters.length > 0 && (
-          <span className="text-sm font-semibold text-gray-600 bg-blue-100 px-3 py-1 rounded-full">
-            {characters.length} characters detected
+          <span className="text-xs sm:text-sm font-semibold text-gray-600 bg-blue-100 px-2 sm:px-3 py-1 rounded-full w-fit">
+            {characters.length} character{characters.length !== 1 ? 's' : ''} detected
           </span>
         )}
       </div>
@@ -101,13 +113,18 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
       <div 
         ref={containerRef}
         className="relative w-full bg-gray-900 rounded-xl overflow-hidden shadow-2xl"
-        style={{ minHeight: '400px' }}
+        style={{ minHeight: isMobile ? '300px' : '400px' }}
+        onClick={(e) => {
+          if (isMobile && e.target === e.currentTarget) {
+            setHoveredChar(null)
+          }
+        }}
       >
         <img
           ref={imgRef}
           src={imageUrl}
           alt="AR Overlay"
-          className="w-full h-auto max-h-[70vh] object-contain mx-auto"
+          className="w-full h-auto max-h-[60vh] sm:max-h-[70vh] object-contain mx-auto"
           style={{ display: 'block' }}
         />
         
@@ -122,12 +139,12 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
           return (
             <motion.div
               key={idx}
-              className="absolute cursor-pointer group"
+              className="absolute cursor-pointer group touch-manipulation"
               style={{
                 left: `${scaledBbox.x}px`,
                 top: `${scaledBbox.y}px`,
-                width: `${Math.max(scaledBbox.width, 20)}px`,
-                height: `${Math.max(scaledBbox.height, 20)}px`,
+                width: `${Math.max(scaledBbox.width, isMobile ? 30 : 20)}px`,
+                height: `${Math.max(scaledBbox.height, isMobile ? 30 : 20)}px`,
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ 
@@ -136,8 +153,17 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
                 borderColor: isHovered ? 'var(--primary-color)' : 'var(--primary-color)'
               }}
               transition={{ delay: idx * 0.05, duration: 0.3 }}
-              onMouseEnter={() => setHoveredChar(idx)}
-              onMouseLeave={() => setHoveredChar(null)}
+              onMouseEnter={() => !isMobile && setHoveredChar(idx)}
+              onMouseLeave={() => !isMobile && setHoveredChar(null)}
+              onClick={() => {
+                if (isMobile) {
+                  setHoveredChar(hoveredChar === idx ? null : idx)
+                }
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation()
+                setHoveredChar(hoveredChar === idx ? null : idx)
+              }}
             >
               {/* Bounding Box */}
               <div
@@ -172,68 +198,81 @@ const AROverlay = ({ image, characters, showTranslation = false, translations = 
           )
         })}
         
-        {/* Hover Tooltip */}
+        {/* Hover/Tap Tooltip */}
         <AnimatePresence>
-          {hoveredChar !== null && characters[hoveredChar] && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.9 }}
-              className="absolute z-50 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-2xl border border-gray-700"
-              style={{
-                left: `${getScaledBbox(characters[hoveredChar].bbox)?.x || 0}px`,
-                top: `${(getScaledBbox(characters[hoveredChar].bbox)?.y || 0) - 60}px`,
-                pointerEvents: 'none'
-              }}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl font-bold">{characters[hoveredChar].character}</div>
-                <div className="h-6 w-px bg-gray-600"></div>
-                <div>
-                  <div className="text-xs text-gray-400">Confidence</div>
-                  <div className="text-sm font-semibold">
-                    {(characters[hoveredChar].confidence * 100 || 0).toFixed(1)}%
+          {hoveredChar !== null && characters[hoveredChar] && (() => {
+            const bbox = getScaledBbox(characters[hoveredChar].bbox)
+            const tooltipX = Math.max(10, Math.min((bbox?.x || 0), containerDimensions.width - (isMobile ? 200 : 300)))
+            const tooltipY = Math.max(10, (bbox?.y || 0) - (isMobile ? 80 : 60))
+            
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                className="absolute z-50 bg-gray-900 text-white rounded-lg shadow-2xl border border-gray-700"
+                style={{
+                  left: `${tooltipX}px`,
+                  top: `${tooltipY}px`,
+                  pointerEvents: isMobile ? 'auto' : 'none',
+                  maxWidth: isMobile ? '200px' : '400px',
+                  padding: isMobile ? '8px 12px' : '12px 16px'
+                }}
+                onClick={(e) => isMobile && e.stopPropagation()}
+              >
+                <div className={`flex ${isMobile ? 'flex-col gap-2' : 'items-center space-x-3'}`}>
+                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>
+                    {characters[hoveredChar].character}
                   </div>
-                </div>
-                {showTranslation && translations[characters[hoveredChar].character] && (
-                  <>
-                    <div className="h-6 w-px bg-gray-600"></div>
-                    <div>
-                      <div className="text-xs text-gray-400">Translation</div>
-                      <div className="text-sm font-semibold">
-                        {translations[characters[hoveredChar].character]}
-                      </div>
+                  {!isMobile && <div className="h-6 w-px bg-gray-600"></div>}
+                  <div>
+                    <div className="text-xs text-gray-400">Confidence</div>
+                    <div className={`${isMobile ? 'text-xs' : 'text-sm'} font-semibold`}>
+                      {(characters[hoveredChar].confidence * 100 || 0).toFixed(1)}%
                     </div>
-                  </>
+                  </div>
+                  {showTranslation && translations[characters[hoveredChar].character] && (
+                    <>
+                      {!isMobile && <div className="h-6 w-px bg-gray-600"></div>}
+                      <div>
+                        <div className="text-xs text-gray-400">Translation</div>
+                        <div className={`${isMobile ? 'text-xs' : 'text-sm'} font-semibold`}>
+                          {translations[characters[hoveredChar].character]}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                {/* Arrow */}
+                {!isMobile && (
+                  <div className="absolute bottom-0 left-6 transform translate-y-full">
+                    <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900"></div>
+                  </div>
                 )}
-              </div>
-              {/* Arrow */}
-              <div className="absolute bottom-0 left-6 transform translate-y-full">
-                <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900"></div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )
+          })()}
         </AnimatePresence>
       </div>
       
-      <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+      <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs sm:text-sm text-gray-600">
         <p className="flex items-center">
           <span className="mr-2">💡</span>
-          Hover over highlighted boxes to see character details
+          <span>{isMobile ? 'Tap' : 'Hover over'} highlighted boxes to see character details</span>
         </p>
         {characters && characters.length > 0 && (
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span>High confidence (≥90%)</span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500"></div>
+              <span className="text-xs sm:text-sm whitespace-nowrap">High (≥90%)</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <span>Medium (70-89%)</span>
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500"></div>
+              <span className="text-xs sm:text-sm whitespace-nowrap">Medium (70-89%)</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <span>Low (&lt;70%)</span>
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500"></div>
+              <span className="text-xs sm:text-sm whitespace-nowrap">Low (&lt;70%)</span>
             </div>
           </div>
         )}
