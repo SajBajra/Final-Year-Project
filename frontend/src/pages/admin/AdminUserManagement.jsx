@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUsers, FaSearch, FaEdit, FaTrash, FaCrown, FaStar, FaUser, FaExclamationTriangle } from 'react-icons/fa';
-import { getAllUsers, updateUserRole, deleteUser } from '../../services/adminService';
+import { FaUsers, FaSearch, FaTrash, FaCrown, FaStar, FaUser, FaExclamationTriangle } from 'react-icons/fa';
+import { getAllUsers, deleteUser } from '../../services/adminService';
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -9,7 +9,6 @@ const AdminUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [selectedUser, setSelectedUser] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -27,20 +26,6 @@ const AdminUserManagement = () => {
       console.error('Error loading users:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleUpdateRole = async (userId, newRole) => {
-    try {
-      const response = await updateUserRole(userId, newRole);
-      if (response.success) {
-        await loadUsers();
-        setShowEditModal(false);
-        setSelectedUser(null);
-      }
-    } catch (error) {
-      console.error('Error updating user role:', error);
-      alert('Failed to update user role');
     }
   };
 
@@ -222,21 +207,8 @@ const AdminUserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex items-center gap-2">
-                        {/* Show edit button only for Paid users */}
-                        {user.accountType === 'Paid' && (
-                          <button
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setShowEditModal(true);
-                            }}
-                            className="text-primary-600 hover:text-primary-900"
-                            title="Edit Role"
-                          >
-                            <FaEdit />
-                          </button>
-                        )}
                         {/* Show delete button only for Free and Paid users (not Admin) */}
-                        {user.accountType !== 'Admin' && (
+                        {user.accountType !== 'Admin' ? (
                           <button
                             onClick={() => {
                               setSelectedUser(user);
@@ -247,13 +219,8 @@ const AdminUserManagement = () => {
                           >
                             <FaTrash />
                           </button>
-                        )}
-                        {/* Show message if no actions available */}
-                        {user.accountType === 'Admin' && (
+                        ) : (
                           <span className="text-gray-400 text-xs">No actions</span>
-                        )}
-                        {user.accountType === 'Free' && (
-                          <span className="text-gray-400 text-xs">Delete only</span>
                         )}
                       </div>
                     </td>
@@ -264,50 +231,6 @@ const AdminUserManagement = () => {
           </table>
         </div>
       </div>
-
-      {/* Edit Role Modal */}
-      {showEditModal && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
-          >
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Update User Role</h3>
-            <p className="text-gray-600 mb-4">
-              Change role for <strong>{selectedUser.username}</strong>
-            </p>
-            <div className="space-y-2 mb-6">
-              {['USER', 'PREMIUM', 'ADMIN'].map((role) => (
-                <button
-                  key={role}
-                  onClick={() => handleUpdateRole(selectedUser.id, role)}
-                  className={`w-full px-4 py-3 rounded-lg border-2 text-left font-semibold transition-colors ${
-                    selectedUser.role === role
-                      ? 'border-primary-600 bg-primary-50 text-primary-700'
-                      : 'border-gray-200 hover:border-primary-300'
-                  }`}
-                >
-                  {role === 'USER' && '👤 Free User'}
-                  {role === 'PREMIUM' && '⭐ Paid User'}
-                  {role === 'ADMIN' && '👑 Administrator'}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setShowEditModal(false);
-                  setSelectedUser(null);
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
