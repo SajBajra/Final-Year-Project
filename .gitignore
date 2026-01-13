@@ -82,6 +82,10 @@ fonts/
 esewa.properties
 payment-config.properties
 
+# SMTP/Email Configuration (contains sensitive credentials)
+**/application-mail.properties
+**/application-mail.yml
+
 # Training metrics
 training_progress_monitor.png
 *_metrics.png
