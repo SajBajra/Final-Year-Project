@@ -30,9 +30,7 @@ const Payment = () => {
       description: 'Unlimited OCR scans for 30 days',
       features: [
         'Unlimited OCR scans',
-        'Priority processing',
-        'Advanced features',
-        'Email support'
+        'Priority processing'
       ]
     },
     {
@@ -43,8 +41,6 @@ const Payment = () => {
       features: [
         'Unlimited OCR scans',
         'Priority processing',
-        'Advanced features',
-        'Email support',
         'Save 17% compared to monthly'
       ],
       badge: 'Best Value'
