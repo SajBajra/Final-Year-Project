@@ -127,10 +127,7 @@ public class ForgotPasswordController {
                     .body(new ApiResponse<>(false, "OTP has expired. Please request a new one", null));
             }
             
-            // Mark OTP as verified
-            otp.setVerified(true);
-            otpRepository.save(otp);
-            
+            // Don't mark as verified yet - that happens in step 3 after password reset
             logger.info("OTP verified successfully for email: {}", email);
             
             return ResponseEntity.ok(new ApiResponse<>(true, "OTP verified successfully", null));
@@ -167,16 +164,12 @@ public class ForgotPasswordController {
                     .body(new ApiResponse<>(false, "Password must be at least 6 characters long", null));
             }
             
-            // Find verified OTP
+            // Find OTP (should not be used/verified yet)
             Optional<OTP> otpOptional = otpRepository.findByEmailAndOtpCodeAndVerifiedFalse(email, otpCode);
             
             if (otpOptional.isEmpty()) {
-                // Check if OTP was already used
-                otpOptional = otpRepository.findFirstByEmailAndVerifiedFalseOrderByCreatedAtDesc(email);
-                if (otpOptional.isEmpty() || !otpOptional.get().getOtpCode().equals(otpCode)) {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ApiResponse<>(false, "Invalid or already used OTP", null));
-                }
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, "Invalid or already used OTP", null));
             }
             
             OTP otp = otpOptional.get();
