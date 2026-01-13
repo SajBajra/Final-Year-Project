@@ -10,10 +10,11 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
   const [preview, setPreview] = useState(null)
   const [error, setError] = useState(null)
 
+  // Use same camera settings for both mobile and desktop (front camera)
   const videoConstraints = {
     width: { min: 640, ideal: 1280, max: 1920 },
     height: { min: 480, ideal: 720, max: 1080 },
-    facingMode: { ideal: 'environment' },
+    facingMode: 'user', // Front camera for both mobile and desktop
     aspectRatio: { ideal: 16/9 }
   }
 
@@ -162,7 +163,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
               screenshotFormat="image/jpeg"
               videoConstraints={videoConstraints}
               className="w-full h-full object-cover"
-              mirrored={false}
+              mirrored={true}
               onUserMediaError={handleUserMediaError}
             />
             <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
