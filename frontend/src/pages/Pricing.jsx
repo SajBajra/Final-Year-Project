@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { 
   FaClock,
   FaInfinity,
-  FaStar
+  FaStar,
+  FaCheckCircle
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
