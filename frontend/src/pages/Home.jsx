@@ -90,6 +90,11 @@ function Home() {
       setTranslations({ devanagari: result.text })
       console.log('OCR Result - Devanagari text:', result.text)
       console.log('OCR Result - Characters:', result.characters)
+      
+      // Show AR overlay by default when OCR completes successfully
+      if (result.characters && result.characters.length > 0) {
+        setShowAR(true)
+      }
     }
   }
 
