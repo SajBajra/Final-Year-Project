@@ -405,9 +405,9 @@ function Home() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className={`grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12 ${isMobile ? 'hidden' : ''}`}
+          className={`grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12 items-start ${isMobile ? 'hidden' : ''}`}
         >
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="h-fit">
             <ImageUpload 
               onImageUpload={handleImageUpload}
               onProcessing={handleProcessing}
@@ -416,7 +416,7 @@ function Home() {
               cookieId={cookieId}
             />
           </motion.div>
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="h-fit">
             <CameraCapture 
               onImageCapture={handleImageUpload}
               onProcessing={handleProcessing}
