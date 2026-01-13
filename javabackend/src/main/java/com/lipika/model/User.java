@@ -99,6 +99,15 @@ public class User {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
+    
+    // Convenience method for password (maps to passwordHash)
+    public String getPassword() {
+        return passwordHash;
+    }
+    
+    public void setPassword(String password) {
+        this.passwordHash = password;
+    }
 
     public String getRole() {
         return role;

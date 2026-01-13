@@ -67,4 +67,53 @@ public class EmailServiceImpl implements EmailService {
             // Don't throw exception for confirmation email failure
         }
     }
+    
+    @Override
+    public void sendWelcomeEmail(String toEmail, String username) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Welcome to Lipika OCR!");
+            message.setText(
+                "Hello " + username + ",\n\n" +
+                "Welcome to Lipika OCR! We're excited to have you on board.\n\n" +
+                "You can now start using our Ranjana script OCR services.\n\n" +
+                "If you have any questions, feel free to contact us.\n\n" +
+                "Best regards,\n" +
+                "Lipika OCR Team"
+            );
+            
+            mailSender.send(message);
+            logger.info("Welcome email sent to: {}", toEmail);
+        } catch (Exception e) {
+            logger.error("Failed to send welcome email to: {}", toEmail, e);
+            // Don't throw exception for welcome email failure
+        }
+    }
+    
+    @Override
+    public void sendPasswordResetEmail(String toEmail, String username, String token) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Lipika OCR - Password Reset Request");
+            message.setText(
+                "Hello " + username + ",\n\n" +
+                "You have requested to reset your password.\n\n" +
+                "Please use this token: " + token + "\n\n" +
+                "Note: We now recommend using the OTP-based password reset from the login page.\n\n" +
+                "If you did not request this, please ignore this email.\n\n" +
+                "Best regards,\n" +
+                "Lipika OCR Team"
+            );
+            
+            mailSender.send(message);
+            logger.info("Password reset email sent to: {}", toEmail);
+        } catch (Exception e) {
+            logger.error("Failed to send password reset email to: {}", toEmail, e);
+            // Don't throw exception for password reset email failure
+        }
+    }
 }
