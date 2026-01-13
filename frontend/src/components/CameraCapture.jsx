@@ -8,20 +8,43 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
   const webcamRef = useRef(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [preview, setPreview] = useState(null)
+  const [error, setError] = useState(null)
 
   const videoConstraints = {
-    width: { ideal: 1280 },
-    height: { ideal: 720 },
-    facingMode: 'environment'
+    width: { min: 640, ideal: 1280, max: 1920 },
+    height: { min: 480, ideal: 720, max: 1080 },
+    facingMode: { ideal: 'environment' },
+    aspectRatio: { ideal: 16/9 }
   }
 
   const startCapture = () => {
     setIsCapturing(true)
     setPreview(null)
+    setError(null)
   }
 
   const stopCapture = () => {
     setIsCapturing(false)
+    setError(null)
+  }
+
+  const handleUserMediaError = (error) => {
+    console.error('Camera Error:', error)
+    setIsCapturing(false)
+    
+    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+      setError('Camera permission denied. Please allow camera access in your browser settings.')
+    } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+      setError('No camera found. Please connect a camera and try again.')
+    } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+      setError('Camera is already in use by another application.')
+    } else if (error.name === 'OverconstrainedError') {
+      setError('Camera does not support the requested settings.')
+    } else if (error.name === 'TypeError') {
+      setError('Camera access requires HTTPS. Please use a secure connection.')
+    } else {
+      setError(`Camera error: ${error.message || 'Unable to access camera'}`)
+    }
   }
 
   const capture = async () => {
@@ -75,6 +98,31 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
       </div>
       
       <div className="relative">
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl"
+          >
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-800">{error}</p>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="flex-shrink-0 text-red-600 hover:text-red-800"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          </motion.div>
+        )}
+        
         {!isCapturing && !preview && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -116,6 +164,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
                 videoConstraints={videoConstraints}
                 className="w-full h-full object-cover"
                 mirrored={true}
+                onUserMediaError={handleUserMediaError}
               />
               <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
             </div>
