@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Features from './pages/Features'
 import About from './pages/About'
 import Pricing from './pages/Pricing'
+import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
@@ -70,6 +71,16 @@ function App() {
             <Header />
             <div className="flex-grow">
               <Pricing />
+            </div>
+            <Footer />
+          </div>
+        } />
+        
+        <Route path="/contact" element={
+          <div className="min-h-screen bg-primary-50 flex flex-col">
+            <Header />
+            <div className="flex-grow">
+              <Contact />
             </div>
             <Footer />
           </div>

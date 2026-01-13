@@ -19,7 +19,8 @@ const Header = () => {
     { path: '/', label: 'Home' },
     { path: '/features', label: 'Features' },
     { path: '/about', label: 'About' },
-    { path: '/pricing', label: 'Pricing' }
+    { path: '/pricing', label: 'Pricing' },
+    { path: '/contact', label: 'Contact' }
   ]
 
   // Close dropdown when clicking outside

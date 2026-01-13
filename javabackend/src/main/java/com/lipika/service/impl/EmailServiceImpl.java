@@ -34,7 +34,7 @@ public class EmailServiceImpl implements EmailService {
                 "This OTP will expire in 5 minutes.\n\n" +
                 "If you did not request this, please ignore this email.\n\n" +
                 "Best regards,\n" +
-                "Lipika OCR Team"
+                "Lipika OCR"
             );
             
             mailSender.send(message);
@@ -57,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
                 "Your password has been successfully reset.\n\n" +
                 "If you did not perform this action, please contact us immediately.\n\n" +
                 "Best regards,\n" +
-                "Lipika OCR Team"
+                "Lipika OCR"
             );
             
             mailSender.send(message);
@@ -81,7 +81,7 @@ public class EmailServiceImpl implements EmailService {
                 "You can now start using our Ranjana script OCR services.\n\n" +
                 "If you have any questions, feel free to contact us.\n\n" +
                 "Best regards,\n" +
-                "Lipika OCR Team"
+                "Lipika OCR"
             );
             
             mailSender.send(message);
@@ -106,7 +106,7 @@ public class EmailServiceImpl implements EmailService {
                 "Note: We now recommend using the OTP-based password reset from the login page.\n\n" +
                 "If you did not request this, please ignore this email.\n\n" +
                 "Best regards,\n" +
-                "Lipika OCR Team"
+                "Lipika OCR"
             );
             
             mailSender.send(message);
@@ -114,6 +114,30 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             logger.error("Failed to send password reset email to: {}", toEmail, e);
             // Don't throw exception for password reset email failure
+        }
+    }
+    
+    @Override
+    public void sendContactFormEmail(String name, String email, String subject, String message) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom(fromEmail);
+            mailMessage.setTo(fromEmail); // Send to admin's email
+            mailMessage.setReplyTo(email); // Set reply-to as user's email
+            mailMessage.setSubject("Contact Form: " + subject);
+            mailMessage.setText(
+                "Contact Form Submission\n\n" +
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n" +
+                "Subject: " + subject + "\n\n" +
+                "Message:\n" + message
+            );
+            
+            mailSender.send(mailMessage);
+            logger.info("Contact form email sent from: {} ({})", name, email);
+        } catch (Exception e) {
+            logger.error("Failed to send contact form email from: {}", email, e);
+            throw new RuntimeException("Failed to send contact form: " + e.getMessage());
         }
     }
 }

@@ -89,6 +89,7 @@ export const ROUTES = {
   FEATURES: '/features',
   ABOUT: '/about',
   PRICING: '/pricing',
+  CONTACT: '/contact',
   ADMIN: '/admin',
   ADMIN_DASHBOARD: '/admin/dashboard',
   ADMIN_OCR_HISTORY: '/admin/ocr-history',
