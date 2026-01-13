@@ -1,13 +1,5 @@
 # Lipika - Ranjana Script OCR System
 
-<div align="center">
-
-![Lipika Logo](frontend/src/images/Logo.png)
-
-**Advanced Optical Character Recognition System for Ranjana Script**
-
-</div>
-
 ---
 
 ## About The Project
