@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  FaClock,
   FaInfinity,
   FaStar,
   FaCheckCircle
@@ -12,51 +10,45 @@ import { useAuth } from '../context/AuthContext';
 const Pricing = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [billingCycle, setBillingCycle] = useState('monthly');
   
   const plans = [
     {
-      name: 'Free',
-      price: 0,
-      period: 'Forever',
-      description: 'Perfect for trying out Lipika OCR',
-      features: [
-        { text: '10 OCR scans per day', icon: FaClock }
-      ],
-      cta: 'Get Started',
-      popular: false,
-      color: 'gray'
-    },
-    {
-      name: 'Premium',
-      price: billingCycle === 'monthly' ? 100 : 1000,
-      period: billingCycle === 'monthly' ? 'month' : 'year',
-      originalPrice: billingCycle === 'yearly' ? 1200 : null,
-      description: 'For power users and professionals',
+      name: 'Premium Monthly',
+      price: 100,
+      period: 'month',
+      description: 'Perfect for short-term needs',
       features: [
         { text: 'Unlimited OCR scans', icon: FaInfinity },
         { text: 'Priority processing', icon: FaStar },
         { text: 'No daily limits', icon: FaCheckCircle }
       ],
-      cta: 'Upgrade Now',
+      cta: 'Get Monthly',
+      popular: false,
+      color: 'primary'
+    },
+    {
+      name: 'Premium Yearly',
+      price: 1000,
+      period: 'year',
+      originalPrice: 1200,
+      description: 'Best value for committed users',
+      features: [
+        { text: 'Unlimited OCR scans', icon: FaInfinity },
+        { text: 'Priority processing', icon: FaStar },
+        { text: 'No daily limits', icon: FaCheckCircle },
+        { text: 'Save 17% compared to monthly', icon: FaCheckCircle }
+      ],
+      cta: 'Get Yearly',
       popular: true,
       color: 'primary'
     }
   ];
 
-  const handleSelectPlan = (plan) => {
-    if (plan.name === 'Free') {
-      if (!isAuthenticated()) {
-        navigate('/register');
-      } else {
-        navigate('/');
-      }
+  const handleSelectPlan = () => {
+    if (!isAuthenticated()) {
+      navigate('/login', { state: { redirectTo: '/payment' } });
     } else {
-      if (!isAuthenticated()) {
-        navigate('/login', { state: { redirectTo: '/payment' } });
-      } else {
-        navigate('/payment');
-      }
+      navigate('/payment');
     }
   };
 
@@ -77,33 +69,9 @@ const Pricing = () => {
             >
               Simple, Transparent Pricing
             </h1>
-
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>
-                Monthly
-              </span>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                className={`relative w-16 h-8 rounded-full transition-colors duration-200 ${
-                  billingCycle === 'yearly' ? 'bg-primary-600' : 'bg-gray-300'
-                }`}
-              >
-                <motion.div
-                  layout
-                  className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md"
-                  animate={{ x: billingCycle === 'yearly' ? 32 : 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                />
-              </motion.button>
-              <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500'}`}>
-                Yearly
-                <span className="ml-2 inline-block px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">
-                  Save 17%
-                </span>
-              </span>
-            </div>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Choose the plan that works best for you. All plans include unlimited OCR scans.
+            </p>
           </motion.div>
 
           {/* Pricing Cards */}
@@ -157,9 +125,7 @@ const Pricing = () => {
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
-                        <feature.icon className={`flex-shrink-0 w-5 h-5 mt-0.5 ${
-                          plan.color === 'primary' ? 'text-primary-600' : 'text-gray-500'
-                        }`} />
+                        <feature.icon className="flex-shrink-0 w-5 h-5 mt-0.5 text-primary-600" />
                         <span className="text-gray-700">{feature.text}</span>
                       </li>
                     ))}
@@ -169,12 +135,8 @@ const Pricing = () => {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => handleSelectPlan(plan)}
-                    className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-200 ${
-                      plan.popular
-                        ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl'
-                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                    }`}
+                    onClick={handleSelectPlan}
+                    className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-200 bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl"
                   >
                     {plan.cta}
                   </motion.button>
