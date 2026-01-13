@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   FaCheckCircle, 
-  FaCreditCard, 
   FaRocket, 
-  FaShieldAlt, 
   FaClock,
   FaInfinity,
   FaHeadset,
@@ -193,77 +191,6 @@ const Pricing = () => {
             ))}
           </div>
 
-          {/* Trust Badges */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-16 max-w-4xl mx-auto"
-          >
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <div className="grid md:grid-cols-3 gap-8 text-center">
-                <div>
-                  <FaShieldAlt className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                  <h4 className="font-semibold text-gray-900 mb-2">Secure Payment</h4>
-                  <p className="text-sm text-gray-600">
-                    Protected by eSewa with HMAC-SHA256 encryption
-                  </p>
-                </div>
-                <div>
-                  <FaCreditCard className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                  <h4 className="font-semibold text-gray-900 mb-2">Easy Payment</h4>
-                  <p className="text-sm text-gray-600">
-                    Quick checkout with eSewa digital wallet
-                  </p>
-                </div>
-                <div>
-                  <FaCheckCircle className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                  <h4 className="font-semibold text-gray-900 mb-2">Instant Upgrade</h4>
-                  <p className="text-sm text-gray-600">
-                    Access premium features immediately after payment
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* FAQ Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-16 max-w-3xl mx-auto"
-          >
-            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-              Frequently Asked Questions
-            </h3>
-            <div className="space-y-4">
-              <div className="bg-white rounded-xl shadow p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">
-                  Can I upgrade from monthly to yearly?
-                </h4>
-                <p className="text-gray-600">
-                  Yes! You can upgrade anytime and save 17% with our yearly plan.
-                </p>
-              </div>
-              <div className="bg-white rounded-xl shadow p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">
-                  What payment methods do you accept?
-                </h4>
-                <p className="text-gray-600">
-                  We accept payments through eSewa, Nepal's most trusted digital wallet.
-                </p>
-              </div>
-              <div className="bg-white rounded-xl shadow p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">
-                  Is there a free trial?
-                </h4>
-                <p className="text-gray-600">
-                  Yes! Our Free plan gives you 5 OCR scans per day with no credit card required.
-                </p>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </div>
     </div>
