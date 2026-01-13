@@ -68,6 +68,7 @@ desktop.ini
 !templates/*.html
 *.pdf
 *.md
+!README.md
 
 # Fonts (large binary files)
 fonts/
