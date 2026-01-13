@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaCreditCard, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
+import { FaCreditCard, FaCheckCircle } from 'react-icons/fa';
 import CryptoJS from 'crypto-js';
 import { useAuth } from '../context/AuthContext';
 
@@ -222,37 +222,6 @@ const Payment = () => {
             </motion.div>
           ))}
         </div>
-        
-        {/* Security Info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="max-w-3xl mx-auto bg-white rounded-xl p-6 shadow-lg"
-        >
-          <div className="flex items-start gap-4">
-            <FaShieldAlt className="text-green-600 text-3xl flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="font-bold text-gray-800 mb-2">🔐 Secure Payment Gateway</h3>
-              <p className="text-gray-600 text-sm mb-2">
-                Payment processed through <strong>eSewa</strong> - Nepal's #1 payment gateway. 
-                Signature generated using <strong>crypto.js HMAC-SHA256</strong> for enhanced security.
-              </p>
-              <ul className="text-gray-600 text-sm space-y-1">
-                <li>✓ Cryptographic signature verification</li>
-                <li>✓ Secure redirect to eSewa payment page</li>
-                <li>✓ Payment confirmation and verification</li>
-                <li>✓ Test mode - Use eSewa test credentials</li>
-              </ul>
-              <div className="mt-3 p-3 bg-blue-50 rounded-lg text-xs text-gray-700">
-                <strong>Test Credentials:</strong><br/>
-                eSewa ID: 9806800001/2/3/4/5<br/>
-                Password: Nepal@123<br/>
-                MPIN: 1122
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
