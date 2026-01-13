@@ -2,46 +2,94 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaSpinner } from 'react-icons/fa';
-import { verifyPayment } from '../services/paymentService';
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
-  const [paymentDetails, setPaymentDetails] = useState(null);
   const [error, setError] = useState(null);
   
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+  
   useEffect(() => {
-    const data = searchParams.get('data');
-    
-    if (!data) {
-      setError('Invalid payment response');
-      setVerifying(false);
-      return;
-    }
-    
-    // Verify payment
-    const verify = async () => {
-      try {
-        const response = await verifyPayment(data);
-        
-        if (response.success && response.data) {
-          setPaymentDetails(response.data);
-          setVerified(response.data.status === 'COMPLETE');
-        } else {
-          setError(response.message || 'Payment verification failed');
+    verifyPayment();
+  }, []);
+  
+  const verifyPayment = async () => {
+    try {
+      // Get payment data from URL params (returned by eSewa)
+      // eSewa returns parameters like: ?data=base64EncodedData or individual params
+      const data = searchParams.get('data');
+      
+      let paymentData;
+      
+      if (data) {
+        // If data is base64 encoded
+        try {
+          const decodedData = atob(data);
+          paymentData = JSON.parse(decodedData);
+        } catch (e) {
+          console.error('Error decoding data:', e);
+          setError('Invalid payment response format');
+          setVerifying(false);
+          return;
         }
-      } catch (err) {
-        console.error('Verification error:', err);
-        setError(err.message || 'Failed to verify payment');
-      } finally {
-        setVerifying(false);
+      } else {
+        // eSewa might return individual query parameters
+        paymentData = {
+          status: searchParams.get('status'),
+          transaction_code: searchParams.get('transaction_code'),
+          total_amount: searchParams.get('total_amount'),
+          transaction_uuid: searchParams.get('transaction_uuid'),
+          product_code: searchParams.get('product_code'),
+          signed_field_names: searchParams.get('signed_field_names'),
+          signature: searchParams.get('signature')
+        };
+        
+        if (!paymentData.status || !paymentData.transaction_uuid) {
+          setError('Invalid payment response');
+          setVerifying(false);
+          return;
+        }
       }
-    };
-    
-    verify();
-  }, [searchParams]);
+      
+      console.log('=== Payment Data from eSewa ===');
+      console.log('Raw payment data:', paymentData);
+      console.log('Status:', paymentData.status);
+      console.log('Transaction UUID:', paymentData.transaction_uuid);
+      console.log('Transaction Code:', paymentData.transaction_code);
+      console.log('Total Amount:', paymentData.total_amount);
+      console.log('Signature:', paymentData.signature);
+      console.log('================================');
+      
+      // Call backend to verify and upgrade user
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${API_URL}/payment/verify`,
+        { paymentData: paymentData },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (response.data.success) {
+        setVerified(true);
+      } else {
+        setError(response.data.message || 'Payment verification failed');
+      }
+    } catch (err) {
+      console.error('Verification error:', err);
+      setError(err.response?.data?.message || 'Failed to verify payment');
+    } finally {
+      setVerifying(false);
+    }
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center px-4">
@@ -57,7 +105,7 @@ const PaymentSuccess = () => {
               Verifying Payment
             </h2>
             <p className="text-gray-600">
-              Please wait while we confirm your payment...
+              Please wait while we confirm your payment with eSewa...
             </p>
           </div>
         ) : verified ? (
@@ -75,41 +123,17 @@ const PaymentSuccess = () => {
             </h2>
             
             <p className="text-gray-600 mb-6">
-              Thank you for upgrading to Premium. Your payment has been confirmed.
+              Thank you for upgrading to Premium. Your payment has been confirmed and your account has been upgraded!
             </p>
-            
-            {paymentDetails && (
-              <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Transaction ID:</span>
-                    <span className="font-semibold text-gray-800 truncate ml-2">
-                      {paymentDetails.transactionUuid}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Amount:</span>
-                    <span className="font-semibold text-gray-800">
-                      NPR {paymentDetails.totalAmount}
-                    </span>
-                  </div>
-                  {paymentDetails.refId && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Reference ID:</span>
-                      <span className="font-semibold text-gray-800">
-                        {paymentDetails.refId}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
             
             <div className="space-y-3">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/profile')}
+                onClick={() => {
+                  navigate('/profile');
+                  window.location.reload(); // Reload to update user context
+                }}
                 className="w-full btn-primary py-3"
               >
                 Go to Profile

@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import Home from './pages/Home'
 import Features from './pages/Features'
 import About from './pages/About'
+import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
@@ -59,6 +60,16 @@ function App() {
             <Header />
             <div className="flex-grow">
               <About />
+            </div>
+            <Footer />
+          </div>
+        } />
+        
+        <Route path="/pricing" element={
+          <div className="min-h-screen bg-primary-50 flex flex-col">
+            <Header />
+            <div className="flex-grow">
+              <Pricing />
             </div>
             <Footer />
           </div>
@@ -141,23 +152,27 @@ function App() {
         } />
         
         <Route path="/payment/success" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <PaymentSuccess />
-          </motion.div>
+          <ProtectedRoute>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <PaymentSuccess />
+            </motion.div>
+          </ProtectedRoute>
         } />
         
         <Route path="/payment/failure" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <PaymentFailure />
-          </motion.div>
+          <ProtectedRoute>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <PaymentFailure />
+            </motion.div>
+          </ProtectedRoute>
         } />
         
         {/* Admin Routes */}

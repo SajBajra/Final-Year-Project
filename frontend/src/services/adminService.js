@@ -48,13 +48,14 @@ export const getAnalytics = async (period = 'daily', days = 7) => {
 /**
  * Get revenue statistics
  */
-export const getRevenueStatistics = async (authToken) => {
+export const getRevenueStatistics = async () => {
   try {
+    const token = localStorage.getItem('token');
     const response = await axios.get(
       `${API_URL}/admin/revenue/stats`,
       {
         headers: {
-          'Authorization': `Bearer ${authToken}`
+          'Authorization': `Bearer ${token}`
         }
       }
     );
@@ -68,13 +69,14 @@ export const getRevenueStatistics = async (authToken) => {
 /**
  * Get all users
  */
-export const getAllUsers = async (authToken) => {
+export const getAllUsers = async () => {
   try {
+    const token = localStorage.getItem('token');
     const response = await axios.get(
       `${API_URL}/admin/users`,
       {
         headers: {
-          'Authorization': `Bearer ${authToken}`
+          'Authorization': `Bearer ${token}`
         }
       }
     );
@@ -88,15 +90,16 @@ export const getAllUsers = async (authToken) => {
 /**
  * Update user role
  */
-export const updateUserRole = async (userId, role, authToken) => {
+export const updateUserRole = async (userId, role) => {
   try {
+    const token = localStorage.getItem('token');
     const response = await axios.put(
       `${API_URL}/admin/users/${userId}/role`,
       { role },
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
+          'Authorization': `Bearer ${token}`
         }
       }
     );
@@ -110,13 +113,14 @@ export const updateUserRole = async (userId, role, authToken) => {
 /**
  * Delete user
  */
-export const deleteUser = async (userId, authToken) => {
+export const deleteUser = async (userId) => {
   try {
+    const token = localStorage.getItem('token');
     const response = await axios.delete(
       `${API_URL}/admin/users/${userId}`,
       {
         headers: {
-          'Authorization': `Bearer ${authToken}`
+          'Authorization': `Bearer ${token}`
         }
       }
     );
@@ -183,7 +187,7 @@ export const getCharacterStatistics = async () => {
   try {
     const token = localStorage.getItem('token');
     const response = await axios.get(
-      `${API_URL}/admin/character-stats`,
+      `${API_URL}/admin/characters/stats`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -204,7 +208,7 @@ export const changePassword = async (currentPassword, newPassword) => {
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(
-      `${API_URL}/admin/change-password`,
+      `${API_URL}/admin/password/change`,
       {
         currentPassword,
         newPassword

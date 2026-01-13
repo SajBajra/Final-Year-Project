@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/auth/**").permitAll()
                 // Public health and application APIs (free usage, no login)
                 .requestMatchers("/api/health").permitAll()
+                // Payment verification endpoint - requires authentication
+                .requestMatchers("/api/payment/**").authenticated()
                 // All other admin endpoints require ADMIN role
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // All user-facing OCR/translation/etc. endpoints stay completely open (free, no login)

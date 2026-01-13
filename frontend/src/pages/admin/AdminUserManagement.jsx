@@ -32,8 +32,7 @@ const AdminUserManagement = () => {
 
   const handleUpdateRole = async (userId, newRole) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await updateUserRole(userId, newRole, token);
+      const response = await updateUserRole(userId, newRole);
       if (response.success) {
         await loadUsers();
         setShowEditModal(false);
@@ -47,8 +46,7 @@ const AdminUserManagement = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await deleteUser(userId, token);
+      const response = await deleteUser(userId);
       if (response.success) {
         await loadUsers();
         setShowDeleteModal(false);
@@ -67,18 +65,19 @@ const AdminUserManagement = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const getAccountTypeBadge = (accountType) => {
+  const getAccountTypeBadge = (accountType, planType) => {
     switch (accountType) {
       case 'Admin':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary-600 text-white">
             <FaCrown className="mr-1" /> Admin
           </span>
         );
       case 'Paid':
+        const planLabel = planType ? ` (${planType.charAt(0).toUpperCase() + planType.slice(1)})` : '';
         return (
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900">
-            <FaStar className="mr-1" /> Paid
+            <FaStar className="mr-1" /> Paid{planLabel}
           </span>
         );
       default:
@@ -199,7 +198,7 @@ const AdminUserManagement = () => {
                       <div className="text-sm text-gray-600">{user.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {getAccountTypeBadge(user.accountType)}
+                      {getAccountTypeBadge(user.accountType, user.planType)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
@@ -219,26 +218,39 @@ const AdminUserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setShowEditModal(true);
-                          }}
-                          className="text-primary-600 hover:text-primary-900"
-                          title="Edit Role"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setShowDeleteModal(true);
-                          }}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete User"
-                        >
-                          <FaTrash />
-                        </button>
+                        {/* Show edit button only for Paid users */}
+                        {user.accountType === 'Paid' && (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowEditModal(true);
+                            }}
+                            className="text-primary-600 hover:text-primary-900"
+                            title="Edit Role"
+                          >
+                            <FaEdit />
+                          </button>
+                        )}
+                        {/* Show delete button only for Free and Paid users (not Admin) */}
+                        {user.accountType !== 'Admin' && (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowDeleteModal(true);
+                            }}
+                            className="text-red-600 hover:text-red-900"
+                            title="Delete User"
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                        {/* Show message if no actions available */}
+                        {user.accountType === 'Admin' && (
+                          <span className="text-gray-400 text-xs">No actions</span>
+                        )}
+                        {user.accountType === 'Free' && (
+                          <span className="text-gray-400 text-xs">Delete only</span>
+                        )}
                       </div>
                     </td>
                   </tr>

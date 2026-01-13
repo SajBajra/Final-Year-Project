@@ -18,7 +18,8 @@ const Header = () => {
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/features', label: 'Features' },
-    { path: '/about', label: 'About' }
+    { path: '/about', label: 'About' },
+    { path: '/pricing', label: 'Pricing' }
   ]
 
   // Close dropdown when clicking outside
@@ -127,7 +128,7 @@ const Header = () => {
                         <p className="text-xs font-medium mt-1">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
                             isAdmin()
-                              ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white'
+                              ? 'bg-primary-600 text-white'
                               : user?.role === 'PREMIUM'
                               ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900' 
                               : 'bg-gray-200 text-gray-700'

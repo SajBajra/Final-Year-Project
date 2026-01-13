@@ -36,13 +36,15 @@ const AdminDashboard = () => {
       setChartLoading(true)
       
       // Load stats, analytics, and revenue in parallel
-      const [statsData, analyticsResponse, revenueResponse] = await Promise.all([
-        getDashboardStats(),
+      const [statsResponse, analyticsResponse, revenueResponse] = await Promise.all([
+        getDashboardStats().catch(() => ({ success: false, data: null })),
         getAnalytics('daily', 7).catch(() => ({ success: false, data: null })),
         getRevenueStatistics().catch(() => ({ success: false, data: null }))
       ])
       
-      setStats(statsData)
+      if (statsResponse.success) {
+        setStats(statsResponse.data)
+      }
       if (analyticsResponse.success) {
         setAnalytics(analyticsResponse.data)
       }

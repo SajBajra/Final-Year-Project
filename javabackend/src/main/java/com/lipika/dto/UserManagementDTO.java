@@ -13,6 +13,7 @@ public class UserManagementDTO {
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
     private String accountType; // "Free", "Paid", "Admin"
+    private String planType; // "monthly", "yearly" for paid accounts
     
     public UserManagementDTO() {
     }
@@ -96,5 +97,13 @@ public class UserManagementDTO {
     
     public void setAccountType(String accountType) {
         this.accountType = accountType;
+    }
+    
+    public String getPlanType() {
+        return planType;
+    }
+    
+    public void setPlanType(String planType) {
+        this.planType = planType;
     }
 }

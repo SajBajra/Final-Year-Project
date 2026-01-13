@@ -159,7 +159,7 @@ const UserProfile = () => {
                 
                 <div className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border-2 ${
                   profile.role === 'ADMIN'
-                    ? 'bg-gradient-to-r from-purple-500/30 to-indigo-600/30 border-purple-400 text-purple-100'
+                    ? 'bg-primary-600/30 border-primary-400 text-primary-100'
                     : profile.isPremium
                     ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 border-yellow-400 text-yellow-100'
                     : 'bg-white/10 backdrop-blur-sm border-white/20 text-white/80'

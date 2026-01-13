@@ -28,15 +28,15 @@ public class AdminServiceImpl implements AdminService {
     private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
     
     private final OCRHistoryRepository ocrHistoryRepository;
-    private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
     
     public AdminServiceImpl(OCRHistoryRepository ocrHistoryRepository, 
-                          PaymentRepository paymentRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          PaymentRepository paymentRepository) {
         this.ocrHistoryRepository = ocrHistoryRepository;
-        this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
     }
     
     // System settings (still in-memory - can be moved to DB later)
@@ -475,36 +475,54 @@ public class AdminServiceImpl implements AdminService {
     }
     
     /**
-     * Get revenue statistics
+     * Get revenue statistics from payment records
      */
     @Override
     public Map<String, Object> getRevenueStatistics() {
         Map<String, Object> stats = new HashMap<>();
         
-        // Total revenue and transactions
-        Double totalRevenue = paymentRepository.getTotalRevenue();
-        Long completedTransactions = paymentRepository.getCompletedTransactionsCount();
-        
-        // Monthly revenue (last 30 days)
-        LocalDateTime monthAgo = LocalDateTime.now().minusDays(30);
-        Double monthlyRevenue = paymentRepository.getRevenueAfterDate(monthAgo);
-        Long monthlyTransactions = paymentRepository.getCompletedTransactionsAfterDate(monthAgo);
-        
-        // Transaction status counts
-        Long pendingTransactions = paymentRepository.countByStatus(Payment.PaymentStatus.PENDING);
-        Long failedTransactions = paymentRepository.countByStatus(Payment.PaymentStatus.FAILED);
-        Long initiatedTransactions = paymentRepository.countByStatus(Payment.PaymentStatus.INITIATED);
-        
-        stats.put("totalRevenue", totalRevenue != null ? totalRevenue : 0.0);
-        stats.put("totalTransactions", completedTransactions != null ? completedTransactions : 0L);
-        stats.put("monthlyRevenue", monthlyRevenue != null ? monthlyRevenue : 0.0);
-        stats.put("monthlyTransactions", monthlyTransactions != null ? monthlyTransactions : 0L);
-        stats.put("pendingTransactions", pendingTransactions != null ? pendingTransactions : 0L);
-        stats.put("completedTransactions", completedTransactions != null ? completedTransactions : 0L);
-        stats.put("failedTransactions", failedTransactions != null ? failedTransactions : 0L);
-        stats.put("initiatedTransactions", initiatedTransactions != null ? initiatedTransactions : 0L);
-        
-        log.info("Revenue statistics retrieved: Total={}, Monthly={}", totalRevenue, monthlyRevenue);
+        try {
+            // Calculate total revenue
+            Double totalRevenue = paymentRepository.calculateTotalRevenue();
+            stats.put("totalRevenue", totalRevenue != null ? totalRevenue : 0.0);
+            
+            // Count total completed transactions
+            Long totalTransactions = paymentRepository.countCompletedPayments();
+            stats.put("totalTransactions", totalTransactions != null ? totalTransactions : 0L);
+            
+            // Calculate monthly revenue (last 30 days)
+            LocalDateTime monthAgo = LocalDateTime.now().minusDays(30);
+            Double monthlyRevenue = paymentRepository.calculateRevenueAfter(monthAgo);
+            stats.put("monthlyRevenue", monthlyRevenue != null ? monthlyRevenue : 0.0);
+            
+            // Count monthly transactions
+            List<Payment> allPayments = paymentRepository.findByStatus("COMPLETED");
+            long monthlyTransactions = allPayments.stream()
+                .filter(p -> p.getVerifiedAt() != null && p.getVerifiedAt().isAfter(monthAgo))
+                .count();
+            stats.put("monthlyTransactions", monthlyTransactions);
+            
+            // Count by status
+            stats.put("completedTransactions", totalTransactions != null ? totalTransactions : 0L);
+            stats.put("pendingTransactions", 0L);
+            stats.put("failedTransactions", 0L);
+            stats.put("initiatedTransactions", totalTransactions != null ? totalTransactions : 0L);
+            
+            log.info("Revenue statistics retrieved: Total Revenue = NPR {}, Monthly Revenue = NPR {}", 
+                    totalRevenue, monthlyRevenue);
+            
+        } catch (Exception e) {
+            log.error("Error calculating revenue statistics", e);
+            // Return zeros on error
+            stats.put("totalRevenue", 0.0);
+            stats.put("totalTransactions", 0L);
+            stats.put("monthlyRevenue", 0.0);
+            stats.put("monthlyTransactions", 0L);
+            stats.put("pendingTransactions", 0L);
+            stats.put("completedTransactions", 0L);
+            stats.put("failedTransactions", 0L);
+            stats.put("initiatedTransactions", 0L);
+        }
         
         return stats;
     }
@@ -530,14 +548,28 @@ public class AdminServiceImpl implements AdminService {
             
             // Determine account type
             String accountType;
+            String planType = null;
+            
             if ("ADMIN".equals(user.getRole())) {
                 accountType = "Admin";
             } else if (user.isPremium() || "PREMIUM".equals(user.getRole())) {
                 accountType = "Paid";
+                
+                // Fetch the latest payment to get plan type
+                try {
+                    List<Payment> payments = paymentRepository.findLatestPaymentByUserId(user.getId());
+                    if (!payments.isEmpty()) {
+                        planType = payments.get(0).getPlanType();
+                    }
+                } catch (Exception e) {
+                    log.warn("Could not fetch plan type for user {}: {}", user.getId(), e.getMessage());
+                }
             } else {
                 accountType = "Free";
             }
+            
             userMap.put("accountType", accountType);
+            userMap.put("planType", planType); // Will be "monthly", "yearly", or null
             
             return userMap;
         }).collect(Collectors.toList());
