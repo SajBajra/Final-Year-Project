@@ -119,12 +119,12 @@ const Header = () => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                      className="absolute right-0 mt-2 min-w-56 max-w-xs bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
                     >
                       {/* User Info */}
                       <div className="px-4 py-3 border-b border-gray-200">
-                        <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
-                        <p className="text-xs text-black mt-0.5">{user?.email}</p>
+                        <p className="text-sm font-semibold text-gray-900 break-words">{user?.username}</p>
+                        <p className="text-xs text-black mt-0.5 break-words">{user?.email}</p>
                         <p className="text-xs font-medium mt-1">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
                             isAdmin()
