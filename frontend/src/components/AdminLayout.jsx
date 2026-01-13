@@ -1,23 +1,29 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
-import { FaTachometerAlt, FaHistory, FaCog, FaBars, FaChartBar, FaFont, FaSignOutAlt, FaUsers } from 'react-icons/fa'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FaTachometerAlt, FaHistory, FaCog, FaBars, FaChartBar, FaFont, FaSignOutAlt, FaUsers, FaExclamationTriangle } from 'react-icons/fa'
 import { ROUTES } from '../config/constants'
 import { useAuth } from '../context/AuthContext'
 import logoImage from '../images/Logo.png'
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const { logout } = useAuth()
 
   const handleLogout = () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to logout?')
-    if (confirmed) {
-      logout()
-      navigate('/login')
-    }
+    setShowLogoutModal(true)
+  }
+
+  const confirmLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false)
   }
 
   const menuItems = [
@@ -159,6 +165,71 @@ const AdminLayout = () => {
           </div>
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={cancelLogout}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+            />
+            
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                {/* Icon */}
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                    <FaExclamationTriangle className="text-3xl text-red-600" />
+                  </div>
+                </div>
+
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-gray-900 text-center mb-2">
+                  Confirm Logout
+                </h3>
+
+                {/* Message */}
+                <p className="text-gray-600 text-center mb-6">
+                  Are you sure you want to logout? You will need to login again to access the admin panel.
+                </p>
+
+                {/* Buttons */}
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={cancelLogout}
+                    className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={confirmLogout}
+                    className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <FaSignOutAlt />
+                    Logout
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
