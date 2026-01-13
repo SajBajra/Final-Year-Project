@@ -6,6 +6,21 @@ This document provides instructions for setting up the eSewa payment gateway int
 
 The application integrates with [eSewa Payment Gateway](https://developer.esewa.com.np/) to allow users to upgrade to Premium plans with unlimited OCR scans.
 
+## Quick Reference - Test Credentials
+
+For quick testing, use these eSewa test credentials:
+
+| Purpose | Credential | Value |
+|---------|-----------|-------|
+| **eSewa Login** | eSewa ID | 9806800001, 9806800002, 9806800003, 9806800004, or 9806800005 |
+| | Password | Nepal@123 |
+| | MPIN | 1122 |
+| | Token | 123456 |
+| **Backend Config** | Merchant Code | EPAYTEST |
+| | Secret Key | 8gBm/:&EnhH.1/q |
+
+**✅ Backend is already pre-configured with test credentials. Just use the eSewa ID and password to complete test payments.**
+
 ## Backend Setup
 
 ### 1. Configuration File
@@ -90,19 +105,48 @@ No additional environment variables are required. The frontend uses the existing
 
 ### Test with eSewa
 
-1. Use the test credentials already configured
-2. Navigate to `/payment` in your application
-3. Select any plan
-4. You will be redirected to eSewa's test environment
-5. Use any test eSewa account to complete payment
-6. Verify the payment is recorded in your database
+1. **Start your application** (backend and frontend)
+2. **Login** to your application as a regular user
+3. Navigate to `/payment` page or click "Upgrade to Premium" from profile
+4. **Select any premium plan** (Monthly or Yearly)
+5. Click **"Pay with eSewa"**
+6. You will be redirected to eSewa's test payment gateway
+7. **Login to eSewa** using test credentials:
+   - eSewa ID: **9806800001** (or 002, 003, 004, 005)
+   - Password: **Nepal@123**
+   - MPIN: **1122** (if asked)
+8. **Complete the payment** on eSewa's portal
+9. You will be redirected back to your application's success page
+10. **Verify** the payment is recorded in your database
+
+### Testing Notes
+
+- Use any of the 5 test eSewa IDs (9806800001 through 9806800005)
+- All test accounts use the same password and MPIN
+- No real money is charged in test environment
+- Test payments are automatically approved
 
 ### Test Credentials
 
 The application is pre-configured with eSewa's official test credentials:
-- Environment: RC (Release Candidate)
-- Merchant Code: EPAYTEST
-- Secret Key: 8gBm/:&EnhH.1/q
+
+#### Backend Configuration (Already Set)
+- **Environment**: RC (Release Candidate)
+- **Merchant Code/Service Code**: EPAYTEST
+- **Secret Key (Epay-v2)**: 8gBm/:&EnhH.1/q
+
+#### For Testing Payments (User Login)
+To complete test payments on eSewa's portal, use these credentials:
+- **eSewa ID**: 9806800001, 9806800002, 9806800003, 9806800004, or 9806800005
+- **Password**: Nepal@123
+- **MPIN**: 1122
+- **Token**: 123456
+
+#### For SDK Integration (If Needed)
+- **client_id**: JB0BBQ4aD0UqIThFJwAKBgAXEUkEGQUBBAwdOgABHD4DChwUAB0R
+- **client_secret**: BhwIWQQADhIYSxILExMcAgFXFhcOBwAKBgAXEQ==
+
+**Note**: These are official eSewa test credentials for development purposes only.
 
 Reference: https://developer.esewa.com.np/pages/Test-credentials
 
