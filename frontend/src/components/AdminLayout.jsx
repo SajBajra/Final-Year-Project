@@ -12,8 +12,12 @@ const AdminLayout = () => {
   const { logout } = useAuth()
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to logout?')
+    if (confirmed) {
+      logout()
+      navigate('/login')
+    }
   }
 
   const menuItems = [
@@ -73,7 +77,7 @@ const AdminLayout = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-sm font-semibold text-error-600 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors flex items-center space-x-2"
+              className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-200 flex items-center space-x-2 border border-gray-300 hover:border-red-600"
             >
               <FaSignOutAlt />
               <span>Logout</span>
