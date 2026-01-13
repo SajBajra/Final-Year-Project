@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
-import { FaTachometerAlt, FaHistory, FaCog, FaBars, FaChartBar, FaFont, FaSignOutAlt } from 'react-icons/fa'
+import { FaTachometerAlt, FaHistory, FaCog, FaBars, FaChartBar, FaFont, FaSignOutAlt, FaUsers } from 'react-icons/fa'
 import { ROUTES } from '../config/constants'
 import { useAuth } from '../context/AuthContext'
 import logoImage from '../images/Logo.png'
@@ -21,6 +21,7 @@ const AdminLayout = () => {
     { path: ROUTES.ADMIN_OCR_HISTORY, label: 'OCR History', icon: FaHistory },
     { path: ROUTES.ADMIN_ANALYTICS, label: 'Analytics', icon: FaChartBar },
     { path: ROUTES.ADMIN_CHARACTERS, label: 'Character Stats', icon: FaFont },
+    { path: '/admin/users', label: 'User Management', icon: FaUsers },
     { path: ROUTES.ADMIN_SETTINGS, label: 'Settings', icon: FaCog },
   ]
 

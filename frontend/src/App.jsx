@@ -20,6 +20,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminCharacterStats from './pages/admin/AdminCharacterStats'
+import AdminUserManagement from './pages/admin/AdminUserManagement'
 import AdminSettings from './pages/admin/AdminSettings'
 import ProtectedRoute from './components/ProtectedRoute'
 import Preloader from './components/Preloader'
@@ -170,6 +171,7 @@ function App() {
           <Route path="ocr-history" element={<AdminOCRHistory />} />
           <Route path="analytics" element={<AdminAnalytics />} />
           <Route path="characters" element={<AdminCharacterStats />} />
+          <Route path="users" element={<AdminUserManagement />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
         </Routes>

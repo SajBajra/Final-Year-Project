@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FaChartBar, FaUser, FaFont, FaChartLine, FaChartPie, FaTachometerAlt } from 'react-icons/fa'
+import { FaChartBar, FaUser, FaFont, FaChartLine, FaChartPie, FaTachometerAlt, FaMoneyBillWave, FaCalendarAlt } from 'react-icons/fa'
 import { 
   LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, BarChart, Bar 
 } from 'recharts'
-import { getDashboardStats, getAnalytics } from '../../services/adminService'
+import { getDashboardStats, getAnalytics, getRevenueStatistics } from '../../services/adminService'
 import { UI_CONFIG } from '../../config/constants'
 
 const AdminDashboard = () => {
@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false)
   const [analytics, setAnalytics] = useState(null)
   const [chartLoading, setChartLoading] = useState(false)
+  const [revenueStats, setRevenueStats] = useState(null)
 
   // Use primary and secondary colors with variations
   const COLORS = [
@@ -34,15 +35,19 @@ const AdminDashboard = () => {
       setLoading(true)
       setChartLoading(true)
       
-      // Load stats and analytics in parallel
-      const [statsData, analyticsResponse] = await Promise.all([
+      // Load stats, analytics, and revenue in parallel
+      const [statsData, analyticsResponse, revenueResponse] = await Promise.all([
         getDashboardStats(),
-        getAnalytics('daily', 7).catch(() => ({ success: false, data: null }))
+        getAnalytics('daily', 7).catch(() => ({ success: false, data: null })),
+        getRevenueStatistics().catch(() => ({ success: false, data: null }))
       ])
       
       setStats(statsData)
       if (analyticsResponse.success) {
         setAnalytics(analyticsResponse.data)
+      }
+      if (revenueResponse.success) {
+        setRevenueStats(revenueResponse.data)
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error)
@@ -169,7 +174,7 @@ const AdminDashboard = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6"
       >
         <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center justify-between">
@@ -222,6 +227,44 @@ const AdminDashboard = () => {
             </div>
             <div className="p-3 rounded-xl bg-orange-100">
               <FaChartLine className="text-2xl sm:text-3xl md:text-4xl text-secondary-600" />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs sm:text-sm text-black font-semibold">Total Revenue</p>
+              {loading ? (
+                <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
+              ) : (
+                <p className="text-2xl sm:text-3xl font-bold text-green-600 mt-2">
+                  NPR {revenueStats?.totalRevenue?.toLocaleString() ?? 0}
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">{revenueStats?.completedTransactions ?? 0} payments</p>
+            </div>
+            <div className="p-3 rounded-xl bg-green-100">
+              <FaMoneyBillWave className="text-2xl sm:text-3xl md:text-4xl text-green-600" />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs sm:text-sm text-black font-semibold">Monthly Revenue</p>
+              {loading ? (
+                <div className="h-8 sm:h-10 w-16 sm:w-20 bg-gray-200 animate-pulse-fast rounded mt-2 transition-fast"></div>
+              ) : (
+                <p className="text-2xl sm:text-3xl font-bold text-blue-600 mt-2">
+                  NPR {revenueStats?.monthlyRevenue?.toLocaleString() ?? 0}
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">Last 30 days</p>
+            </div>
+            <div className="p-3 rounded-xl bg-blue-100">
+              <FaCalendarAlt className="text-2xl sm:text-3xl md:text-4xl text-blue-600" />
             </div>
           </div>
         </motion.div>
