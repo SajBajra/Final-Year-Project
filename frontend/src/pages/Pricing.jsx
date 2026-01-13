@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   FaCheckCircle, 
-  FaRocket, 
   FaClock,
   FaInfinity,
-  FaHeadset,
   FaStar
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -40,11 +38,8 @@ const Pricing = () => {
       description: 'For power users and professionals',
       features: [
         { text: 'Unlimited OCR scans', icon: FaInfinity },
-        { text: 'Advanced character recognition', icon: FaRocket },
         { text: 'Priority processing', icon: FaStar },
-        { text: 'Email support', icon: FaHeadset },
-        { text: 'No daily limits', icon: FaCheckCircle },
-        { text: 'Export to multiple formats', icon: FaCheckCircle }
+        { text: 'No daily limits', icon: FaCheckCircle }
       ],
       cta: 'Upgrade Now',
       popular: true,
