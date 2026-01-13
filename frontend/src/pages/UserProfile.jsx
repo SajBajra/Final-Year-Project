@@ -142,9 +142,10 @@ const UserProfile = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleLogout}
-                  className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl transition-colors border border-white/20"
+                  className="p-3 bg-red-500 hover:bg-red-600 rounded-xl transition-colors shadow-lg"
+                  title="Logout"
                 >
-                  <FaSignOutAlt className="text-xl" />
+                  <FaSignOutAlt className="text-xl text-white" />
                 </motion.button>
               </div>
 
