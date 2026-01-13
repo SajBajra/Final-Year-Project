@@ -1,4 +1,4 @@
-# 🔤 Lipika - Ranjana Script OCR System
+# Lipika - Ranjana Script OCR System
 
 <div align="center">
 
@@ -6,22 +6,17 @@
 
 **Advanced Optical Character Recognition System for Ranjana Script**
 
-[![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C?logo=pytorch)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
 </div>
 
 ---
 
-## 📖 About The Project
+## About The Project
 
 **Lipika** is a comprehensive web-based Optical Character Recognition (OCR) system specifically designed to recognize and digitize **Ranjana script** - an ancient Brahmic script historically used in Nepal and parts of India for writing Sanskrit, Newari, and Tibetan languages.
 
 The system combines modern deep learning techniques with a user-friendly web interface to preserve and digitize historical manuscripts, religious texts, and cultural documents written in Ranjana script.
 
-### 🎯 Key Objectives
+### Key Objectives
 
 - **Preserve Cultural Heritage**: Digitize ancient Ranjana script documents for future generations
 - **Accessibility**: Make historical texts accessible to researchers and scholars worldwide
@@ -30,54 +25,54 @@ The system combines modern deep learning techniques with a user-friendly web int
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔐 User Management
+### User Management
 - **User Registration & Authentication** with JWT-based security
 - **Role-Based Access Control** (User & Admin roles)
 - **User Profile Management** with avatar upload
 - **Password Reset** via email OTP verification
 - **Free & Premium Subscriptions** with daily usage limits
 
-### 📸 OCR Capabilities
+### OCR Capabilities
 - **Image Upload OCR**: Upload images directly for recognition
 - **Camera Capture OCR**: Real-time capture using device camera
 - **Batch Processing**: Process multiple images efficiently
 - **High Accuracy**: Deep learning model trained on 60+ Ranjana characters
 - **Format Support**: JPEG, PNG, GIF, WebP
 
-### 🌐 Translation Services
+### Translation Services
 - **Multi-Language Translation**: Translate recognized text to:
   - Nepali (Devanagari)
   - English (Romanized)
 - **Real-time Translation**: Instant translation results
 - **Translation History**: Track all translations
 
-### 📊 Analytics & Reporting
+### Analytics & Reporting
 - **User Dashboard**: Track personal OCR usage and statistics
 - **Admin Analytics**: System-wide usage metrics and insights
 - **Character Recognition Stats**: Detailed character-level statistics
 - **Usage History**: Complete OCR history with timestamps
 
-### 💳 Subscription Management
+### Subscription Management
 - **Free Tier**: 10 OCR scans per day
 - **Premium Monthly**: Unlimited scans (NPR 100/month)
 - **Premium Yearly**: Unlimited scans with 17% savings (NPR 1000/year)
 - **Flexible Extensions**: Easy subscription renewal for premium users
 
-### 👨‍💼 Admin Panel
+### Admin Panel
 - **User Management**: View, activate, deactivate users
 - **OCR History Monitoring**: Track all system OCR operations
 - **Contact Form Management**: Handle user inquiries
 - **System Analytics**: Comprehensive dashboard with charts
 - **Character Statistics**: Monitor recognition accuracy per character
 
-### 📧 Communication
+### Communication
 - **Email Notifications**: Welcome emails, password reset, confirmations
 - **Contact Form**: Direct communication channel with support
 - **SMTP Integration**: Reliable email delivery
 
-### 🎨 User Experience
+### User Experience
 - **Modern UI/UX**: Clean, intuitive interface with Framer Motion animations
 - **Responsive Design**: Seamless experience across desktop, tablet, and mobile
 - **Dark Mode Ready**: Eye-friendly interface
@@ -85,7 +80,7 @@ The system combines modern deep learning techniques with a user-friendly web int
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: React 18.2 with React Router DOM
@@ -130,7 +125,7 @@ The system combines modern deep learning techniques with a user-friendly web int
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -169,7 +164,7 @@ The system combines modern deep learning techniques with a user-friendly web int
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -189,15 +184,15 @@ Before you begin, ensure you have the following installed:
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
-### 1️⃣ Clone the Repository
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/yourusername/lipika-ocr.git
 cd lipika-ocr
 ```
 
-### 2️⃣ Database Setup
+### 2. Database Setup
 ```sql
 -- Create database
 CREATE DATABASE lipika;
@@ -208,7 +203,7 @@ USE lipika;
 -- Tables will be auto-created by Spring Boot JPA
 ```
 
-### 3️⃣ Backend Setup (Spring Boot)
+### 3. Backend Setup (Spring Boot)
 
 #### Configure Database
 Edit `javabackend/src/main/resources/application.properties`:
@@ -234,7 +229,7 @@ mvn spring-boot:run
 ```
 Backend will start on `http://localhost:8080`
 
-### 4️⃣ Frontend Setup (React)
+### 4. Frontend Setup (React)
 ```bash
 cd frontend
 npm install
@@ -242,7 +237,7 @@ npm run dev
 ```
 Frontend will start on `http://localhost:5173`
 
-### 5️⃣ Python OCR Service Setup
+### 5. Python OCR Service Setup
 ```bash
 cd python-model
 pip install -r requirements.txt
@@ -252,7 +247,7 @@ Python service will start on `http://localhost:5000`
 
 ---
 
-## 📱 Usage
+## Usage
 
 ### For End Users
 
@@ -290,7 +285,7 @@ Python service will start on `http://localhost:5000`
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 lipika-ocr/
@@ -348,7 +343,7 @@ lipika-ocr/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/users/register` - Register new user
@@ -385,7 +380,7 @@ lipika-ocr/
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
 - **JWT Authentication**: Secure token-based authentication
 - **Password Hashing**: BCrypt for secure password storage
@@ -397,13 +392,13 @@ lipika-ocr/
 
 ---
 
-## 🎨 UI Screenshots
+## UI Screenshots
 
 *(Add screenshots here when available)*
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -415,19 +410,19 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👨‍💻 Authors
+## Authors
 
 - **Your Name** - *Initial work* - [GitHub](https://github.com/yourusername)
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Ranjana script historical research and documentation
 - PyTorch community for deep learning resources
@@ -436,7 +431,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Support
+## Support
 
 For support, email sajesh.bajracharya.01@gmail.com or create an issue in the repository.
 
@@ -444,6 +439,6 @@ For support, email sajesh.bajracharya.01@gmail.com or create an issue in the rep
 
 <div align="center">
 
-**Made with ❤️ for preserving cultural heritage**
+**Made with love for preserving cultural heritage**
 
 </div>
