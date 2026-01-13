@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaUsers, FaSearch, FaTrash, FaCrown, FaStar, FaUser, FaExclamationTriangle } from 'react-icons/fa';
+import { FaUsers, FaSearch, FaTrash, FaCrown, FaStar, FaUser, FaExclamationTriangle, FaSignOutAlt } from 'react-icons/fa';
 import { getAllUsers, deleteUser } from '../../services/adminService';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
@@ -240,18 +240,12 @@ const AdminUserManagement = () => {
           setShowDeleteModal(false);
           setSelectedUser(null);
         }}
-        title="Delete User"
-        message={
-          selectedUser && (
-            <>
-              Are you sure you want to delete <strong className="text-gray-900">{selectedUser.username}</strong>? This action cannot be undone and will remove all user data including OCR history and payment records.
-            </>
-          )
-        }
+        title="Confirm Logout"
+        message="Are you sure you want to logout? You will need to login again to access the admin panel."
         icon={<FaExclamationTriangle className="text-3xl text-red-600" />}
         iconBgColor="bg-red-100"
-        confirmText="Delete"
-        confirmIcon={FaTrash}
+        confirmText="Logout"
+        confirmIcon={FaSignOutAlt}
         confirmClassName="bg-red-600 hover:bg-red-700"
         onConfirm={() => selectedUser && handleDeleteUser(selectedUser.id)}
       />
