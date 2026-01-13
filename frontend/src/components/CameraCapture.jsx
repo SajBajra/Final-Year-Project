@@ -185,7 +185,7 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
                 onClick={capture}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 border-4 border-white"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-600 hover:bg-primary-700 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 border-4 border-white"
                 title="Capture"
               >
                 <FaCamera className="text-white text-2xl sm:text-3xl" />
