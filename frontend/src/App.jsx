@@ -12,6 +12,9 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import UserProfile from './pages/UserProfile'
 import ChangePassword from './pages/ChangePassword'
+import Payment from './pages/Payment'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentFailure from './pages/PaymentFailure'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOCRHistory from './pages/admin/AdminOCRHistory'
@@ -121,6 +124,39 @@ function App() {
               <ChangePassword />
             </motion.div>
           </ProtectedRoute>
+        } />
+        
+        {/* Payment Routes */}
+        <Route path="/payment" element={
+          <ProtectedRoute>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Payment />
+            </motion.div>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/payment/success" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <PaymentSuccess />
+          </motion.div>
+        } />
+        
+        <Route path="/payment/failure" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <PaymentFailure />
+          </motion.div>
         } />
         
         {/* Admin Routes */}

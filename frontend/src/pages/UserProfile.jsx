@@ -50,8 +50,7 @@ const UserProfile = () => {
   };
 
   const handleUpgradeToPremium = () => {
-    // Placeholder for payment integration
-    alert('Payment integration coming soon! This will redirect to a payment gateway.');
+    navigate('/payment');
   };
 
   const calculateUsagePercentage = () => {

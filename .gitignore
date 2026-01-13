@@ -75,6 +75,12 @@ fonts/
 .env
 .env.local
 
+# Payment Gateway Configuration (eSewa sensitive data)
+**/application-payment.properties
+**/application-payment.yml
+esewa.properties
+payment-config.properties
+
 # Training metrics
 training_progress_monitor.png
 *_metrics.png
