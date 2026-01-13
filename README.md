@@ -154,7 +154,7 @@ The system combines modern deep learning techniques with a user-friendly web int
 ### For End Users
 
 1. **Register/Login**
-   - Visit `http://localhost:5173`
+   - Visit `http://localhost:3000`
    - Create an account or login
    - Free tier: 10 OCR scans per day
 
@@ -171,7 +171,7 @@ The system combines modern deep learning techniques with a user-friendly web int
 ### For Administrators
 
 1. **Login to Admin Panel**
-   - Visit `http://localhost:5173/admin`
+   - Visit `http://localhost:3000/admin`
    - Login with admin credentials
    - Access admin dashboard
 
