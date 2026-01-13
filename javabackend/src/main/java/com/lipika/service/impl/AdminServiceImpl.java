@@ -615,22 +615,33 @@ public class AdminServiceImpl implements AdminService {
                 return false;
             }
             
+            log.info("Starting deletion process for user: userId={}", userId);
+            
             // Delete related OCR history records first
             List<OCRHistory> ocrHistories = ocrHistoryRepository.findByUserId(userId);
             if (!ocrHistories.isEmpty()) {
-                ocrHistoryRepository.deleteAll(ocrHistories);
+                log.info("Found {} OCR history records to delete for user: userId={}", ocrHistories.size(), userId);
+                for (OCRHistory history : ocrHistories) {
+                    ocrHistoryRepository.delete(history);
+                }
+                ocrHistoryRepository.flush(); // Force flush to database
                 log.info("Deleted {} OCR history records for user: userId={}", ocrHistories.size(), userId);
             }
             
             // Delete related payment records
             List<com.lipika.model.Payment> payments = paymentRepository.findByUserId(userId);
             if (!payments.isEmpty()) {
-                paymentRepository.deleteAll(payments);
+                log.info("Found {} payment records to delete for user: userId={}", payments.size(), userId);
+                for (com.lipika.model.Payment payment : payments) {
+                    paymentRepository.delete(payment);
+                }
+                paymentRepository.flush(); // Force flush to database
                 log.info("Deleted {} payment records for user: userId={}", payments.size(), userId);
             }
             
             // Now delete the user
             userRepository.deleteById(userId);
+            userRepository.flush(); // Force flush to database
             log.info("Successfully deleted user: userId={}", userId);
             return true;
             
