@@ -187,6 +187,16 @@ public class PaymentController {
             // Payment verified, upgrade user to premium
             user.setRole("PREMIUM");
             user.setIsPremium(true);
+            
+            // Set premium expiry date based on plan type
+            LocalDateTime expiryDate;
+            if ("yearly".equalsIgnoreCase(planType)) {
+                expiryDate = LocalDateTime.now().plusYears(1);
+            } else {
+                expiryDate = LocalDateTime.now().plusMonths(1);
+            }
+            user.setPremiumUntil(expiryDate);
+            
             userRepository.save(user);
 
             logger.info("User {} upgraded to PREMIUM successfully via eSewa transaction: {} with total amount: NPR {}", 

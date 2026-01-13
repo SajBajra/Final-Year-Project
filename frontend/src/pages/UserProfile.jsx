@@ -64,6 +64,24 @@ const UserProfile = () => {
     return Math.max(0, profile.usageLimit - profile.usageCount);
   };
 
+  const getSubscriptionStatus = () => {
+    if (!profile || !profile.isPremium || !profile.premiumUntil || profile.role === 'ADMIN') return null;
+
+    const now = new Date();
+    const expiryDate = new Date(profile.premiumUntil);
+    const daysUntilExpiry = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+
+    if (daysUntilExpiry < 0) {
+      return { status: 'expired', color: 'red', icon: '❌', message: 'Expired', days: 0 };
+    } else if (daysUntilExpiry <= 7) {
+      return { status: 'expiring-soon', color: 'red', icon: '⚠️', message: `Expires in ${daysUntilExpiry} day${daysUntilExpiry !== 1 ? 's' : ''}!`, days: daysUntilExpiry };
+    } else if (daysUntilExpiry <= 30) {
+      return { status: 'active', color: 'yellow', icon: '⏰', message: `${daysUntilExpiry} days remaining`, days: daysUntilExpiry };
+    } else {
+      return { status: 'active', color: 'green', icon: '✅', message: `Active`, days: daysUntilExpiry };
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-primary-50 flex flex-col">
@@ -150,13 +168,6 @@ const UserProfile = () => {
               </div>
 
               <div className="space-y-3 mb-6">
-                {profile.isPremium && (
-                  <div className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl font-semibold">
-                    <FaCrown className="text-lg" />
-                    <span>Premium Member</span>
-                  </div>
-                )}
-                
                 <div className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border-2 ${
                   profile.role === 'ADMIN'
                     ? 'bg-primary-600/30 border-primary-400 text-primary-100'
@@ -194,10 +205,21 @@ const UserProfile = () => {
                   </div>
                 )}
 
-                {profile.isPremium && profile.premiumUntil && (
-                  <div className="flex items-center gap-2 text-sm text-white/80 bg-yellow-500/20 backdrop-blur-sm px-4 py-2 rounded-xl border border-yellow-400/30">
-                    <FaCrown />
-                    <span>Premium Until: {new Date(profile.premiumUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                {profile.isPremium && profile.premiumUntil && profile.role !== 'ADMIN' && getSubscriptionStatus() && (
+                  <div className={`flex items-center gap-2 text-sm px-4 py-2 rounded-xl border ${
+                    getSubscriptionStatus().color === 'green' 
+                      ? 'bg-green-500/20 border-green-400/30 text-green-100'
+                      : getSubscriptionStatus().color === 'yellow'
+                      ? 'bg-yellow-500/20 border-yellow-400/30 text-yellow-100'
+                      : 'bg-red-500/20 border-red-400/30 text-red-100'
+                  } backdrop-blur-sm`}>
+                    <span className="text-lg">{getSubscriptionStatus().icon}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold">{getSubscriptionStatus().message}</p>
+                      <p className="text-xs opacity-80">
+                        Expires: {new Date(profile.premiumUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
