@@ -84,7 +84,9 @@ const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete, authHeaders =
       </div>
       
       <div
-        className={`border-2 border-dashed rounded-xl p-6 sm:p-8 md:p-12 text-center cursor-pointer transition-all duration-200 ${
+        className={`border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-200 ${
+          !preview ? 'aspect-video flex items-center justify-center p-6 sm:p-8' : 'p-6 sm:p-8 md:p-12'
+        } ${
           dragActive
             ? 'border-primary-600 bg-primary-50'
             : 'border-gray-300 hover:border-primary-600 hover:bg-gray-50'
@@ -107,7 +109,7 @@ const ImageUpload = ({ onImageUpload, onProcessing, onOCRComplete, authHeaders =
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-3 sm:space-y-4"
+            className="space-y-3 sm:space-y-4 w-full"
           >
             <motion.div
               animate={{ y: [0, -10, 0] }}
