@@ -18,6 +18,7 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -27,12 +28,60 @@ const Contact = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[e.target.name]) {
+      setValidationErrors({
+        ...validationErrors,
+        [e.target.name]: ''
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters';
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    // Subject validation
+    if (!formData.subject.trim()) {
+      errors.subject = 'Subject is required';
+    } else if (formData.subject.trim().length < 5) {
+      errors.subject = 'Subject must be at least 5 characters';
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      errors.message = 'Message is required';
+    } else if (formData.message.trim().length < 10) {
+      errors.message = 'Message must be at least 10 characters';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -46,6 +95,7 @@ const Contact = () => {
           subject: '',
           message: ''
         });
+        setValidationErrors({});
       } else {
         setError(response.data.message || 'Failed to send message');
       }
@@ -165,11 +215,15 @@ const Contact = () => {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 transition-colors ${
+                        validationErrors.name ? 'border-red-500' : 'border-gray-300 focus:border-primary-500'
+                      }`}
                       placeholder="Your name"
-                      required
                     />
                   </div>
+                  {validationErrors.name && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+                  )}
                 </div>
 
                 {/* Email */}
@@ -184,11 +238,15 @@ const Contact = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 transition-colors ${
+                        validationErrors.email ? 'border-red-500' : 'border-gray-300 focus:border-primary-500'
+                      }`}
                       placeholder="your.email@example.com"
-                      required
                     />
                   </div>
+                  {validationErrors.email && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                  )}
                 </div>
 
                 {/* Subject */}
@@ -201,10 +259,14 @@ const Contact = () => {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 transition-colors ${
+                      validationErrors.subject ? 'border-red-500' : 'border-gray-300 focus:border-primary-500'
+                    }`}
                     placeholder="What's this about?"
-                    required
                   />
+                  {validationErrors.subject && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.subject}</p>
+                  )}
                 </div>
 
                 {/* Message */}
@@ -217,10 +279,14 @@ const Contact = () => {
                     value={formData.message}
                     onChange={handleChange}
                     rows="5"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 transition-colors resize-none ${
+                      validationErrors.message ? 'border-red-500' : 'border-gray-300 focus:border-primary-500'
+                    }`}
                     placeholder="Tell us more about your inquiry..."
-                    required
                   ></textarea>
+                  {validationErrors.message && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.message}</p>
+                  )}
                 </div>
 
                 {/* Submit Button */}
