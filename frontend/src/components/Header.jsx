@@ -130,10 +130,20 @@ const Header = () => {
                             isAdmin()
                               ? 'bg-primary-600 text-white'
                               : user?.role === 'PREMIUM'
-                              ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900' 
+                              ? 'bg-primary-600 text-white' 
                               : 'bg-gray-200 text-gray-700'
                           }`}>
-                            {isAdmin() ? '👑 Admin - Unlimited' : user?.role === 'PREMIUM' ? '✨ Paid Account' : 'Free Account'}
+                            {isAdmin() ? (
+                              <>
+                                <span className="mr-1">👑</span> Admin - Unlimited
+                              </>
+                            ) : user?.role === 'PREMIUM' ? (
+                              <>
+                                <span className="mr-1">✨</span> Paid Account
+                              </>
+                            ) : (
+                              'Free Account'
+                            )}
                           </span>
                         </p>
                       </div>
