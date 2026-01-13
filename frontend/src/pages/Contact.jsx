@@ -3,9 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   FaEnvelope, 
   FaUser, 
-  FaPaperPlane,
-  FaMapMarkerAlt,
-  FaPhone
+  FaPaperPlane
 } from 'react-icons/fa';
 import axios from 'axios';
 
@@ -126,56 +124,12 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Contact Information */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-6"
-          >
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FaEnvelope className="text-primary-600 text-xl" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">sajesh.bajracharya.01@gmail.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FaMapMarkerAlt className="text-primary-600 text-xl" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Location</h3>
-                    <p className="text-gray-600">Kathmandu, Nepal</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FaPhone className="text-primary-600 text-xl" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Response Time</h3>
-                    <p className="text-gray-600">We typically respond within 24-48 hours</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
+        <div className="max-w-2xl mx-auto">
           {/* Contact Form */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
           >
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
