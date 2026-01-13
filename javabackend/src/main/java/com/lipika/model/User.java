@@ -163,6 +163,15 @@ public class User {
     public void setIsPremium(Boolean isPremium) {
         this.isPremium = isPremium;
     }
+    
+    // Additional boolean-style getters/setters for isPremium field
+    public boolean isPremium() {
+        return isPremium != null && isPremium;
+    }
+    
+    public void setPremium(boolean premium) {
+        this.isPremium = premium;
+    }
 
     public LocalDateTime getPremiumUntil() {
         return premiumUntil;
