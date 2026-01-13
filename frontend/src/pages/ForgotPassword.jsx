@@ -1,101 +1,153 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaEnvelope, FaCheckCircle, FaArrowLeft } from 'react-icons/fa';
-import { forgotPassword } from '../services/authService';
+import { FaEnvelope, FaLock, FaKey, FaArrowLeft } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import logoImage from '../images/Logo.png';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleRequestOTP = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
-      const response = await forgotPassword(email);
-      if (response.success) {
-        setSuccess(true);
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      
+      if (response.data.success) {
+        setSuccess(response.data.message);
+        setStep(2);
       } else {
-        setError(response.message || 'Failed to send reset email');
+        setError(response.data.message || 'Failed to send OTP');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset email. Please try again.');
+      setError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4 py-12">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md"
-        >
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="inline-block p-4 bg-green-100 rounded-full mb-6"
-            >
-              <FaCheckCircle className="text-5xl text-green-600" />
-            </motion.div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Check Your Email
-            </h2>
-            <p className="text-gray-600 mb-6">
-              If an account exists with <strong>{email}</strong>, you will receive a password reset link shortly.
-            </p>
-            <Link 
-              to="/login"
-              className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold transition-colors"
-            >
-              <FaArrowLeft />
-              Back to Login
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${API_URL}/auth/verify-otp`, { email, otp });
+      
+      if (response.data.success) {
+        setSuccess(response.data.message);
+        setStep(3);
+      } else {
+        setError(response.data.message || 'Invalid OTP');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+        email,
+        otp,
+        newPassword
+      });
+      
+      if (response.data.success) {
+        setSuccess(response.data.message);
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setError(response.data.message || 'Failed to reset password');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to reset password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4 py-12">
-      <motion.div 
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center px-4 py-12">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md"
       >
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="text-center mb-8">
-            <div className="inline-block p-3 bg-primary-100 rounded-full mb-4">
-              <FaEnvelope className="text-3xl text-primary-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Forgot Password?
-            </h1>
-            <p className="text-gray-600 text-sm">
-              Enter your email and we'll send you a reset link
-            </p>
-          </div>
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img src={logoImage} alt="Lipika Logo" className="h-16 w-16" />
+        </div>
 
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-            >
-              {error}
-            </motion.div>
-          )}
+        {/* Title */}
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">
+          Forgot Password
+        </h2>
+        <p className="text-center text-gray-600 mb-8">
+          {step === 1 && 'Enter your email to receive an OTP'}
+          {step === 2 && 'Enter the OTP sent to your email'}
+          {step === 3 && 'Create your new password'}
+        </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm"
+          >
+            {error}
+          </motion.div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm"
+          >
+            {success}
+          </motion.div>
+        )}
+
+        {/* Step 1: Email */}
+        {step === 1 && (
+          <form onSubmit={handleRequestOTP} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
@@ -106,40 +158,127 @@ const ForgotPassword = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                   placeholder="Enter your email"
+                  required
                 />
               </div>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full btn-primary py-3"
             >
-              {loading ? 'Sending...' : 'Send Reset Link'}
+              {loading ? 'Sending OTP...' : 'Send OTP'}
+            </motion.button>
+          </form>
+        )}
+
+        {/* Step 2: OTP Verification */}
+        {step === 2 && (
+          <form onSubmit={handleVerifyOTP} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Enter OTP
+              </label>
+              <div className="relative">
+                <FaKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-center text-2xl tracking-widest"
+                  placeholder="000000"
+                  maxLength="6"
+                  required
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                OTP expires in 5 minutes
+              </p>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading}
+              className="w-full btn-primary py-3"
+            >
+              {loading ? 'Verifying...' : 'Verify OTP'}
+            </motion.button>
+
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="w-full text-primary-600 hover:text-primary-700 text-sm font-medium"
+            >
+              Resend OTP
             </button>
           </form>
+        )}
 
-          <div className="mt-6 text-center space-y-2">
-            <Link 
-              to="/login"
-              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors"
+        {/* Step 3: New Password */}
+        {step === 3 && (
+          <form onSubmit={handleResetPassword} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                New Password
+              </label>
+              <div className="relative">
+                <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  placeholder="Enter new password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  placeholder="Confirm new password"
+                  required
+                />
+              </div>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading}
+              className="w-full btn-primary py-3"
             >
-              <FaArrowLeft className="text-xs" />
-              Back to Login
-            </Link>
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link 
-                to="/register" 
-                className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
+              {loading ? 'Resetting Password...' : 'Reset Password'}
+            </motion.button>
+          </form>
+        )}
+
+        {/* Back to Login */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/login"
+            className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium text-sm"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Login
+          </Link>
         </div>
       </motion.div>
     </div>
@@ -147,4 +286,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
-
