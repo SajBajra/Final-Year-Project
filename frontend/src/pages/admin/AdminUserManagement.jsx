@@ -240,12 +240,18 @@ const AdminUserManagement = () => {
           setShowDeleteModal(false);
           setSelectedUser(null);
         }}
-        title="Confirm Logout"
-        message="Are you sure you want to logout? You will need to login again to access the admin panel."
+        title="Delete User"
+        message={
+          selectedUser && (
+            <>
+              Are you sure you want to delete <strong className="text-gray-900">{selectedUser.username}</strong>? This action cannot be undone and will remove all user data including OCR history and payment records.
+            </>
+          )
+        }
         icon={<FaExclamationTriangle className="text-3xl text-red-600" />}
         iconBgColor="bg-red-100"
-        confirmText="Logout"
-        confirmIcon={FaSignOutAlt}
+        confirmText="Delete"
+        confirmIcon={FaTrash}
         confirmClassName="bg-red-600 hover:bg-red-700"
         onConfirm={() => selectedUser && handleDeleteUser(selectedUser.id)}
       />
