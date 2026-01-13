@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FaSearch, FaFilter, FaDownload, FaSort, FaHistory, FaImage, FaTimes } from 'react-icons/fa'
 import { getOCRHistory, exportOCRHistory } from '../../services/adminService'
 
@@ -360,54 +361,74 @@ const AdminOCRHistory = () => {
       )}
 
       {/* Image Viewing Modal */}
-      {imageModal.isOpen && (
-        <div
-          style={{ zIndex: 99999 }}
-          className="fixed inset-0 flex items-center justify-center p-4"
-          onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
-        >
-          <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-5xl"
-            style={{ maxHeight: '90vh', marginTop: '0' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-300 rounded-t-xl">
-              <div className="flex-1 pr-4">
-                <h2 className="text-xl font-bold text-gray-900 mb-1">
-                  OCR Image
-                </h2>
-                <p className="text-sm text-gray-700" style={{ wordBreak: 'break-all' }}>
-                  {imageModal.filename || 'Image'}
-                </p>
-              </div>
-              <button
-                onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
-                className="flex-shrink-0 p-3 hover:bg-gray-100 rounded-lg transition-all"
-                title="Close"
-              >
-                <FaTimes className="text-2xl text-gray-700" />
-              </button>
-            </div>
+      <AnimatePresence>
+        {imageModal.isOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+            />
             
-            {/* Modal Body */}
-            <div 
-              className="overflow-auto p-4"
-              style={{ maxHeight: 'calc(90vh - 90px)' }}
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+              onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
             >
-              <img
-                src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
-                alt={imageModal.filename || 'OCR Image'}
-                className="max-w-full h-auto rounded-lg shadow-lg mx-auto block"
-                onError={(e) => {
-                  e.target.style.display = 'none'
-                  e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-12"><p class="text-lg font-semibold mb-2">Failed to load image</p><p class="text-sm text-gray-500">' + imageModal.imagePath + '</p></div>'
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+              <div
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                  <div className="flex items-center gap-3 flex-1 pr-4">
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <FaImage className="text-primary-600 text-xl" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-xl font-bold text-gray-900">
+                        OCR Image
+                      </h2>
+                      <p className="text-sm text-gray-600 truncate">
+                        {imageModal.filename || 'Image'}
+                      </p>
+                    </div>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setImageModal({ isOpen: false, imagePath: null, filename: null })}
+                    className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Close"
+                  >
+                    <FaTimes className="text-xl text-gray-700" />
+                  </motion.button>
+                </div>
+                
+                {/* Modal Body */}
+                <div className="overflow-auto p-6 flex-1">
+                  <img
+                    src={`http://localhost:8080/api/images?path=${encodeURIComponent(imageModal.imagePath)}`}
+                    alt={imageModal.filename || 'OCR Image'}
+                    className="max-w-full h-auto rounded-lg shadow-lg mx-auto block"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.parentElement.innerHTML = '<div class="text-center text-red-600 py-12"><p class="text-lg font-semibold mb-2">Failed to load image</p><p class="text-sm text-gray-500">' + imageModal.imagePath + '</p></div>'
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
