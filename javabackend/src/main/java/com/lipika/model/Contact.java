@@ -33,7 +33,7 @@ public class Contact {
     @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
     
-    @Column(nullable = false)
+    @Column(name = "is_read", nullable = false)
     private Boolean read = false;
     
     @PrePersist
