@@ -215,7 +215,12 @@ const ForgotPassword = () => {
 
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => {
+                setStep(1);
+                setOtp(''); // Clear OTP when resending
+                setError('');
+                setSuccess('');
+              }}
               className="w-full text-primary-600 hover:text-primary-700 text-sm font-medium"
             >
               Resend OTP

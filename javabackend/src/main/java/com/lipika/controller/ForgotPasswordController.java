@@ -57,6 +57,11 @@ public class ForgotPasswordController {
                     .body(new ApiResponse<>(false, "Email is required", null));
             }
             
+            // Trim email
+            email = email.trim();
+            
+            logger.info("Request OTP for email: {}", email);
+            
             // Check if user exists
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isEmpty()) {
@@ -111,6 +116,12 @@ public class ForgotPasswordController {
                     .body(new ApiResponse<>(false, "Email and OTP are required", null));
             }
             
+            // Trim email and OTP
+            email = email.trim();
+            otpCode = otpCode.trim();
+            
+            logger.info("Verify OTP request - Email: {}, OTP: {}", email, otpCode);
+            
             // Find OTP
             Optional<OTP> otpOptional = otpRepository.findByEmailAndOtpCodeAndVerifiedFalse(email, otpCode);
             
@@ -158,16 +169,29 @@ public class ForgotPasswordController {
                     .body(new ApiResponse<>(false, "Email, OTP, and new password are required", null));
             }
             
+            // Trim email and OTP
+            email = email.trim();
+            otpCode = otpCode.trim();
+            
             // Validate password length
             if (newPassword.length() < 6) {
                 return ResponseEntity.badRequest()
                     .body(new ApiResponse<>(false, "Password must be at least 6 characters long", null));
             }
             
+            logger.info("Reset password request - Email: {}, OTP: {}", email, otpCode);
+            
             // Find OTP (should not be used/verified yet)
             Optional<OTP> otpOptional = otpRepository.findByEmailAndOtpCodeAndVerifiedFalse(email, otpCode);
             
             if (otpOptional.isEmpty()) {
+                logger.warn("OTP not found or already verified - Email: {}, OTP: {}", email, otpCode);
+                // Try to find if OTP exists at all for debugging
+                Optional<OTP> anyOtp = otpRepository.findFirstByEmailAndVerifiedFalseOrderByCreatedAtDesc(email);
+                if (anyOtp.isPresent()) {
+                    logger.warn("Found different OTP for email - Stored OTP: {}, Received OTP: {}", 
+                        anyOtp.get().getOtpCode(), otpCode);
+                }
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse<>(false, "Invalid or already used OTP", null));
             }
