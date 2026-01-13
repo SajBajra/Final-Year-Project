@@ -74,7 +74,9 @@ public class AuthService {
             user.getUsername(),
             user.getEmail(),
             user.getRole(),
-            null // Unlimited for registered users
+            null, // Unlimited for admin users
+            true, // Admins are always premium
+            null  // No expiry for admins
         );
     }
 }

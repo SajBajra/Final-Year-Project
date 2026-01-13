@@ -87,7 +87,9 @@ public class UserService {
             user.getUsername(),
             user.getEmail(),
             user.getRole(),
-            user.getUsageLimit() - user.getUsageCount()
+            user.getUsageLimit() - user.getUsageCount(),
+            user.getIsPremium(),
+            user.getPremiumUntil()
         );
     }
     
@@ -132,7 +134,9 @@ public class UserService {
             user.getUsername(),
             user.getEmail(),
             user.getRole(),
-            remainingScans
+            remainingScans,
+            user.getIsPremium(),
+            user.getPremiumUntil()
         );
     }
     

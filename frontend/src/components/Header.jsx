@@ -15,13 +15,18 @@ const Header = () => {
 
   const isActive = (path) => location.pathname === path
 
-  const navItems = [
+  // Filter out Pricing for admin users
+  const allNavItems = [
     { path: '/', label: 'Home' },
     { path: '/features', label: 'Features' },
     { path: '/about', label: 'About' },
     { path: '/pricing', label: 'Pricing' },
     { path: '/contact', label: 'Contact' }
   ]
+  
+  const navItems = isAdmin() 
+    ? allNavItems.filter(item => item.path !== '/pricing')
+    : allNavItems
 
   // Close dropdown when clicking outside
   useEffect(() => {

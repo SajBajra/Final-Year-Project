@@ -48,9 +48,9 @@ export const AuthProvider = ({ children }) => {
         throw new Error(data.message || 'Login failed');
       }
 
-      const { token: newToken, userId, username, email, role } = data.data;
+      const { token: newToken, userId, username, email, role, isPremium, premiumUntil } = data.data;
       
-      const userData = { userId, username, email, role };
+      const userData = { userId, username, email, role, isPremium, premiumUntil };
       
       localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify(userData));
@@ -81,9 +81,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Auto-login after successful registration
-      const { token: newToken, userId, username: userName, email: userEmail, role } = data.data;
+      const { token: newToken, userId, username: userName, email: userEmail, role, isPremium, premiumUntil } = data.data;
       
-      const userData = { userId, username: userName, email: userEmail, role };
+      const userData = { userId, username: userName, email: userEmail, role, isPremium, premiumUntil };
       
       localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify(userData));
@@ -113,6 +113,10 @@ export const AuthProvider = ({ children }) => {
     return user?.role === 'ADMIN';
   };
 
+  const isPremium = () => {
+    return user?.isPremium === true;
+  };
+
   const getAuthHeaders = () => {
     if (!token) return {};
     return {
@@ -129,6 +133,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated,
     isAdmin,
+    isPremium,
     getAuthHeaders,
   };
 

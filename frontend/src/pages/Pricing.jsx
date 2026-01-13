@@ -3,26 +3,43 @@ import { motion } from 'framer-motion';
 import { 
   FaInfinity,
   FaStar,
-  FaCheckCircle
+  FaCheckCircle,
+  FaShieldAlt,
+  FaCrown
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin, isPremium, user } = useAuth();
+
+  // Redirect admins to dashboard
+  useEffect(() => {
+    if (isAdmin()) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [isAdmin, navigate]);
+
+  // If admin, show nothing (will redirect)
+  if (isAdmin()) {
+    return null;
+  }
+
+  const userIsPremium = isPremium();
   
   const plans = [
     {
       name: 'Premium Monthly',
       price: 100,
       period: 'month',
-      description: 'Perfect for short-term needs',
+      description: userIsPremium ? 'Extend for 1 more month' : 'Perfect for short-term needs',
       features: [
         { text: 'Unlimited OCR scans', icon: FaInfinity },
         { text: 'Priority processing', icon: FaStar },
         { text: 'No daily limits', icon: FaCheckCircle }
       ],
-      cta: 'Get Monthly',
+      cta: userIsPremium ? 'Extend 1 Month' : 'Get Monthly',
       popular: false,
       color: 'primary'
     },
@@ -31,14 +48,14 @@ const Pricing = () => {
       price: 1000,
       period: 'year',
       originalPrice: 1200,
-      description: 'Best value for committed users',
+      description: userIsPremium ? 'Extend for 1 more year' : 'Best value for committed users',
       features: [
         { text: 'Unlimited OCR scans', icon: FaInfinity },
         { text: 'Priority processing', icon: FaStar },
         { text: 'No daily limits', icon: FaCheckCircle },
         { text: 'Save 17% compared to monthly', icon: FaCheckCircle }
       ],
-      cta: 'Get Yearly',
+      cta: userIsPremium ? 'Extend 1 Year' : 'Get Yearly',
       popular: true,
       color: 'primary'
     }
@@ -63,14 +80,23 @@ const Pricing = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
+            {userIsPremium && (
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full mb-6 shadow-lg">
+                <FaCrown className="text-xl" />
+                <span className="font-semibold">Premium Member</span>
+              </div>
+            )}
             <h1 
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Simple, Transparent Pricing
+              {userIsPremium ? 'Extend Your Premium Access' : 'Simple, Transparent Pricing'}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Choose the plan that works best for you. All plans include unlimited OCR scans.
+              {userIsPremium 
+                ? 'Continue enjoying unlimited OCR scans and priority processing by extending your subscription.'
+                : 'Choose the plan that works best for you. All plans include unlimited OCR scans.'
+              }
             </p>
           </motion.div>
 

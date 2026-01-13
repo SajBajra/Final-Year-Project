@@ -1,5 +1,7 @@
 package com.lipika.dto;
 
+import java.time.LocalDateTime;
+
 public class AuthResponse {
     private String token;
     private String type = "Bearer";
@@ -8,6 +10,8 @@ public class AuthResponse {
     private String email;
     private String role;
     private Integer remainingTrials;
+    private Boolean isPremium;
+    private LocalDateTime premiumUntil;
     
     // Constructors
     public AuthResponse() {
@@ -21,6 +25,18 @@ public class AuthResponse {
         this.email = email;
         this.role = role;
         this.remainingTrials = remainingTrials;
+    }
+    
+    public AuthResponse(String token, String type, Long userId, String username, String email, String role, Integer remainingTrials, Boolean isPremium, LocalDateTime premiumUntil) {
+        this.token = token;
+        this.type = type;
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.role = role;
+        this.remainingTrials = remainingTrials;
+        this.isPremium = isPremium;
+        this.premiumUntil = premiumUntil;
     }
     
     // Getters and Setters
@@ -78,6 +94,22 @@ public class AuthResponse {
     
     public void setRemainingTrials(Integer remainingTrials) {
         this.remainingTrials = remainingTrials;
+    }
+    
+    public Boolean getIsPremium() {
+        return isPremium;
+    }
+    
+    public void setIsPremium(Boolean isPremium) {
+        this.isPremium = isPremium;
+    }
+    
+    public LocalDateTime getPremiumUntil() {
+        return premiumUntil;
+    }
+    
+    public void setPremiumUntil(LocalDateTime premiumUntil) {
+        this.premiumUntil = premiumUntil;
     }
 }
 
