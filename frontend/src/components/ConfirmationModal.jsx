@@ -57,7 +57,7 @@ const ConfirmationModal = ({
             className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
           >
             <div 
-              className={`bg-white rounded-2xl shadow-2xl ${maxWidth} w-full p-6 pointer-events-auto`}
+              className={`bg-white rounded-2xl shadow-2xl ${maxWidth} w-full px-6 pb-6 pointer-events-auto`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Custom Content or Default Layout */}
@@ -67,7 +67,7 @@ const ConfirmationModal = ({
                 <>
                   {/* Icon */}
                   {icon && (
-                    <div className="flex justify-center mb-4">
+                    <div className="flex justify-center mb-4 mt-6">
                       <div className={`w-16 h-16 rounded-full ${iconBgColor} flex items-center justify-center`}>
                         {icon}
                       </div>
