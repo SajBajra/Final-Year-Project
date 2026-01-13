@@ -6,6 +6,7 @@ import com.lipika.dto.PaymentVerificationResponse;
 import com.lipika.model.ApiResponse;
 import com.lipika.model.Payment;
 import com.lipika.model.User;
+import com.lipika.repository.UserRepository;
 import com.lipika.service.PaymentService;
 import com.lipika.util.JwtUtil;
 import org.slf4j.Logger;
@@ -13,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +28,9 @@ public class PaymentController {
     private PaymentService paymentService;
     
     @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
     private JwtUtil jwtUtil;
     
     /**
@@ -39,12 +41,13 @@ public class PaymentController {
             @RequestBody PaymentRequest request,
             @RequestHeader("Authorization") String token) {
         try {
-            // Extract user from token
+            // Extract username from token
             String jwt = token.substring(7);
             String username = jwtUtil.extractUsername(jwt);
             
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) authentication.getPrincipal();
+            // Get user from database
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
             
             PaymentInitiateResponse response = paymentService.initiatePayment(request, user);
             
@@ -88,8 +91,13 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<List<Payment>>> getPaymentHistory(
             @RequestHeader("Authorization") String token) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) authentication.getPrincipal();
+            // Extract username from token
+            String jwt = token.substring(7);
+            String username = jwtUtil.extractUsername(jwt);
+            
+            // Get user from database
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
             
             List<Payment> payments = paymentService.getUserPayments(user);
             
