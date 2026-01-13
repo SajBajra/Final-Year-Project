@@ -157,9 +157,22 @@ const UserProfile = () => {
                   </div>
                 )}
                 
-                <div className="flex items-center gap-2 text-sm text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/20">
-                  <FaCheckCircle />
-                  <span>Role: {profile.role}</span>
+                <div className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border-2 ${
+                  profile.isPremium || profile.role === 'ADMIN'
+                    ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 border-yellow-400 text-yellow-100'
+                    : 'bg-white/10 backdrop-blur-sm border-white/20 text-white/80'
+                }`}>
+                  {profile.isPremium || profile.role === 'ADMIN' ? (
+                    <>
+                      <span className="text-xl">✨</span>
+                      <span>Paid Account</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaCheckCircle />
+                      <span>Free Account</span>
+                    </>
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-2 text-sm text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/20">

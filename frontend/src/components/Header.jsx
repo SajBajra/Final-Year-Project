@@ -124,8 +124,14 @@ const Header = () => {
                       <div className="px-4 py-3 border-b border-gray-200">
                         <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
                         <p className="text-xs text-black mt-0.5">{user?.email}</p>
-                        <p className="text-xs text-black mt-1">
-                          {isAdmin() ? 'Administrator' : 'User'}
+                        <p className="text-xs font-medium mt-1">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            user?.role === 'PREMIUM' || isAdmin() 
+                              ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900' 
+                              : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            {user?.role === 'PREMIUM' || isAdmin() ? '✨ Paid Account' : 'Free Account'}
+                          </span>
                         </p>
                       </div>
 
