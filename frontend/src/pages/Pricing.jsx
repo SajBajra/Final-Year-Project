@@ -87,9 +87,6 @@ const Pricing = () => {
             >
               Simple, Transparent Pricing
             </h1>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Choose the plan that works best for you. No hidden fees, cancel anytime.
-            </p>
 
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-4 mb-8">
