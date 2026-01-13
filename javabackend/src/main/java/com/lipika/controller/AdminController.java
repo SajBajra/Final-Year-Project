@@ -320,5 +320,87 @@ public class AdminController {
                     .body(ApiResponse.error("Error changing password: " + e.getMessage()));
         }
     }
+    
+    /**
+     * Get revenue statistics
+     * GET /api/admin/revenue/stats
+     */
+    @GetMapping("/revenue/stats")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getRevenueStatistics() {
+        try {
+            Map<String, Object> stats = adminService.getRevenueStatistics();
+            return ResponseEntity.ok(ApiResponse.success("Revenue statistics retrieved successfully", stats));
+        } catch (Exception e) {
+            log.error("Error retrieving revenue statistics", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error retrieving revenue statistics: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Get all users with management details
+     * GET /api/admin/users
+     */
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllUsers() {
+        try {
+            List<Map<String, Object>> users = adminService.getAllUsers();
+            return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", users));
+        } catch (Exception e) {
+            log.error("Error retrieving users", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error retrieving users: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Update user role
+     * PUT /api/admin/users/{userId}/role
+     */
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<ApiResponse<String>> updateUserRole(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> request) {
+        try {
+            String role = request.get("role");
+            if (role == null || role.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Role is required"));
+            }
+            
+            boolean updated = adminService.updateUserRole(userId, role);
+            if (updated) {
+                return ResponseEntity.ok(ApiResponse.success("User role updated successfully", "Role updated to " + role));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Failed to update user role. User may not exist."));
+            }
+        } catch (Exception e) {
+            log.error("Error updating user role", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error updating user role: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Delete user
+     * DELETE /api/admin/users/{userId}
+     */
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long userId) {
+        try {
+            boolean deleted = adminService.deleteUser(userId);
+            if (deleted) {
+                return ResponseEntity.ok(ApiResponse.success("User deleted successfully", "User removed"));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Failed to delete user. User may not exist."));
+            }
+        } catch (Exception e) {
+            log.error("Error deleting user", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error deleting user: " + e.getMessage()));
+        }
+    }
 }
 

@@ -108,5 +108,32 @@ public interface AdminService {
      * Get a sample record for diagnostics
      */
     Map<String, Object> getSampleRecord();
+    
+    /**
+     * Get revenue statistics
+     * @return Revenue statistics including total, monthly, and transaction counts
+     */
+    Map<String, Object> getRevenueStatistics();
+    
+    /**
+     * Get all users with management details
+     * @return List of users with their account types and usage statistics
+     */
+    List<Map<String, Object>> getAllUsers();
+    
+    /**
+     * Update user role
+     * @param userId User ID
+     * @param role New role (USER, PREMIUM, ADMIN)
+     * @return true if updated successfully
+     */
+    boolean updateUserRole(Long userId, String role);
+    
+    /**
+     * Delete user by ID
+     * @param userId User ID
+     * @return true if deleted successfully
+     */
+    boolean deleteUser(Long userId);
 }
 

@@ -2,7 +2,11 @@ package com.lipika.service.impl;
 
 import com.lipika.dto.OCRHistoryDTO;
 import com.lipika.model.OCRHistory;
+import com.lipika.model.Payment;
+import com.lipika.model.User;
 import com.lipika.repository.OCRHistoryRepository;
+import com.lipika.repository.PaymentRepository;
+import com.lipika.repository.UserRepository;
 import com.lipika.service.AdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +28,15 @@ public class AdminServiceImpl implements AdminService {
     private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
     
     private final OCRHistoryRepository ocrHistoryRepository;
+    private final PaymentRepository paymentRepository;
+    private final UserRepository userRepository;
     
-    public AdminServiceImpl(OCRHistoryRepository ocrHistoryRepository) {
+    public AdminServiceImpl(OCRHistoryRepository ocrHistoryRepository, 
+                          PaymentRepository paymentRepository,
+                          UserRepository userRepository) {
         this.ocrHistoryRepository = ocrHistoryRepository;
+        this.paymentRepository = paymentRepository;
+        this.userRepository = userRepository;
     }
     
     // System settings (still in-memory - can be moved to DB later)
@@ -462,5 +472,116 @@ public class AdminServiceImpl implements AdminService {
             return history.getRecognizedText().length();
         }
         return 0;
+    }
+    
+    /**
+     * Get revenue statistics
+     */
+    @Override
+    public Map<String, Object> getRevenueStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+        
+        // Total revenue and transactions
+        Double totalRevenue = paymentRepository.getTotalRevenue();
+        Long completedTransactions = paymentRepository.getCompletedTransactionsCount();
+        
+        // Monthly revenue (last 30 days)
+        LocalDateTime monthAgo = LocalDateTime.now().minusDays(30);
+        Double monthlyRevenue = paymentRepository.getRevenueAfterDate(monthAgo);
+        Long monthlyTransactions = paymentRepository.getCompletedTransactionsAfterDate(monthAgo);
+        
+        // Transaction status counts
+        Long pendingTransactions = paymentRepository.countByStatus(Payment.PaymentStatus.PENDING);
+        Long failedTransactions = paymentRepository.countByStatus(Payment.PaymentStatus.FAILED);
+        Long initiatedTransactions = paymentRepository.countByStatus(Payment.PaymentStatus.INITIATED);
+        
+        stats.put("totalRevenue", totalRevenue != null ? totalRevenue : 0.0);
+        stats.put("totalTransactions", completedTransactions != null ? completedTransactions : 0L);
+        stats.put("monthlyRevenue", monthlyRevenue != null ? monthlyRevenue : 0.0);
+        stats.put("monthlyTransactions", monthlyTransactions != null ? monthlyTransactions : 0L);
+        stats.put("pendingTransactions", pendingTransactions != null ? pendingTransactions : 0L);
+        stats.put("completedTransactions", completedTransactions != null ? completedTransactions : 0L);
+        stats.put("failedTransactions", failedTransactions != null ? failedTransactions : 0L);
+        stats.put("initiatedTransactions", initiatedTransactions != null ? initiatedTransactions : 0L);
+        
+        log.info("Revenue statistics retrieved: Total={}, Monthly={}", totalRevenue, monthlyRevenue);
+        
+        return stats;
+    }
+    
+    /**
+     * Get all users with management details
+     */
+    @Override
+    public List<Map<String, Object>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        
+        return users.stream().map(user -> {
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getId());
+            userMap.put("username", user.getUsername());
+            userMap.put("email", user.getEmail());
+            userMap.put("role", user.getRole());
+            userMap.put("isPremium", user.isPremium());
+            userMap.put("usageCount", user.getUsageCount());
+            userMap.put("usageLimit", user.getUsageLimit());
+            userMap.put("createdAt", user.getCreatedAt());
+            userMap.put("lastLogin", user.getLastLogin());
+            
+            // Determine account type
+            String accountType;
+            if ("ADMIN".equals(user.getRole())) {
+                accountType = "Admin";
+            } else if (user.isPremium() || "PREMIUM".equals(user.getRole())) {
+                accountType = "Paid";
+            } else {
+                accountType = "Free";
+            }
+            userMap.put("accountType", accountType);
+            
+            return userMap;
+        }).collect(Collectors.toList());
+    }
+    
+    /**
+     * Update user role
+     */
+    @Override
+    @Transactional
+    public boolean updateUserRole(Long userId, String role) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setRole(role);
+            
+            // Update premium status based on role
+            if ("PREMIUM".equals(role)) {
+                user.setPremium(true);
+            } else if ("USER".equals(role)) {
+                user.setPremium(false);
+            }
+            // ADMIN role doesn't affect premium status but has unlimited access
+            
+            userRepository.save(user);
+            log.info("Updated user role: userId={}, newRole={}", userId, role);
+            return true;
+        }
+        log.warn("User not found for role update: userId={}", userId);
+        return false;
+    }
+    
+    /**
+     * Delete user by ID
+     */
+    @Override
+    @Transactional
+    public boolean deleteUser(Long userId) {
+        if (userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
+            log.info("Deleted user: userId={}", userId);
+            return true;
+        }
+        log.warn("User not found for deletion: userId={}", userId);
+        return false;
     }
 }
