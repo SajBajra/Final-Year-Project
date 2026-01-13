@@ -1,6 +1,8 @@
 package com.lipika.controller;
 
 import com.lipika.model.ApiResponse;
+import com.lipika.model.Contact;
+import com.lipika.repository.ContactRepository;
 import com.lipika.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,9 @@ public class ContactController {
     
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private ContactRepository contactRepository;
     
     @PostMapping("/submit")
     public ResponseEntity<ApiResponse<String>> submitContactForm(@RequestBody Map<String, String> request) {
@@ -48,6 +53,15 @@ public class ContactController {
                 return ResponseEntity.badRequest()
                     .body(new ApiResponse<>(false, "Message is required", null));
             }
+            
+            // Save to database
+            Contact contact = new Contact();
+            contact.setName(name);
+            contact.setEmail(email);
+            contact.setSubject(subject);
+            contact.setMessage(message);
+            contact.setRead(false);
+            contactRepository.save(contact);
             
             // Send email
             emailService.sendContactFormEmail(name, email, subject, message);

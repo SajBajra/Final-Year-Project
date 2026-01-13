@@ -30,13 +30,16 @@ public class AdminServiceImpl implements AdminService {
     private final OCRHistoryRepository ocrHistoryRepository;
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
+    private final com.lipika.repository.ContactRepository contactRepository;
     
     public AdminServiceImpl(OCRHistoryRepository ocrHistoryRepository, 
                           UserRepository userRepository,
-                          PaymentRepository paymentRepository) {
+                          PaymentRepository paymentRepository,
+                          com.lipika.repository.ContactRepository contactRepository) {
         this.ocrHistoryRepository = ocrHistoryRepository;
         this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
+        this.contactRepository = contactRepository;
     }
     
     // System settings (still in-memory - can be moved to DB later)
@@ -648,6 +651,73 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             log.error("Error deleting user: userId={}, error: {}", userId, e.getMessage(), e);
             throw new RuntimeException("Failed to delete user: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    public List<Map<String, Object>> getAllContacts() {
+        try {
+            List<com.lipika.model.Contact> contacts = contactRepository.findAllByOrderBySubmittedAtDesc();
+            List<Map<String, Object>> result = new ArrayList<>();
+            
+            for (com.lipika.model.Contact contact : contacts) {
+                Map<String, Object> contactMap = new HashMap<>();
+                contactMap.put("id", contact.getId());
+                contactMap.put("name", contact.getName());
+                contactMap.put("email", contact.getEmail());
+                contactMap.put("subject", contact.getSubject());
+                contactMap.put("message", contact.getMessage());
+                contactMap.put("submittedAt", contact.getSubmittedAt());
+                contactMap.put("read", contact.getRead());
+                result.add(contactMap);
+            }
+            
+            log.info("Retrieved {} contact submissions", result.size());
+            return result;
+            
+        } catch (Exception e) {
+            log.error("Error retrieving contacts: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to retrieve contacts: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    public boolean markContactAsRead(Long contactId) {
+        try {
+            Optional<com.lipika.model.Contact> contactOpt = contactRepository.findById(contactId);
+            if (contactOpt.isEmpty()) {
+                log.warn("Contact not found: contactId={}", contactId);
+                return false;
+            }
+            
+            com.lipika.model.Contact contact = contactOpt.get();
+            contact.setRead(true);
+            contactRepository.save(contact);
+            
+            log.info("Marked contact as read: contactId={}", contactId);
+            return true;
+            
+        } catch (Exception e) {
+            log.error("Error marking contact as read: contactId={}, error: {}", contactId, e.getMessage(), e);
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean deleteContact(Long contactId) {
+        try {
+            if (!contactRepository.existsById(contactId)) {
+                log.warn("Contact not found for deletion: contactId={}", contactId);
+                return false;
+            }
+            
+            contactRepository.deleteById(contactId);
+            log.info("Successfully deleted contact: contactId={}", contactId);
+            return true;
+            
+        } catch (Exception e) {
+            log.error("Error deleting contact: contactId={}, error: {}", contactId, e.getMessage(), e);
+            return false;
         }
     }
 }

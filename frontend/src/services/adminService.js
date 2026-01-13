@@ -226,3 +226,67 @@ export const changePassword = async (currentPassword, newPassword) => {
     throw error.response?.data || error;
   }
 };
+
+/**
+ * Get all contact form submissions
+ */
+export const getAllContacts = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(
+      `${API_URL}/admin/contacts`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Get contacts error:', error);
+    throw error.response?.data || error;
+  }
+};
+
+/**
+ * Mark contact as read
+ */
+export const markContactAsRead = async (contactId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.put(
+      `${API_URL}/admin/contacts/${contactId}/read`,
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Mark contact as read error:', error);
+    throw error.response?.data || error;
+  }
+};
+
+/**
+ * Delete contact submission
+ */
+export const deleteContact = async (contactId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(
+      `${API_URL}/admin/contacts/${contactId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Delete contact error:', error);
+    throw error.response?.data || error;
+  }
+};

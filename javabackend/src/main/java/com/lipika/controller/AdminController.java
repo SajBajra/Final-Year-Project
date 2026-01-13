@@ -402,5 +402,63 @@ public class AdminController {
                     .body(ApiResponse.error("Error deleting user: " + e.getMessage()));
         }
     }
+    
+    /**
+     * Get all contact form submissions
+     * GET /api/admin/contacts
+     */
+    @GetMapping("/contacts")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllContacts() {
+        try {
+            List<Map<String, Object>> contacts = adminService.getAllContacts();
+            return ResponseEntity.ok(ApiResponse.success("Contact submissions retrieved successfully", contacts));
+        } catch (Exception e) {
+            log.error("Error retrieving contacts", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error retrieving contacts: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Mark contact as read
+     * PUT /api/admin/contacts/{contactId}/read
+     */
+    @PutMapping("/contacts/{contactId}/read")
+    public ResponseEntity<ApiResponse<String>> markContactAsRead(@PathVariable Long contactId) {
+        try {
+            boolean marked = adminService.markContactAsRead(contactId);
+            if (marked) {
+                return ResponseEntity.ok(ApiResponse.success("Contact marked as read", "Success"));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Failed to mark contact as read. Contact may not exist."));
+            }
+        } catch (Exception e) {
+            log.error("Error marking contact as read", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error marking contact as read: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Delete contact submission
+     * DELETE /api/admin/contacts/{contactId}
+     */
+    @DeleteMapping("/contacts/{contactId}")
+    public ResponseEntity<ApiResponse<String>> deleteContact(@PathVariable Long contactId) {
+        try {
+            boolean deleted = adminService.deleteContact(contactId);
+            if (deleted) {
+                return ResponseEntity.ok(ApiResponse.success("Contact deleted successfully", "Success"));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Failed to delete contact. Contact may not exist."));
+            }
+        } catch (Exception e) {
+            log.error("Error deleting contact", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Error deleting contact: " + e.getMessage()));
+        }
+    }
 }
 

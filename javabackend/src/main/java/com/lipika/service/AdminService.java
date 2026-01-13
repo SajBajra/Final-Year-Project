@@ -135,5 +135,25 @@ public interface AdminService {
      * @return true if deleted successfully
      */
     boolean deleteUser(Long userId);
+    
+    /**
+     * Get all contact form submissions
+     * @return List of contact submissions
+     */
+    List<Map<String, Object>> getAllContacts();
+    
+    /**
+     * Mark contact as read
+     * @param contactId Contact ID
+     * @return true if marked successfully
+     */
+    boolean markContactAsRead(Long contactId);
+    
+    /**
+     * Delete contact submission
+     * @param contactId Contact ID
+     * @return true if deleted successfully
+     */
+    boolean deleteContact(Long contactId);
 }
 
