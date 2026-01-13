@@ -8,13 +8,6 @@
 
 The system combines modern deep learning techniques with a user-friendly web interface to preserve and digitize historical manuscripts, religious texts, and cultural documents written in Ranjana script.
 
-### Key Objectives
-
-- **Preserve Cultural Heritage**: Digitize ancient Ranjana script documents for future generations
-- **Accessibility**: Make historical texts accessible to researchers and scholars worldwide
-- **Accuracy**: Provide high-accuracy character recognition using deep learning
-- **User-Friendly**: Simple interface for both technical and non-technical users
-
 ---
 
 ## Features
