@@ -10,7 +10,6 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
   const [preview, setPreview] = useState(null)
   const [error, setError] = useState(null)
 
-  // Use same camera settings for both mobile and desktop (front camera)
   const videoConstraints = {
     width: { min: 640, ideal: 1280, max: 1920 },
     height: { min: 480, ideal: 720, max: 1080 },
