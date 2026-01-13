@@ -154,37 +154,41 @@ const CameraCapture = ({ onImageCapture, onProcessing, onOCRComplete, authHeader
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="space-y-4"
+            className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-xl"
           >
-            <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-xl">
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                videoConstraints={videoConstraints}
-                className="w-full h-full object-cover"
-                mirrored={true}
-                onUserMediaError={handleUserMediaError}
-              />
-              <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
-            </div>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-              <motion.button
-                onClick={capture}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="btn-primary flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 sm:px-8 py-3"
-              >
-                <FaCamera className="text-lg sm:text-xl" />
-                <span className="text-sm sm:text-base">Capture</span>
-              </motion.button>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              videoConstraints={videoConstraints}
+              className="w-full h-full object-cover"
+              mirrored={true}
+              onUserMediaError={handleUserMediaError}
+            />
+            <div className="absolute inset-0 border-4 border-primary-600 rounded-xl pointer-events-none"></div>
+            
+            {/* Overlay Camera Controls */}
+            <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-6 z-10">
+              {/* Cancel Button */}
               <motion.button
                 onClick={stopCapture}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="btn-secondary flex-1 sm:flex-none px-6 sm:px-8 py-3 text-sm sm:text-base"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200"
+                title="Cancel"
               >
-                Cancel
+                <FaTimes className="text-white text-xl sm:text-2xl" />
+              </motion.button>
+              
+              {/* Capture Button */}
+              <motion.button
+                onClick={capture}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 border-4 border-white"
+                title="Capture"
+              >
+                <FaCamera className="text-white text-2xl sm:text-3xl" />
               </motion.button>
             </div>
           </motion.div>
