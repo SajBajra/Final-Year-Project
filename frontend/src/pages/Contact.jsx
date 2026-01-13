@@ -119,14 +119,6 @@ const Contact = () => {
                 </div>
               </div>
             </div>
-
-            {/* Additional Info Card */}
-            <div className="bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl shadow-xl p-8 text-white">
-              <h3 className="text-xl font-bold mb-3">Need Immediate Help?</h3>
-              <p className="text-primary-50 mb-4">
-                For technical support or urgent inquiries, please include "URGENT" in your subject line, and we'll prioritize your message.
-              </p>
-            </div>
           </motion.div>
 
           {/* Contact Form */}
