@@ -32,28 +32,6 @@ const OCRResult = ({
             <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-primary-600 truncate">
               Recognition Result
             </h2>
-            {confidence !== undefined && (
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-2">
-                <span className="text-xs text-gray-500">Confidence:</span>
-                <div className="flex items-center space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={`text-xs sm:text-sm ${
-                        star <= Math.round(confidence * 5)
-                          ? 'text-yellow-400'
-                          : 'text-gray-300'
-                      }`}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <span className="text-xs sm:text-sm font-semibold text-gray-600">
-                  {(confidence * 100).toFixed(1)}%
-                </span>
-              </div>
-            )}
           </div>
         </div>
         
