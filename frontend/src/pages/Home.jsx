@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { FaScroll, FaCamera, FaSearch, FaEye, FaUpload, FaArrowRight, FaImage } from 'react-icons/fa'
 import Webcam from 'react-webcam'
@@ -106,7 +106,7 @@ function Home() {
     setShowAR(!showAR)
   }
 
-  const handleTranslateToEnglish = async () => {
+  const handleTranslateToEnglish = useCallback(async () => {
     setTranslationLoading(true)
     
     try {
@@ -116,13 +116,33 @@ function Home() {
       if (englishResult) {
         setEnglishText(englishResult)
         setTranslations({ ...translations, english: englishResult })
+        // Replace the displayed text with translated text
+        if (ocrResult) {
+          setOcrResult({
+            ...ocrResult,
+            text: englishResult
+          })
+        }
       }
     } catch (error) {
       console.error('English translation error:', error)
     } finally {
       setTranslationLoading(false)
     }
-  }
+  }, [devanagariText, ocrResult, translations])
+
+  // Auto-translate when showTranslation is toggled to true
+  useEffect(() => {
+    if (showTranslation && !englishText && devanagariText && !translationLoading) {
+      handleTranslateToEnglish()
+    } else if (!showTranslation && englishText && ocrResult && devanagariText) {
+      // Reset to original Devanagari text when hiding translation
+      setOcrResult({
+        ...ocrResult,
+        text: devanagariText
+      })
+    }
+  }, [showTranslation, englishText, devanagariText, translationLoading, ocrResult, handleTranslateToEnglish])
   
   // Mobile camera capture
   const handleMobileCapture = async () => {

@@ -95,7 +95,11 @@ const OCRResult = ({
       >
         <div className="mb-3 sm:mb-4">
           <h3 className="text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 sm:mb-3">
-            {text && (text.includes('Error') || text.includes('error')) ? 'Error Message' : 'Recognized Text (Devanagari)'}
+            {text && (text.includes('Error') || text.includes('error')) 
+              ? 'Error Message' 
+              : showTranslation 
+                ? 'Recognized Text (English Translation)' 
+                : 'Recognized Text (Devanagari)'}
           </h3>
           <p className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed break-words ${
             (text && (text.includes('Error') || text.includes('error')))
@@ -107,7 +111,7 @@ const OCRResult = ({
         </div>
         
         {/* Character Breakdown - Responsive */}
-        {characters && characters.length > 0 && (
+        {characters && characters.length > 0 && !showTranslation && (
           <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200/50">
             <h3 className="text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider mb-3 sm:mb-4">
               Character Breakdown ({characters.length} characters)
@@ -130,11 +134,6 @@ const OCRResult = ({
                       : 'bg-red-100 text-red-800 border border-red-300'
                   }`}>
                     {char.character}
-                    {showTranslation && translations[char.character] && (
-                      <span className="ml-1 sm:ml-2 text-xs opacity-75 hidden sm:inline">
-                        ({translations[char.character]})
-                      </span>
-                    )}
                   </div>
                   
                   {/* Confidence Tooltip */}
@@ -147,77 +146,6 @@ const OCRResult = ({
           </div>
         )}
       </motion.div>
-      
-      {/* Translation Section - Responsive */}
-      {showTranslation && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="bg-gray-50 rounded-xl p-4 sm:p-6 border-2 border-gray-200 space-y-3 sm:space-y-4"
-        >
-          <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
-            <FaGlobe className="mr-2 text-primary-600" />
-            English Translation (Optional)
-          </h3>
-          
-          {/* Devanagari Text Display */}
-          {devanagariText && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs sm:text-sm font-bold text-gray-600 uppercase tracking-wider">
-                  Devanagari (देवनागरी) - Original
-                </span>
-              </div>
-              <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 leading-relaxed break-words" style={{ fontFamily: 'Arial, sans-serif', unicodeBidi: 'embed' }}>
-                {devanagariText}
-              </p>
-            </motion.div>
-          )}
-          
-          {/* English Translation */}
-          {englishText ? (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs sm:text-sm font-bold text-gray-600 uppercase tracking-wider">
-                  English
-                </span>
-              </div>
-              <p className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 leading-relaxed break-words">
-                {englishText}
-              </p>
-            </motion.div>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={onTranslateToEnglish}
-              disabled={translationLoading || !devanagariText}
-              className="w-full bg-primary-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg hover:bg-primary-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm sm:text-base"
-            >
-              {translationLoading ? (
-                <>
-                  <FaSpinner className="animate-spin text-base sm:text-lg" />
-                  <span>Translating to English...</span>
-                </>
-              ) : (
-                <>
-                  <FaFlag className="text-base sm:text-lg" />
-                  <span>Translate to English</span>
-                </>
-              )}
-            </motion.button>
-          )}
-        </motion.div>
-      )}
     </motion.div>
   )
 }
