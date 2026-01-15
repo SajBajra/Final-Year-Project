@@ -13,6 +13,7 @@ const OCRResult = ({
   showTranslation = false,
   setShowTranslation,
   translationLoading = false,
+  translationError = null,
   onTranslateToEnglish
 }) => {
   return (
@@ -101,6 +102,11 @@ const OCRResult = ({
                 ? 'Recognized Text (English Translation)' 
                 : 'Recognized Text (Devanagari)'}
           </h3>
+          {translationError && showTranslation && (
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600 font-semibold">{translationError}</p>
+            </div>
+          )}
           <p className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed break-words ${
             (text && (text.includes('Error') || text.includes('error')))
               ? 'text-red-600'

@@ -21,6 +21,7 @@ function Home() {
   const [translations, setTranslations] = useState({})
   const [showTranslation, setShowTranslation] = useState(false)
   const [translationLoading, setTranslationLoading] = useState(false)
+  const [translationError, setTranslationError] = useState(null)
   const [devanagariText, setDevanagariText] = useState('')
   const [englishText, setEnglishText] = useState('')
   const [trialInfo, setTrialInfo] = useState(null)
@@ -108,14 +109,22 @@ function Home() {
 
   const handleTranslateToEnglish = useCallback(async () => {
     setTranslationLoading(true)
+    setTranslationError(null)
     
     try {
       // Translate Devanagari to English via API
       const textToTranslate = devanagariText || ocrResult?.text || ''
+      
+      if (!textToTranslate || textToTranslate.trim() === '') {
+        setTranslationError('No text available to translate')
+        return
+      }
+      
       const englishResult = await translateText(textToTranslate, 'en')
-      if (englishResult) {
+      if (englishResult && englishResult.trim() !== '') {
         setEnglishText(englishResult)
         setTranslations({ ...translations, english: englishResult })
+        setTranslationError(null) // Clear any previous errors
         // Replace the displayed text with translated text
         if (ocrResult) {
           setOcrResult({
@@ -123,9 +132,12 @@ function Home() {
             text: englishResult
           })
         }
+      } else {
+        setTranslationError('Translation returned empty result')
       }
     } catch (error) {
       console.error('English translation error:', error)
+      setTranslationError(error.message || 'Translation failed. Please try again.')
     } finally {
       setTranslationLoading(false)
     }
@@ -141,8 +153,17 @@ function Home() {
         ...ocrResult,
         text: devanagariText
       })
+      setTranslationError(null) // Clear any translation errors
     }
   }, [showTranslation, englishText, devanagariText, translationLoading, ocrResult, handleTranslateToEnglish])
+  
+  // Clear translation error when new OCR result comes in
+  useEffect(() => {
+    if (ocrResult && !showTranslation) {
+      setTranslationError(null)
+      setEnglishText('')
+    }
+  }, [ocrResult, showTranslation])
   
   // Mobile camera capture
   const handleMobileCapture = async () => {
@@ -499,6 +520,7 @@ function Home() {
               showTranslation={showTranslation}
               setShowTranslation={setShowTranslation}
               translationLoading={translationLoading}
+              translationError={translationError}
               onTranslateToEnglish={handleTranslateToEnglish}
             />
             

@@ -92,19 +92,29 @@ export const translateText = async (text, targetLanguage = TRANSLATION_CONFIG.DE
       }
     )
     
-    // Java backend returns: { success: true, data: { translatedText: "...", ... } }
+    // Java backend returns: 
+    // { success: true, message: "...", data: { translatedText: "...", originalText: "...", ... } }
     if (response.data.success && response.data.data) {
-      const translatedText = response.data.data.translatedText || response.data.data.text
-      return translatedText || text
+      // The data field contains TranslationResponse object with translatedText property
+      const translatedText = response.data.data.translatedText
+      if (translatedText) {
+        return translatedText
+      } else {
+        // Fallback: if translatedText is not available, return original text
+        console.warn('Translation response missing translatedText, returning original text')
+        return text
+      }
     } else {
       throw new Error(response.data.message || 'Translation failed')
     }
   } catch (error) {
-    console.error('Translation service error:', error.message)
+    console.error('Translation service error:', error)
     
-    // If it's a network error or API error, return original text
+    // If it's a network error or API error, throw with details
     if (error.response) {
-      throw new Error(`Translation failed: ${error.response.data?.message || error.response.statusText}`)
+      const errorMessage = error.response.data?.message || error.response.statusText || 'Translation failed'
+      console.error('Translation API error response:', error.response.data)
+      throw new Error(`Translation failed: ${errorMessage}`)
     } else if (error.request) {
       throw new Error('Translation service is not responding. Please check if the backend is running.')
     } else {
