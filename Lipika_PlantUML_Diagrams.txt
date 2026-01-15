@@ -1,0 +1,910 @@
+@startuml ER_Diagram
+!define PRIMARY_KEY(x) <b><color:red><&key></color></b> x
+!define FOREIGN_KEY(x) <color:blue><&key></color> x
+!define NOT_NULL(x) <b>x</b>
+!define NULLABLE(x) x
+
+title Lipika OCR System - Entity Relationship Diagram
+
+entity "users" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  NOT_NULL(username) : VARCHAR(100) <<UNIQUE>>
+  NOT_NULL(email) : VARCHAR <<UNIQUE>>
+  NOT_NULL(password_hash) : VARCHAR
+  NOT_NULL(role) : VARCHAR(20)
+  NOT_NULL(is_active) : BOOLEAN
+  NOT_NULL(usage_count) : INTEGER
+  NOT_NULL(usage_limit) : INTEGER
+  NOT_NULL(is_premium) : BOOLEAN
+  NULLABLE(premium_until) : DATETIME
+  created_at : DATETIME
+  updated_at : DATETIME
+  last_login : DATETIME
+}
+
+entity "ocr_history" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  FOREIGN_KEY(user_id) : BIGINT <<FK>>
+  NOT_NULL(is_registered) : BOOLEAN
+  NULLABLE(ip_address) : VARCHAR(45)
+  NULLABLE(cookie_id) : VARCHAR(255)
+  NULLABLE(image_filename) : VARCHAR(500)
+  NULLABLE(image_path) : VARCHAR(1000)
+  NULLABLE(recognized_text) : TEXT
+  NULLABLE(character_count) : INTEGER
+  NULLABLE(confidence) : DOUBLE
+  NOT_NULL(timestamp) : DATETIME
+  NULLABLE(language) : VARCHAR(50)
+}
+
+entity "payments" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  NOT_NULL(transaction_uuid) : VARCHAR <<UNIQUE>>
+  NULLABLE(transaction_code) : VARCHAR
+  NOT_NULL(user_id) : BIGINT
+  NOT_NULL(username) : VARCHAR
+  NOT_NULL(plan_type) : VARCHAR
+  NOT_NULL(amount) : DOUBLE
+  NULLABLE(tax_amount) : DOUBLE
+  NULLABLE(service_charge) : DOUBLE
+  NULLABLE(delivery_charge) : DOUBLE
+  NOT_NULL(total_amount) : DOUBLE
+  NOT_NULL(status) : VARCHAR
+  NULLABLE(payment_method) : VARCHAR
+  NOT_NULL(created_at) : DATETIME
+  NULLABLE(verified_at) : DATETIME
+}
+
+entity "otps" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  NOT_NULL(email) : VARCHAR
+  NOT_NULL(otp_code) : VARCHAR
+  NOT_NULL(created_at) : DATETIME
+  NOT_NULL(expires_at) : DATETIME
+  NOT_NULL(verified) : BOOLEAN
+}
+
+entity "password_reset_tokens" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  NOT_NULL(token) : VARCHAR <<UNIQUE>>
+  FOREIGN_KEY(user_id) : BIGINT <<FK>>
+  NOT_NULL(expiry_date) : DATETIME
+  NOT_NULL(used) : BOOLEAN
+  created_at : DATETIME
+}
+
+entity "contacts" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  NOT_NULL(name) : VARCHAR
+  NOT_NULL(email) : VARCHAR
+  NOT_NULL(subject) : VARCHAR
+  NOT_NULL(message) : TEXT
+  NOT_NULL(submitted_at) : DATETIME
+  NOT_NULL(is_read) : BOOLEAN
+}
+
+entity "trial_tracking" {
+  PRIMARY_KEY(id) : BIGINT <<PK>>
+  --
+  NOT_NULL(ip_address) : VARCHAR(45)
+  NULLABLE(cookie_id) : VARCHAR(255)
+  NULLABLE(fingerprint) : VARCHAR(255)
+  NOT_NULL(trial_count) : INTEGER
+  first_attempt : DATETIME
+  last_attempt : DATETIME
+  NOT_NULL(is_blocked) : BOOLEAN
+}
+
+' Relationships
+users ||--o{ ocr_history : "has many"
+users ||--o{ payments : "has many"
+users ||--o{ password_reset_tokens : "has many"
+
+@enduml
+
+@startuml Class_Diagram
+title Lipika OCR System - Class Diagram
+
+package "com.lipika.model" {
+  class User {
+    -Long id
+    -String username
+    -String email
+    -String passwordHash
+    -String role
+    -Boolean isActive
+    -Integer usageCount
+    -Integer usageLimit
+    -Boolean isPremium
+    -LocalDateTime premiumUntil
+    -LocalDateTime createdAt
+    -LocalDateTime updatedAt
+    -LocalDateTime lastLogin
+    +getId() : Long
+    +getUsername() : String
+    +getEmail() : String
+    +isPremium() : boolean
+  }
+  
+  class OCRHistory {
+    -Long id
+    -Long userId
+    -Boolean isRegistered
+    -String ipAddress
+    -String cookieId
+    -String imageFilename
+    -String imagePath
+    -String recognizedText
+    -Integer characterCount
+    -Double confidence
+    -LocalDateTime timestamp
+    -String language
+    -User user
+    +getId() : Long
+    +getRecognizedText() : String
+  }
+  
+  class Payment {
+    -Long id
+    -String transactionUuid
+    -String transactionCode
+    -Long userId
+    -String username
+    -String planType
+    -Double amount
+    -Double totalAmount
+    -String status
+    -String paymentMethod
+    -LocalDateTime createdAt
+    -LocalDateTime verifiedAt
+  }
+  
+  class Contact {
+    -Long id
+    -String name
+    -String email
+    -String subject
+    -String message
+    -LocalDateTime submittedAt
+    -Boolean read
+  }
+  
+  class OTP {
+    -Long id
+    -String email
+    -String otpCode
+    -LocalDateTime createdAt
+    -LocalDateTime expiresAt
+    -Boolean verified
+    +isExpired() : boolean
+  }
+  
+  class PasswordResetToken {
+    -Long id
+    -String token
+    -User user
+    -LocalDateTime expiryDate
+    -Boolean used
+    +isExpired() : boolean
+  }
+  
+  class TrialTracking {
+    -Long id
+    -String ipAddress
+    -String cookieId
+    -String fingerprint
+    -Integer trialCount
+    -LocalDateTime firstAttempt
+    -LocalDateTime lastAttempt
+    -Boolean isBlocked
+  }
+}
+
+package "com.lipika.controller" {
+  class UserController {
+    +register(RegisterRequest) : ResponseEntity
+    +login(LoginRequest) : ResponseEntity
+    +getProfile() : ResponseEntity
+    +checkUsageStatus() : ResponseEntity
+    +changePassword() : ResponseEntity
+  }
+  
+  class OCRController {
+    +recognizeText(MultipartFile) : ResponseEntity
+  }
+  
+  class TranslationController {
+    +translate(TranslationRequest) : ResponseEntity
+  }
+  
+  class AdminController {
+    +getDashboardStats() : ResponseEntity
+    +getAllUsers() : ResponseEntity
+    +getOCRHistory() : ResponseEntity
+    +getAllContacts() : ResponseEntity
+  }
+  
+  class PaymentController {
+    +verifyPayment() : ResponseEntity
+  }
+  
+  class ForgotPasswordController {
+    +requestPasswordReset() : ResponseEntity
+    +verifyOtp() : ResponseEntity
+    +resetPassword() : ResponseEntity
+  }
+  
+  class ContactController {
+    +submitContactForm() : ResponseEntity
+  }
+}
+
+package "com.lipika.service" {
+  class UserService {
+    +register(RegisterRequest) : AuthResponse
+    +login(LoginRequest) : AuthResponse
+    +getUserProfile(Long) : UserProfileResponse
+    +incrementUsageCount(Long) : void
+    +hasReachedLimit(Long) : boolean
+  }
+  
+  class OCRService {
+    +recognizeText(MultipartFile, HttpServletRequest, Long) : OCRResponse
+  }
+  
+  class TranslationService {
+    +translate(TranslationRequest) : TranslationResponse
+  }
+  
+  class AdminService {
+    +getDashboardStats() : Map
+    +getAllUsers() : Map
+    +getOCRHistory() : List
+    +getAllContacts() : Map
+  }
+  
+  class EmailService {
+    +sendWelcomeEmail(String, String) : void
+    +sendOtpEmail(String, String) : void
+    +sendPasswordResetConfirmation(String) : void
+    +sendContactFormEmail(String, String, String, String) : void
+  }
+  
+  class TrialTrackingService {
+    +canPerformOCR(String, String, String) : boolean
+    +incrementTrialCount(String, String, String) : void
+    +getRemainingTrials(String, String, String) : int
+  }
+}
+
+package "com.lipika.repository" {
+  interface UserRepository {
+    +findByUsername(String) : Optional<User>
+    +findByEmail(String) : Optional<User>
+    +existsByUsername(String) : boolean
+    +existsByEmail(String) : boolean
+  }
+  
+  interface OCRHistoryRepository {
+    +findByUserId(Long) : List<OCRHistory>
+    +save(OCRHistory) : OCRHistory
+  }
+  
+  interface PaymentRepository {
+    +findByUserId(Long) : List<Payment>
+    +findLatestPaymentByUserId(Long) : List<Payment>
+  }
+  
+  interface ContactRepository {
+    +findAll() : List<Contact>
+    +save(Contact) : Contact
+  }
+}
+
+' Relationships
+UserController --> UserService
+OCRController --> OCRService
+TranslationController --> TranslationService
+AdminController --> AdminService
+PaymentController --> UserService
+ForgotPasswordController --> UserService
+ContactController --> EmailService
+
+UserService --> UserRepository
+OCRService --> OCRHistoryRepository
+OCRService --> UserService
+AdminService --> UserRepository
+AdminService --> OCRHistoryRepository
+AdminService --> ContactRepository
+
+User ||--o{ OCRHistory : "has many"
+User ||--o{ Payment : "has many"
+User ||--o{ PasswordResetToken : "has one"
+
+@enduml
+
+@startuml Sequence_OCR_Recognition
+title OCR Recognition Sequence Diagram
+
+actor User
+participant "React Frontend" as Frontend
+participant "Spring Boot\nBackend" as Backend
+participant "OCR Service\n(Python Flask)" as MLService
+participant "MySQL Database" as Database
+participant "Trial Tracking\nService" as TrialService
+
+User -> Frontend: Upload Image
+Frontend -> Backend: POST /api/ocr/recognize\n(MultipartFile + JWT Token)
+
+alt User is Authenticated
+  Backend -> Backend: Extract User ID from JWT
+  Backend -> Database: Check User Usage Limit
+  Database --> Backend: User Data (usageCount, usageLimit)
+  
+  alt Usage Limit Reached
+    Backend --> Frontend: Error: Usage limit reached
+    Frontend --> User: Display Error Message
+  else Within Limit
+    Backend -> MLService: POST /recognize\n(Image File)
+    MLService -> MLService: Preprocess Image
+    MLService -> MLService: Run CRNN Model
+    MLService --> Backend: OCR Result\n(text, characters, confidence)
+    
+    Backend -> Database: Increment User Usage Count
+    Backend -> Database: Save OCR History
+    Backend --> Frontend: OCR Response\n+ Trial Info
+    Frontend --> User: Display Results
+  end
+else User is Not Authenticated
+  Backend -> TrialService: Check Trial Limits\n(IP, Cookie, Fingerprint)
+  TrialService -> Database: Query Trial Tracking
+  
+  alt Trial Limit Exceeded
+    Backend --> Frontend: Error: Trial limit exceeded
+    Frontend --> User: Display Login Prompt
+  else Within Trial Limit
+    Backend -> MLService: POST /recognize\n(Image File)
+    MLService -> MLService: Preprocess Image
+    MLService -> MLService: Run CRNN Model
+    MLService --> Backend: OCR Result
+    
+    Backend -> TrialService: Increment Trial Count
+    Backend -> Database: Save OCR History\n(Unregistered)
+    Backend --> Frontend: OCR Response\n+ Trial Info
+    Frontend --> User: Display Results
+  end
+end
+
+@enduml
+
+@startuml Sequence_User_Registration
+title User Registration Sequence Diagram
+
+actor User
+participant "React Frontend" as Frontend
+participant "Spring Boot\nBackend" as Backend
+participant "User Service" as UserService
+participant "Email Service" as EmailService
+participant "JWT Util" as JWT
+participant "MySQL Database" as Database
+
+User -> Frontend: Fill Registration Form
+Frontend -> Backend: POST /api/users/register\n(username, email, password)
+
+Backend -> UserService: register(RegisterRequest)
+UserService -> Database: Check if username exists
+Database --> UserService: Result
+
+alt Username Already Exists
+  UserService --> Backend: Throw Exception
+  Backend --> Frontend: Error: Username already exists
+  Frontend --> User: Display Error
+else Username Available
+  UserService -> Database: Check if email exists
+  Database --> UserService: Result
+  
+  alt Email Already Exists
+    UserService --> Backend: Throw Exception
+    Backend --> Frontend: Error: Email already exists
+    Frontend --> User: Display Error
+  else Email Available
+    UserService -> UserService: Hash Password (BCrypt)
+    UserService -> Database: Save New User
+    Database --> UserService: Saved User
+    
+    UserService -> JWT: Generate Token
+    JWT --> UserService: JWT Token
+    
+    UserService -> EmailService: Send Welcome Email
+    EmailService --> EmailService: Email Sent (Async)
+    
+    UserService --> Backend: AuthResponse\n(token, user data)
+    Backend --> Frontend: Registration Success\n+ JWT Token
+    Frontend -> Frontend: Store Token in LocalStorage
+    Frontend --> User: Redirect to Home
+  end
+end
+
+@enduml
+
+@startuml Sequence_Password_Reset
+title Password Reset Sequence Diagram
+
+actor User
+participant "React Frontend" as Frontend
+participant "Spring Boot\nBackend" as Backend
+participant "User Service" as UserService
+participant "Email Service" as EmailService
+participant "OTP Service" as OTPService
+participant "MySQL Database" as Database
+
+User -> Frontend: Request Password Reset\n(Enter Email)
+Frontend -> Backend: POST /api/forgot-password\n(email)
+
+Backend -> UserService: Find User by Email
+UserService -> Database: Query User
+Database --> UserService: User Data
+
+alt User Not Found
+  UserService --> Backend: Error: User not found
+  Backend --> Frontend: Error Response
+  Frontend --> User: Display Error
+else User Found
+  Backend -> OTPService: Generate OTP
+  OTPService -> Database: Save OTP\n(expires in 10 minutes)
+  
+  Backend -> EmailService: Send OTP Email
+  EmailService --> EmailService: Email Sent
+  Backend --> Frontend: Success: OTP sent
+  
+  Frontend --> User: Display: Enter OTP
+  
+  User -> Frontend: Enter OTP Code
+  Frontend -> Backend: POST /api/forgot-password/verify-otp\n(email, otpCode)
+  
+  Backend -> OTPService: Verify OTP
+  OTPService -> Database: Check OTP\n(valid, not expired, not used)
+  Database --> OTPService: OTP Data
+  
+  alt OTP Invalid
+    OTPService --> Backend: Error: Invalid OTP
+    Backend --> Frontend: Error Response
+    Frontend --> User: Display Error
+  else OTP Valid
+    Backend --> Frontend: Success: OTP Verified
+    
+    Frontend --> User: Display: Enter New Password
+    
+    User -> Frontend: Enter New Password
+    Frontend -> Backend: POST /api/forgot-password/reset-password\n(email, otpCode, newPassword)
+    
+    Backend -> OTPService: Verify OTP Again
+    OTPService -> Database: Check OTP
+    Database --> OTPService: OTP Data
+    
+    Backend -> UserService: Reset Password
+    UserService -> UserService: Hash New Password (BCrypt)
+    UserService -> Database: Update User Password
+    
+    Backend -> OTPService: Mark OTP as Verified
+    OTPService -> Database: Update OTP
+    
+    Backend -> EmailService: Send Confirmation Email
+    EmailService --> EmailService: Email Sent
+    
+    Backend --> Frontend: Success: Password Reset
+    Frontend --> User: Redirect to Login
+  end
+end
+
+@enduml
+
+@startuml Sequence_Payment_Processing
+title Payment Processing Sequence Diagram
+
+actor User
+participant "React Frontend" as Frontend
+participant "eSewa\nPayment Gateway" as eSewa
+participant "Spring Boot\nBackend" as Backend
+participant "Payment Service" as PaymentService
+participant "User Service" as UserService
+participant "MySQL Database" as Database
+
+User -> Frontend: Select Premium Plan
+Frontend -> Frontend: Generate Transaction UUID
+Frontend -> Frontend: Generate HMAC-SHA256 Signature
+Frontend -> eSewa: Submit Payment Form\n(amount, transaction_uuid, signature)
+
+eSewa -> eSewa: Process Payment
+eSewa --> Frontend: Redirect to Success/Failure URL
+
+alt Payment Successful
+  Frontend -> Backend: GET /api/payment/verify\n(transaction_uuid, transaction_code)
+  
+  Backend -> PaymentService: Verify Payment
+  PaymentService -> Database: Check if Payment Exists
+  
+  alt Payment Already Processed
+    PaymentService --> Backend: Error: Already processed
+    Backend --> Frontend: Error Response
+    Frontend --> User: Display Error
+  else Payment New
+    PaymentService -> Database: Save Payment Record
+    PaymentService -> UserService: Upgrade User to Premium
+    UserService -> Database: Update User\n(isPremium=true, premiumUntil)
+    Database --> UserService: Updated User
+    
+    PaymentService --> Backend: Payment Verified
+    Backend --> Frontend: Success Response
+    Frontend --> User: Display Success\n+ Redirect to Home
+  end
+else Payment Failed
+  Frontend -> Backend: GET /api/payment/verify\n(transaction_uuid, status=FAILED)
+  Backend -> PaymentService: Save Failed Payment
+  PaymentService -> Database: Save Payment Record\n(status=FAILED)
+  Backend --> Frontend: Failure Response
+  Frontend --> User: Display Failure Message
+end
+
+@enduml
+
+@startuml Use_Case_Diagram
+title Lipika OCR System - Use Case Diagram
+
+left to right direction
+
+actor User as "Free User"
+actor PremiumUser as "Premium User"
+actor Admin as "Administrator"
+actor Guest as "Guest User"
+
+rectangle "Lipika OCR System" {
+  
+  package "Authentication & User Management" {
+    usecase "Register Account" as UC1
+    usecase "Login" as UC2
+    usecase "Logout" as UC3
+    usecase "View Profile" as UC4
+    usecase "Update Profile" as UC5
+    usecase "Change Password" as UC6
+    usecase "Forgot Password" as UC7
+    usecase "Reset Password" as UC8
+  }
+  
+  package "OCR Functionality" {
+    usecase "Upload Image" as UC9
+    usecase "Capture Image\n(Camera)" as UC10
+    usecase "Recognize Text\n(OCR)" as UC11
+    usecase "View OCR Results" as UC12
+    usecase "View OCR History" as UC13
+    usecase "View AR Overlay" as UC14
+    usecase "Download Results" as UC15
+  }
+  
+  package "Translation" {
+    usecase "Translate to Devanagari" as UC16
+    usecase "Translate to English" as UC17
+    usecase "View Translation" as UC18
+  }
+  
+  package "Subscription Management" {
+    usecase "View Pricing Plans" as UC19
+    usecase "Select Premium Plan" as UC20
+    usecase "Process Payment\n(eSewa)" as UC21
+    usecase "View Subscription Status" as UC22
+    usecase "Extend Subscription" as UC23
+  }
+  
+  package "Contact & Support" {
+    usecase "Submit Contact Form" as UC24
+    usecase "View Contact Info" as UC25
+  }
+  
+  package "Admin Functions" {
+    usecase "View Dashboard" as UC26
+    usecase "Manage Users" as UC27
+    usecase "View OCR History\n(All Users)" as UC28
+    usecase "View Analytics" as UC29
+    usecase "Manage Contact Messages" as UC30
+    "View Character Statistics" as UC31
+    "Activate/Deactivate Users" as UC32
+    "Delete Users" as UC33
+  }
+}
+
+' Guest User (Unauthenticated)
+Guest --> UC9 : "10 free trials"
+Guest --> UC10
+Guest --> UC11
+Guest --> UC12
+Guest --> UC14
+Guest --> UC16
+Guest --> UC17
+Guest --> UC18
+Guest --> UC1
+Guest --> UC2
+Guest --> UC7
+Guest --> UC24
+Guest --> UC19
+
+' Free User (Authenticated)
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC9 : "10 scans/day"
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC14
+User --> UC15
+User --> UC16
+User --> UC17
+User --> UC18
+User --> UC19
+User --> UC20
+User --> UC21
+User --> UC24
+User --> UC25
+
+' Premium User
+PremiumUser --> UC2
+PremiumUser --> UC3
+PremiumUser --> UC4
+PremiumUser --> UC5
+PremiumUser --> UC6
+PremiumUser --> UC9 : "Unlimited"
+PremiumUser --> UC10
+PremiumUser --> UC11
+PremiumUser --> UC12
+PremiumUser --> UC13
+PremiumUser --> UC14
+PremiumUser --> UC15
+PremiumUser --> UC16
+PremiumUser --> UC17
+PremiumUser --> UC18
+PremiumUser --> UC22
+PremiumUser --> UC23
+PremiumUser --> UC24
+PremiumUser --> UC25
+
+' Administrator
+Admin --> UC2
+Admin --> UC3
+Admin --> UC26
+Admin --> UC27
+Admin --> UC28
+Admin --> UC29
+Admin --> UC30
+Admin --> UC31
+Admin --> UC32
+Admin --> UC33
+Admin --> UC9 : "Unlimited"
+Admin --> UC11
+Admin --> UC12
+
+' Extend relationships
+UC20 ..> UC21 : <<include>>
+UC21 ..> UC22 : <<include>>
+UC7 ..> UC8 : <<include>>
+UC11 ..> UC12 : <<include>>
+UC11 ..> UC13 : <<include>>
+
+@enduml
+
+@startuml Component_Diagram
+title Lipika OCR System - Component Diagram
+
+package "Frontend Layer" {
+  component [React Application] as ReactApp {
+    component [Home Page] as Home
+    component [Login/Register] as Auth
+    component [Admin Panel] as Admin
+    component [Pricing Page] as Pricing
+    component [Contact Page] as Contact
+  }
+}
+
+package "Backend Layer (Spring Boot)" {
+  component [REST Controllers] as Controllers {
+    component [UserController]
+    component [OCRController]
+    component [TranslationController]
+    component [AdminController]
+    component [PaymentController]
+    component [ContactController]
+  }
+  
+  component [Service Layer] as Services {
+    component [UserService]
+    component [OCRService]
+    component [TranslationService]
+    component [AdminService]
+    component [EmailService]
+    component [TrialTrackingService]
+  }
+  
+  component [Security] as Security {
+    component [JWT Authentication]
+    component [Spring Security]
+    component [BCrypt Password Hashing]
+  }
+  
+  component [Data Access Layer] as DataAccess {
+    component [JPA Repositories]
+    component [Hibernate ORM]
+  }
+}
+
+package "ML Service Layer" {
+  component [Python Flask Service] as FlaskService {
+    component [CRNN Model]
+    component [Image Preprocessing]
+    component [OCR Recognition]
+  }
+}
+
+package "External Services" {
+  component [eSewa Payment Gateway]
+  component [SMTP Email Service]
+}
+
+database "MySQL Database" as MySQL {
+  entity [users]
+  entity [ocr_history]
+  entity [payments]
+  entity [contacts]
+  entity [otps]
+  entity [trial_tracking]
+}
+
+' Connections
+ReactApp --> Controllers : HTTP/REST API
+Controllers --> Services
+Services --> DataAccess
+DataAccess --> MySQL
+OCRService --> FlaskService : HTTP Request
+PaymentController --> eSewa : Payment API
+EmailService --> SMTP : Email API
+
+@enduml
+
+@startuml Deployment_Diagram
+title Lipika OCR System - Deployment Diagram
+
+node "Client Browser" {
+  artifact "React Application\n(Vite Build)" as ReactApp
+}
+
+node "Web Server" {
+  artifact "Nginx/Apache\n(Static Files)" as WebServer
+}
+
+node "Application Server" {
+  artifact "Spring Boot Application\n(Port 8080)" as SpringBoot
+  database "MySQL Database\n(Port 3306)" as MySQL
+}
+
+node "ML Service Server" {
+  artifact "Python Flask Service\n(Port 5000)" as FlaskService
+  artifact "PyTorch CRNN Model" as MLModel
+}
+
+cloud "External Services" {
+  artifact "eSewa Payment Gateway" as eSewa
+  artifact "Gmail SMTP Server" as SMTP
+}
+
+' Connections
+ReactApp --> WebServer : HTTPS
+WebServer --> SpringBoot : HTTP/Proxy
+SpringBoot --> MySQL : JDBC
+SpringBoot --> FlaskService : HTTP
+FlaskService --> MLModel : Local
+SpringBoot --> eSewa : HTTPS
+SpringBoot --> SMTP : SMTP/587
+
+@enduml
+
+@startuml Activity_OCR_Flow
+title OCR Processing Activity Diagram
+
+start
+
+:User uploads/captures image;
+
+if (User authenticated?) then (yes)
+  :Check user usage limit;
+  if (Usage limit reached?) then (yes)
+    :Display error: Upgrade to premium;
+    stop
+  else (no)
+    :Process OCR;
+  endif
+else (no)
+  :Check trial limits\n(IP, Cookie, Fingerprint);
+  if (Trial limit exceeded?) then (yes)
+    :Display error: Login required;
+    stop
+  else (no)
+    :Process OCR;
+  endif
+endif
+
+:Send image to Python ML Service;
+:Preprocess image;
+:Run CRNN model inference;
+:Extract recognized text;
+:Calculate confidence scores;
+:Detect character bounding boxes;
+
+:Return OCR results to Backend;
+
+if (User authenticated?) then (yes)
+  :Increment user usage count;
+  :Save OCR history to database;
+else (no)
+  :Increment trial count;
+  :Save OCR history (unregistered);
+endif
+
+:Return results to Frontend;
+:Display recognized text;
+:Display AR overlay (optional);
+:Display translation options;
+
+stop
+
+@enduml
+
+@startuml State_User_Account
+title User Account State Diagram
+
+[*] --> Guest : Initial State
+
+state Guest {
+  [*] --> TrialAvailable : Start
+  TrialAvailable --> TrialUsed : Perform OCR
+  TrialUsed --> TrialAvailable : Reset (Daily)
+  TrialUsed --> LimitReached : 10 Trials Used
+  LimitReached --> Registered : Register/Login
+}
+
+state Registered {
+  [*] --> FreeUser : Registration Complete
+  
+  state FreeUser {
+    [*] --> Active : Account Active
+    Active --> Scanning : Perform OCR
+    Scanning --> Active : Scan Complete
+    Active --> LimitReached : 10 Scans/Day
+    LimitReached --> PremiumUser : Upgrade
+    LimitReached --> Active : Daily Reset
+  }
+  
+  state PremiumUser {
+    [*] --> Active : Premium Active
+    Active --> Scanning : Perform OCR
+    Scanning --> Active : Scan Complete
+    Active --> Expired : Premium Expired
+    Expired --> FreeUser : Downgrade
+    Expired --> Active : Renew Premium
+  }
+  
+  Active --> Suspended : Admin Action
+  Suspended --> Active : Admin Reactivate
+  Suspended --> Deleted : Admin Delete
+}
+
+Guest --> Registered : Register/Login
+Registered --> [*] : Account Deleted
+
+@enduml
