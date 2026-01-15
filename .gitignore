@@ -69,6 +69,7 @@ desktop.ini
 *.pdf
 *.md
 !README.md
+!Technology_Report.md
 
 # Fonts (large binary files)
 fonts/
