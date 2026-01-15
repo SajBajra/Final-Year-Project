@@ -325,7 +325,7 @@ function Home() {
           <TrialCounter trialInfo={trialInfo} />
         )}
 
-        {/* User Usage Counter - Show for authenticated users */}
+        {/* User Usage Counter - Always show for authenticated free users */}
         {isAuthenticated() && (
           <UserUsageCounter ocrResult={ocrResult} />
         )}

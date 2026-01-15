@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaExclamationTriangle, FaCrown } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { checkUsageStatus } from '../services/authService';
+import { getUserProfile } from '../services/authService';
 
 const UserUsageCounter = ({ ocrResult }) => {
   const [usageData, setUsageData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { token, isAuthenticated, isAdmin } = useAuth();
+  const { token, isAuthenticated, isAdmin, isPremium } = useAuth();
+  const navigate = useNavigate();
 
   const fetchUsageData = async () => {
     if (!isAuthenticated() || !token) {
@@ -16,14 +18,23 @@ const UserUsageCounter = ({ ocrResult }) => {
     }
 
     try {
-      const response = await checkUsageStatus(token);
+      // Fetch user profile to get usage counts
+      const response = await getUserProfile(token);
       if (response.success && response.data) {
-        // Parse usage info from the response
-        // The backend returns hasReachedLimit as boolean, but we need counts
-        // We'll get this from ocrResult.trialInfo if available
-        setUsageData({
-          hasReachedLimit: response.data
-        });
+        const profile = response.data;
+        // Only show counter for free users (not premium or admin)
+        if (!profile.isPremium && profile.role !== 'ADMIN') {
+          const remaining = Math.max(0, profile.usageLimit - profile.usageCount);
+          setUsageData({
+            remaining: remaining,
+            used: profile.usageCount || 0,
+            limit: profile.usageLimit || 10,
+            hasReachedLimit: remaining === 0
+          });
+        } else {
+          // Premium users or admins don't need the counter
+          setUsageData(null);
+        }
       }
     } catch (error) {
       console.error('Error fetching usage data:', error);
@@ -32,11 +43,12 @@ const UserUsageCounter = ({ ocrResult }) => {
     }
   };
 
+  // Fetch usage data on mount and when token changes
   useEffect(() => {
     fetchUsageData();
   }, [token, isAuthenticated]);
 
-  // Update when OCR result changes (new scan)
+  // Update when OCR result changes (new scan completed)
   useEffect(() => {
     if (ocrResult?.trialInfo) {
       setUsageData({
@@ -48,17 +60,45 @@ const UserUsageCounter = ({ ocrResult }) => {
     }
   }, [ocrResult]);
 
-  // Don't show usage counter for admins
-  if (isAdmin()) {
+  // Don't show usage counter for admins or premium users
+  if (isAdmin() || isPremium()) {
     return null;
   }
 
-  if (!isAuthenticated() || loading) {
-    return null;
+  // Show loading state with a placeholder
+  if (!isAuthenticated() || (loading && !usageData)) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6 p-4 rounded-xl shadow-md border-2 bg-gray-50 border-gray-200"
+      >
+        <div className="flex items-center gap-2">
+          <div className="animate-pulse bg-gray-300 h-4 w-32 rounded"></div>
+        </div>
+      </motion.div>
+    );
   }
 
+  // If no usage data available, try to show default values
   if (!usageData) {
-    return null;
+    // Still show counter with default values for free users
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6 p-4 rounded-xl shadow-md border-2 bg-primary-50 border-primary-300"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <FaCheckCircle className="text-primary-600 text-lg" />
+            <span className="text-base font-bold text-primary-900">
+              OCR Scans Remaining: <span className="text-xl">Loading...</span>
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    );
   }
 
   const { remaining, used, limit, hasReachedLimit } = usageData;
@@ -78,7 +118,10 @@ const UserUsageCounter = ({ ocrResult }) => {
             <p className="text-sm text-orange-800 mb-3">
               You've used all {limit} free OCR scans. Upgrade to premium for unlimited access!
             </p>
-            <button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-5 py-2.5 rounded-lg font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+            <button 
+              onClick={() => navigate('/pricing')}
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-5 py-2.5 rounded-lg font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+            >
               <FaCrown />
               <span>Upgrade to Premium</span>
             </button>
