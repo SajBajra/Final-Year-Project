@@ -69,7 +69,8 @@ desktop.ini
 *.pdf
 *.md
 !README.md
-!Technology_Report.md
+Technology_Report.md
+Lipika_PlantUML_Diagrams.txt
 
 # Fonts (large binary files)
 fonts/

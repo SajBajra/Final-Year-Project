@@ -293,7 +293,7 @@ function Home() {
             Advanced Ranjana Script OCR
           </motion.p>
           
-          <motion.p 
+          <motion.p  
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
